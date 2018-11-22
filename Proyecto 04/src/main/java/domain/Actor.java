@@ -15,6 +15,8 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
+import security.UserAccount;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class Actor extends DomainEntity {
@@ -30,6 +32,8 @@ public class Actor extends DomainEntity {
 	//Dependencias
 	private List<SocialProfile>	socialProfiles;
 	private List<Box>			boxes;
+
+	private UserAccount			userAccount;
 
 
 	public Actor() {		//Created for Json purposes
@@ -94,7 +98,7 @@ public class Actor extends DomainEntity {
 
 	@NotBlank
 	@Email
-	//@Column(unique = true)
+	@Column(unique = true)
 	public String getEmail() {
 		return this.email;
 	}
@@ -120,6 +124,15 @@ public class Actor extends DomainEntity {
 
 	public void setAddress(final String address) {
 		this.address = address;
+	}
+
+	@Valid
+	public UserAccount getUserAccount() {
+		return this.userAccount;
+	}
+
+	public void setUserAccount(UserAccount userAccount) {
+		this.userAccount = userAccount;
 	}
 
 }
