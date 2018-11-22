@@ -1,6 +1,7 @@
 
 package services;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -40,5 +41,34 @@ public class ApplicationService {
 		application.setStatus(Status.PENDING);
 
 		return application;
+	}
+
+	//Simple CRUD methods
+
+	public Application create(final Application application) {
+		this.applicationRepository.save(application);
+		return application;
+	}
+
+	public Collection<Application> findAll() {
+		Collection<Application> result;
+
+		result = this.applicationRepository.findAll();
+
+		return result;
+	}
+
+	public Application findOne(final Integer id) {
+
+		final Application result = this.applicationRepository.findOne(id);
+		return result;
+	}
+
+	public Application saveApplication(final Application application) {
+		return this.applicationRepository.save(application);
+	}
+
+	public void delete(final Application applitacion) {
+		this.applicationRepository.delete(applitacion);
 	}
 }
