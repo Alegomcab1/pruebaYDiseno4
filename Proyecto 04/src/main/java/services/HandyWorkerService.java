@@ -30,12 +30,14 @@ public class HandyWorkerService {
 
 	// Supporting Services ------------------------------------------
 
+	//TODO Consultar quien tiene este Autowired
 	@Autowired
 	private TutorialService			tutorialService;
 	@Autowired
 	private FinderService			finderService;
 	@Autowired
 	private EndorserService			endorserService;
+	//TODO Consultar quien tiene este Autowired
 	@Autowired
 	private CurriculumService		curriculumService;
 	@Autowired
@@ -44,15 +46,21 @@ public class HandyWorkerService {
 
 	// Simple CRUD methods ------------------------------------------
 
-	public HandyWorker create(final Endorser a, final String make) {
+	public HandyWorker createHandyWorker(final Endorser a, final String make) {
 		final HandyWorker result = new HandyWorker();
+		//final Actor b = createActor();
+		//final Endorser a = createEndorser();
+		//TODO Eliminar los parametros de entrada? Llamar solo al create de Endorser? Realizar el make dentro del create?
 		final List<Application> applications = new ArrayList<Application>();
 		final List<Finder> finders = new ArrayList<Finder>();
 		final List<Tutorial> tutorials = new ArrayList<Tutorial>();
+		//TODO Toda lista vacia podria pasarse como parametro de entrada en vez de forzosamente inicializarlo vacio?
 
 		result.setAddress(a.getAddress());
 		result.setApplications(applications);
 		result.setBoxes(a.getBoxes());
+		//TODO setCurriculum no veo que se deje a null, averiguar si hay que usar createCurriculum, pasarlo como parametro de entrada o dejarlo asi
+
 		result.setCurriculum(null);
 		result.setEmail(a.getEmail());
 		result.setEndorsments(a.getEndorsments());
@@ -66,7 +74,6 @@ public class HandyWorkerService {
 		result.setSocialProfiles(a.getSocialProfiles());
 		result.setSurname(a.getSurname());
 		result.setTutorials(tutorials);
-		result.setVersion(a.getVersion());
 
 		return result;
 
