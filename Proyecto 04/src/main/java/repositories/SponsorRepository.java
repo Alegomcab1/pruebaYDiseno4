@@ -4,9 +4,9 @@ package repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import domain.Referee;
+import domain.Sponsor;
 
 @Repository
-public interface RefereeRepository extends JpaRepository<Referee, Integer> {
+public interface SponsorRepository extends JpaRepository<Sponsor, Integer> {
 
 }

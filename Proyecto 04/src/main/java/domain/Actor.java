@@ -9,15 +9,21 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
+import security.UserAccount;
+
 @Entity
 @Access(AccessType.PROPERTY)
 public class Actor extends DomainEntity {
+
+	private UserAccount			userAccount;
 
 	private String				name;
 	private String				middleName;
@@ -30,6 +36,8 @@ public class Actor extends DomainEntity {
 	//Dependencias
 	private List<SocialProfile>	socialProfiles;
 	private List<Box>			boxes;
+
+	private UserAccount			userAccount;
 
 
 	public Actor() {		//Created for Json purposes
@@ -94,7 +102,7 @@ public class Actor extends DomainEntity {
 
 	@NotBlank
 	@Email
-	//@Column(unique = true)
+	@Column(unique = true)
 	public String getEmail() {
 		return this.email;
 	}
@@ -120,6 +128,16 @@ public class Actor extends DomainEntity {
 
 	public void setAddress(final String address) {
 		this.address = address;
+	}
+  
+	@NotNull
+	@OneToOne(cascade = CascadeType.ALL)
+	public UserAccount getUserAccount() {
+		return this.userAccount;
+	}
+
+	public void setUserAccount(final UserAccount userAccount) {
+		this.userAccount = userAccount;
 	}
 
 }
