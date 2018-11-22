@@ -37,6 +37,8 @@ public class Actor extends DomainEntity {
 	private List<SocialProfile>	socialProfiles;
 	private List<Box>			boxes;
 
+	private UserAccount			userAccount;
+
 
 	public Actor() {		//Created for Json purposes
 		super();
@@ -100,7 +102,7 @@ public class Actor extends DomainEntity {
 
 	@NotBlank
 	@Email
-	//@Column(unique = true)
+	@Column(unique = true)
 	public String getEmail() {
 		return this.email;
 	}
@@ -127,7 +129,7 @@ public class Actor extends DomainEntity {
 	public void setAddress(final String address) {
 		this.address = address;
 	}
-
+  
 	@NotNull
 	@OneToOne(cascade = CascadeType.ALL)
 	public UserAccount getUserAccount() {
