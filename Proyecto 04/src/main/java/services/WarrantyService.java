@@ -6,15 +6,13 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import repositories.ApplicationRepository;
+import repositories.WarrantyRepository;
 
 @Service
 @Transactional
-public class ApplicationService {
-
-	// Managed repository ------------------------------------------
+public class WarrantyService {
 
 	@Autowired
-	private ApplicationRepository	applicationRepository;
+	private WarrantyRepository	warrantyRepository;
 
 }

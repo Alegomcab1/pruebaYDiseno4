@@ -6,14 +6,17 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import repositories.EndorserRepository;
+import repositories.ComplaintRepository;
 
 @Service
 @Transactional
-public class EndorserService {
-
-	// Managed repository ------------------------------------------
+public class ComplaintService {
 
 	@Autowired
-	private EndorserRepository	endorserRepository;
+	private ComplaintRepository	complaintRepository;
+
+	//Supporting services
+
+	@Autowired
+	private RefereeService		refereeService;
 }
