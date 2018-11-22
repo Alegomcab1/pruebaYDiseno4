@@ -30,17 +30,21 @@ public class ApplicationService {
 
 	public static Application createApplication(final Integer offeredPrice, final List<String> comments, final FixUpTask fixUpTask, final HandyWorker handyWorker) {
 
-		final Application application = new Application();
+		final Application result = new Application();
 		final Date thisMoment = new Date();
 
-		application.setComments(comments);
-		application.setFixUpTask(fixUpTask);
-		application.setHandyWorker(handyWorker);
-		application.setMoment(thisMoment);
-		application.setOfferedPrice(offeredPrice);
-		application.setStatus(Status.PENDING);
+		result.setComments(comments);
+		result.setFixUpTask(fixUpTask);
+		result.setHandyWorker(handyWorker);
+		result.setMoment(thisMoment);
+		result.setOfferedPrice(offeredPrice);
+		result.setStatus(Status.PENDING);
 
-		return application;
+		return result;
+	}
+
+	public Application saveApplication(final Application application) {
+		return this.applicationRepository.save(application);
 	}
 
 	//Simple CRUD methods
