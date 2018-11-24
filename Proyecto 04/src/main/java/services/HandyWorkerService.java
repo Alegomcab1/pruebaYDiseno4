@@ -107,4 +107,8 @@ public class HandyWorkerService {
 	public HandyWorker saveHandyWorker(final HandyWorker handyWorker) {
 		return this.handyWorkerRepository.save(handyWorker);
 	}
+
+	public List<HandyWorker> findAll() {
+		return this.handyWorkerRepository.findAll();
+	}
 }
