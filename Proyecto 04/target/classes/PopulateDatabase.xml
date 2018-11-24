@@ -51,9 +51,226 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="userAccount4" class="security.UserAccount">
+		<property name="username" value="PacoCustomer" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="CUSTOMER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount5" class="security.UserAccount">
+		<property name="username" value="JuanCustomer" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="CUSTOMER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount6" class="security.UserAccount">
+		<property name="username" value="DaniCustomer" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="CUSTOMER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount7" class="security.UserAccount">
+		<property name="username" value="JoseCustomer" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="CUSTOMER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount8" class="security.UserAccount">
+		<property name="username" value="PepeHW" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="HANDYWORKER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount9" class="security.UserAccount">
+		<property name="username" value="Pepe2HW" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="HANDYWORKER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount10" class="security.UserAccount">
+		<property name="username" value="Pepe3HW" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="HANDYWORKER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount11" class="security.UserAccount">
+		<property name="username" value="Pepe4HW" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="HANDYWORKER" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount12" class="security.UserAccount">
+		<property name="username" value="arbitrasoRF" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="REFEREE" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount13" class="security.UserAccount">
+		<property name="username" value="refeeroRF" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="REFEREE" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount14" class="security.UserAccount">
+		<property name="username" value="refeero2314RF" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="REFEREE" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount15" class="security.UserAccount">
+		<property name="username" value="refe12eroRF" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="REFEREE" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount16" class="security.UserAccount">
+		<property name="username" value="pepeSponsor" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="SPONSOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount17" class="security.UserAccount">
+		<property name="username" value="juanSponsor" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="SPONSOR" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userAccount18" class="security.UserAccount">
+		<property name="username" value="davidAdmin" />
+		<property name="password" value="81dc9bdb52d04dc20036dbd8313ed055" />
+		<property name="authorities">
+			<list>
+				<bean class="security.Authority">
+					<property name="authority" value="ADMIN" />
+				</bean>
+			</list>
+		</property>
+	</bean>
 
 	<!-- Other domain beans come here -->
 
+
+	<!--  CONFIGURATION -->
+	<bean id ="configuration" class="domain.Configuration">
+		<property name="iva21" value="21" />
+		<property name="spainTelephoneCode" value="+34" />
+		<property name="spamWords">
+			<list>
+				<value>sex</value>
+				<value>viagra</value>
+				<value>cialis</value>
+				<value>one million</value>
+				<value>you’ve been selected</value>
+				<value>Nigeria</value>
+				<value>sexo</value>
+				<value>un millón</value>
+				<value>ha sido seleccionado</value>
+				<value>pene</value>
+				<value>maduras</value>
+				<value>astolfo</value>
+				<value>furry</value>
+				<value>ugly bastard</value>
+			</list>
+		</property>
+		<property name="cardType">
+			<list>
+				<value>VISA</value>
+				<value>MASTER</value>
+				<value>DINNERS</value>
+				<value>AMEX</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<!--   				-->
+	
+	
 
 	<!-- FIX-UP TASK -->
 	<bean id="fixUpTasks1" class="domain.FixUpTask">
@@ -968,6 +1185,8 @@
 				<ref bean="report1" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount12" />
+		
 
 	</bean>
 	<bean id="referee2" class="domain.Referee">
@@ -984,6 +1203,7 @@
 				<ref bean="report2" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount13" />
 
 	</bean>
 	<bean id="referee3" class="domain.Referee">
@@ -999,6 +1219,7 @@
 				<ref bean="report3" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount14" />
 
 	</bean>
 	<bean id="referee4" class="domain.Referee">
@@ -1014,6 +1235,7 @@
 				<ref bean="report4" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount15" />
 	</bean>
 	<!-- END OF REFEREE -->
 
@@ -1036,6 +1258,7 @@
 				<ref bean="box1" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount18" />
 	</bean>
 	<!-- ADMIN -->
 
@@ -1086,6 +1309,7 @@
 			</list>
 		</property>
 		<property name="curriculum" ref="curriculum1" />
+		<property name="userAccount" ref="userAccount8" />
 	</bean>
 	
 	
@@ -1105,6 +1329,7 @@
 				<ref bean="application2" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount9" />
 	</bean>
 		
 	<bean id="handyWorker3" class="domain.HandyWorker">
@@ -1112,7 +1337,7 @@
 		<property name="middleName" value="Luis3" />
 		<property name="surname" value="Martinez3" />
 		<property name="photo" value="https://www.url.com/example2" />
-		<property name="email" value="pepe.luis2@gmail.com" />
+		<property name="email" value="pepe.luis3@gmail.com" />
 		<property name="phoneNumber" value="+34633256914" />
 		<property name="address" value="Sevilla" />
 		<property name="score" value="GOOD" />
@@ -1123,6 +1348,7 @@
 				<ref bean="application4" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount10" />
 	</bean>	
 	
 	<bean id="handyWorker4" class="domain.HandyWorker">
@@ -1130,7 +1356,7 @@
 		<property name="middleName" value="Luis4" />
 		<property name="surname" value="Martinez4" />
 		<property name="photo" value="https://www.url.com/example2" />
-		<property name="email" value="pepe.luis2@gmail.com" />
+		<property name="email" value="pepe.luis4@gmail.com" />
 		<property name="phoneNumber" value="+34644456914" />
 		<property name="address" value="Sevilla" />
 		<property name="score" value="GOOD" />
@@ -1141,6 +1367,7 @@
 				<ref bean="application6" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount11" />
 	</bean>	
 		
 	<!-- END OF HANDY WORKER -->
@@ -1247,6 +1474,7 @@
 				<ref bean="fixUpTasks4" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount4" />
 	</bean>
 
 	<bean id="customer2" class="domain.Customer">
@@ -1263,6 +1491,7 @@
 				<ref bean="fixUpTasks5" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount5" />
 	</bean>
 
 	<bean id="customer3" class="domain.Customer">
@@ -1279,6 +1508,7 @@
 				<ref bean="fixUpTasks6" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount6" />
 	</bean>
 
 	<bean id="customer4" class="domain.Customer">
@@ -1295,6 +1525,7 @@
 				<ref bean="fixUpTasks7" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount7" />
 	</bean>
 	<!-- END OF CUSTOMER -->
 
@@ -1367,6 +1598,7 @@
 				<ref bean="sponsorship1" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount16" />
 	</bean>
 
 	<bean id="sponsor2" class="domain.Sponsor">
@@ -1382,6 +1614,7 @@
 				<ref bean="sponsorship2" />
 			</list>
 		</property>
+		<property name="userAccount" ref="userAccount17" />
 	</bean>
 	<!-- END OF SPONSOR -->
 
