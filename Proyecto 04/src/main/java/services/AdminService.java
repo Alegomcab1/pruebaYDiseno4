@@ -1,6 +1,7 @@
 
 package services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,9 @@ public class AdminService {
 	@Autowired
 	private AdminRepository	adminRepository;
 
+	@Autowired
+	private WarrantyService	warrantyService;
+
 
 	//1. Create user accounts for new administrators.
 
@@ -48,37 +52,86 @@ public class AdminService {
 	 * Only warranties that are saved in final mode can be referenced by fix-up tasks.
 	 */
 
-	public void createWarranty(Warranty warranty) {
-
+	public Warranty createWarranty(Warranty warranty) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+
+		final Warranty w = this.warrantyService.create(warranty);
+
+		return warranty;
 	}
 
-	public void listWarranty() {
+	public List<Warranty> listWarranty() {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+
+		List<Warranty> lw = new ArrayList<>();
+		lw = this.warrantyService.findAllWarranties();
+
+		return lw;
 	}
 
-	public void updateWarranty(Warranty warranty) {
+	public Warranty updateWarranty(Warranty warranty) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
-	}
 
-	public void showWarranty(Warranty warranty) {
+		List<Warranty> lw = this.listWarranty();
+		Warranty res = null;
+
+		for (Warranty w : lw)
+			if (w == warranty) {
+				res = w;
+				break;
+			}
+
+		Assert.isTrue(!res.equals(null));
+
+		if (warranty.getSave() == Save."DRAFTMODE")
+			Warranty updWarranty = this.warrantyService.save(warranty);
+
+		return updWarranty;
+
+	}
+	public Warranty showWarranty(Warranty warranty) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+
+		List<Warranty> lw = this.listWarranty();
+		Warranty res = null;
+
+		for (Warranty w : lw)
+			if (w == warranty) {
+				res = w;
+				break;
+			}
+
+		return res;
+
 	}
 
 	public void deleteWarranty(Warranty warranty) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
-	}
 
+		List<Warranty> lw = this.listWarranty();
+		Warranty res = null;
+
+		for (Warranty w : lw)
+			if (w == warranty) {
+				res = w;
+				break;
+			}
+
+		Assert.isTrue(!warranty.equals(null));
+		
+		if (warranty.getSave() == Save."DRAFTMODE")
+			this.warrantyService.delete(warranty);
+	}
 	/*
 	 * 3. Manage the catalogue of categories, which includes listing, showing, creating, updating,
 	 * and deleting them. Note that categories evolve independently from fix-up
