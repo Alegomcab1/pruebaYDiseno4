@@ -189,7 +189,7 @@ public class ActorService {
 
 	List<HandyWorker> handyWorkers = new ArrayList<HandyWorker>();
 
-	handyWorkers = this.handyWorkerService.findAll();
+	handyWorkers = (List<HandyWorker>) this.handyWorkerService.findAll();
 	HandyWorker requiredHandyWorker = new HandyWorker();
 
 	for (HandyWorker h : handyWorkers)
