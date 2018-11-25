@@ -95,6 +95,7 @@ public class Application extends DomainEntity {
 
 	@Valid
 	public CreditCard getCreditCard() {
+		// TODO Auto-generated method stub
 		return this.creditCard;
 	}
 

@@ -237,7 +237,7 @@ public class CustomerService {
 	public Complaint createComplaint(final FixUpTask fixUpTask, final Complaint complaint) {
 		final Customer loggedCustomer = this.securityAndCustomer();
 
-		final Complaint complaintSaved = this.complaintService.create(complaint);
+		final Complaint complaintSaved = this.complaintService.save(complaint);
 
 		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
@@ -289,8 +289,10 @@ public class CustomerService {
 
 		if (application.getStatus().equals(Status.ACCEPTED))
 			Assert.notNull(application.getCreditCard());
+		Integer number = application.getCreditCard().getNumber();
+		Assert.isTrue(CustomerService.validateCreditCardNumber(number.toString()));
 
-		return this.applicationService.saveApplication(application);
+		return this.applicationService.save(application);
 	}
 
 	//NOTES
@@ -383,7 +385,7 @@ public class CustomerService {
 
 		Assert.notNull(handyWorkerFound);
 
-		return this.endorsmentService.saveEndorsment(endorsment);
+		return this.endorsmentService.save(endorsment);
 	}
 
 	public Endorsment updateEndorsment(Endorsment endorsment) {
@@ -400,7 +402,7 @@ public class CustomerService {
 
 		Assert.notNull(endorsmentFound);
 
-		return this.endorsmentService.saveEndorsment(endorsment);
+		return this.endorsmentService.save(endorsment);
 	}
 
 	public void deleteEndorsment(Endorsment endorsment) {
