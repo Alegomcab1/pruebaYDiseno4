@@ -1,14 +1,18 @@
 
 package services;
 
+import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
+import domain.Actor;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -35,7 +39,11 @@ public class ActorServiceTest extends AbstractTest {
 
 	@Test
 	public void testloggedAsActor() {
-
+		Collection<Actor> all;
+		super.authenticate("PacoCustomer");
+		all = this.actorService.findAll();
+		Assert.isTrue(all.size() > 0);
+		super.authenticate(null);
 	}
 
 	/*
