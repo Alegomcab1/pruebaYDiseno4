@@ -1,7 +1,6 @@
 
 package domain;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Access;
@@ -21,7 +20,7 @@ public class HandyWorker extends Endorser {
 	private String				make;
 
 	private List<Application>	applications;
-	private Collection<Finder>	finders;
+	private Finder				finder;
 	private List<Tutorial>		tutorials;
 	private Curriculum			curriculum;
 
@@ -38,12 +37,12 @@ public class HandyWorker extends Endorser {
 
 	@OneToMany
 	@Valid
-	public Collection<Finder> getFinders() {
-		return this.finders;
+	public Finder getFinder() {
+		return this.finder;
 	}
 
-	public void setFinders(final Collection<Finder> finders) {
-		this.finders = finders;
+	public void setFinder(final Finder finder) {
+		this.finder = finder;
 	}
 
 	@OneToMany

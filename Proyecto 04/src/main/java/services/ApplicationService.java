@@ -1,6 +1,8 @@
 
 package services;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -22,27 +24,57 @@ public class ApplicationService {
 	// Managed repository ------------------------------------------
 
 	@Autowired
-	private ApplicationRepository	applicationRepository;
+	private static ApplicationRepository	applicationRepository;
 
 
 	// Supporting Services ------------------------------------------
 
-	public static Application createApplication(final Integer offeredPrice, final List<String> comments, final FixUpTask fixUpTask, final HandyWorker handyWorker) {
+	public static Application createApplication() {
 
-		final Application result = new Application();
-		final Date thisMoment = new Date();
+		Application result = new Application();
+		Date thisMoment = new Date();
+		List<String> comments = new ArrayList<String>();
 
 		result.setComments(comments);
-		result.setFixUpTask(fixUpTask);
-		result.setHandyWorker(handyWorker);
+		result.setFixUpTask(null);
+		result.setHandyWorker(null);
 		result.setMoment(thisMoment);
-		result.setOfferedPrice(offeredPrice);
+		result.setOfferedPrice(1);
 		result.setStatus(Status.PENDING);
 
 		return result;
 	}
 
-	public Application saveApplication(final Application application) {
-		return this.applicationRepository.save(application);
+	public static Collection<Application> findAll() {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		return ApplicationService.applicationRepository.findAll();
 	}
+
+	public static Application findOne(int id) {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		//TODO id en Application?
+		return ApplicationService.applicationRepository.findOne(id);
+	}
+
+	public static Application save(Application application) {
+		return ApplicationService.applicationRepository.save(application);
+	}
+
+	public static void delete(Application application) {
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+		ApplicationService.applicationRepository.delete(application);
+	}
+
+	public static void updateApplication(int id, List<String> comments, FixUpTask fixUpTask, HandyWorker handyWorker, Integer offeredPrice, Status status) {
+		Application newApplication = ApplicationService.findOne(id);
+		newApplication.setComments(comments);
+		newApplication.setFixUpTask(fixUpTask);
+		newApplication.setHandyWorker(handyWorker);
+		newApplication.setOfferedPrice(offeredPrice);
+		newApplication.setStatus(status);
+
+		ApplicationService.save(newApplication);
+
+	}
+
 }

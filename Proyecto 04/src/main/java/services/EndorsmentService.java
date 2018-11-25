@@ -1,6 +1,8 @@
 
 package services;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -27,10 +29,12 @@ public class EndorsmentService {
 
 	// Simple CRUD methods ------------------------------------------
 
-	public Endorsment createEndorsment(final Endorser writtenBy, final Endorser writtenTo, final List<String> comments) {
-		final Endorsment result = new Endorsment();
-		//final List<String> comments = new ArrayList<String>();
-		final Date thisMoment = new Date();
+	public Endorsment createEndorsment() {
+		Endorsment result = new Endorsment();
+		Date thisMoment = new Date();
+		List<String> comments = new ArrayList<String>();
+		Endorser writtenTo = EndorserService.createEndorser();
+		Endorser writtenBy = EndorserService.createEndorser();
 
 		result.setComments(comments);
 		result.setMoment(thisMoment);
@@ -40,7 +44,25 @@ public class EndorsmentService {
 		return result;
 
 	}
-	public Endorsment saveEndorsment(final Endorsment endorsment) {
+
+	public Collection<Endorsment> findAll() {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		return this.endorsmentRepository.findAll();
+	}
+
+	public Endorsment findOne(int id) {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		//TODO id en Endorsment?
+		return this.endorsmentRepository.findOne(id);
+	}
+
+	public Endorsment save(Endorsment endorsment) {
 		return this.endorsmentRepository.save(endorsment);
 	}
+
+	public void delete(Endorsment endorsment) {
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+		this.endorsmentRepository.delete(endorsment);
+	}
+
 }
