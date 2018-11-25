@@ -1,6 +1,7 @@
 
 package services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -23,54 +24,45 @@ public class ApplicationService {
 	// Managed repository ------------------------------------------
 
 	@Autowired
-	private ApplicationRepository	applicationRepository;
+	private static ApplicationRepository	applicationRepository;
 
 
 	// Supporting Services ------------------------------------------
 
-	public static Application createApplication(final Integer offeredPrice, final List<String> comments, final FixUpTask fixUpTask, final HandyWorker handyWorker) {
+	public static Application createApplication() {
 
-		final Application result = new Application();
-		final Date thisMoment = new Date();
+		Application result = new Application();
+		Date thisMoment = new Date();
+		List<String> comments = new ArrayList<String>();
 
 		thisMoment.setTime(thisMoment.getTime() - 1);
 
 		result.setComments(comments);
-		result.setFixUpTask(fixUpTask);
-		result.setHandyWorker(handyWorker);
+		result.setFixUpTask(null);
+		result.setHandyWorker(null);
 		result.setMoment(thisMoment);
-		result.setOfferedPrice(offeredPrice);
+		result.setOfferedPrice(1);
 		result.setStatus(Status.PENDING);
 
 		return result;
 	}
-
-	//Simple CRUD methods
-
-	public Application create(final Application application) {
-		this.applicationRepository.save(application);
-		return application;
+	// Simple CRUD methods ------------------------------------------
+  
+	public static Collection<Application> findAll() {
+		return ApplicationService.applicationRepository.findAll();
 	}
 
-	public Collection<Application> findAll() {
-		Collection<Application> result;
-
-		result = this.applicationRepository.findAll();
-
-		return result;
+	public static Application findOne(int id) {
+		return ApplicationService.applicationRepository.findOne(id);
 	}
 
-	public Application findOne(final Integer id) {
-
-		final Application result = this.applicationRepository.findOne(id);
-		return result;
+	public static Application save(Application application) {
+		return ApplicationService.applicationRepository.save(application);
 	}
 
-	public Application saveApplication(final Application application) {
-		return this.applicationRepository.save(application);
+	public static void delete(Application application) {
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, adem�s mirar si hay restricciones a la hora de eliminarlo
+		ApplicationService.applicationRepository.delete(application);
 	}
-
-	public void delete(final Application applitacion) {
-		this.applicationRepository.delete(applitacion);
-	}
+  
 }

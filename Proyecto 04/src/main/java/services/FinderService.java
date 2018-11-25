@@ -1,6 +1,11 @@
 
 package services;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import repositories.FinderRepository;
 import domain.Finder;
+import domain.FixUpTask;
 
 @Service
 @Transactional
@@ -16,68 +22,59 @@ public class FinderService {
 	// Managed repository ------------------------------------------
 
 	@Autowired
-	private FinderRepository	finderRepository;
+	private static FinderRepository	finderRepository;
 
 	// Supporting Services ------------------------------------------
 
 	//TODO Dejar claro si este Autowired va aqui o en FixUpTask
 	@Autowired
-	private FixUpTaskService	fixUpTaskService;
+	private FixUpTaskService		fixUpTaskService;
 
 
 	// Simple CRUD methods ------------------------------------------
 
-	public static Finder createFinder(final Finder f) {
+	public static Finder createFinder() {
 
-		final Finder result = new Finder();
-
-		result.setCategory(f.getCategory());
-		result.setEndDate(f.getEndDate());
-		result.setFixUpTasks(f.getFixUpTasks());
-		result.setKeyWord(f.getKeyWord());
-		result.setMaxPrice(f.getMaxPrice());
-		result.setMinPrice(f.getMinPrice());
-		result.setStartDate(f.getStartDate());
-		result.setWarranty(f.getWarranty());
+		Finder result = new Finder();
 
 		//TODO Esto es por si se quiere que solo se tenga que pasar por parametro a keyWord inicializando lo demas para que el Filter use solo el keyWord
 
-		/*
-		 * final List<FixUpTask> fixUpTasks2 = new ArrayList<FixUpTask>();
-		 * 
-		 * @SuppressWarnings("deprecation")
-		 * final Date startDate2 = new Date(1, 1, 1);
-		 * 
-		 * @SuppressWarnings("deprecation")
-		 * final Date endDate2 = new Date(1000, 1, 1);
-		 * 
-		 * result.setCategory("");
-		 * result.setEndDate(endDate2);
-		 * result.setFixUpTasks(fixUpTasks2);
-		 * result.setKeyWord(keyWord);
-		 * result.setMaxPrice(999999999.99);
-		 * result.setMinPrice(0.0);
-		 * result.setStartDate(startDate2);
-		 * result.setWarranty("");
-		 */
+		List<FixUpTask> fixUpTasks2 = new ArrayList<FixUpTask>();
 
-		//TODO Esto es por si en vez de pasar un Finder se le pasan los parametros
+		@SuppressWarnings("deprecation")
+		Date startDate2 = new Date(1, 1, 1);
 
-		/*
-		 * result.setCategory(category);
-		 * result.setEndDate(endDate);
-		 * result.setFixUpTasks(fixUpTasks);
-		 * result.setKeyWord(keyWord);
-		 * result.setMaxPrice(maxPrice);
-		 * result.setMinPrice(minPrice);
-		 * result.setStartDate(startDate);
-		 * result.setWarranty(warranty);
-		 * 
-		 * return result;
-		 */
+		@SuppressWarnings("deprecation")
+		Date endDate2 = new Date(1000, 1, 1);
+
+		result.setCategory("");
+		result.setEndDate(endDate2);
+		result.setFixUpTasks(fixUpTasks2);
+		result.setKeyWord("keyWord");
+		result.setMaxPrice(999999999.99);
+		result.setMinPrice(0.0);
+		result.setStartDate(startDate2);
+		result.setWarranty("");
+
 	}
 
-	public Finder saveFinder(final Finder finder) {
-		return this.finderRepository.save(finder);
+	public static Collection<Finder> findAll() {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		return FinderService.finderRepository.findAll();
+	}
+
+	public static Finder findOne(int id) {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		//TODO id en Finder?
+		return FinderService.finderRepository.findOne(id);
+	}
+
+	public static Finder save(Finder finder) {
+		return FinderService.finderRepository.save(finder);
+	}
+
+	public static void delete(Finder finder) {
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+		FinderService.finderRepository.delete(finder);
 	}
 }
