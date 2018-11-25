@@ -30,6 +30,7 @@ public class Actor extends DomainEntity {
 	private String				email;
 	private String				phoneNumber;
 	private String				address;
+	private Boolean				hasSpam;
 
 	//Dependencias
 	private List<SocialProfile>	socialProfiles;
@@ -136,6 +137,14 @@ public class Actor extends DomainEntity {
 
 	public void setUserAccount(final UserAccount userAccount) {
 		this.userAccount = userAccount;
+	}
+
+	public Boolean getHasSpam() {
+		return this.hasSpam;
+	}
+
+	public void setHasSpam(Boolean hasSpam) {
+		this.hasSpam = hasSpam;
 	}
 
 }

@@ -56,6 +56,14 @@ public class UserAccount extends DomainEntity implements UserDetails {
 	private Boolean					isNotLocked;
 
 
+	public Boolean getIsNotLocked() {
+		return this.isNotLocked;
+	}
+
+	public void setIsNotLocked(Boolean isNotLocked) {
+		this.isNotLocked = isNotLocked;
+	}
+
 	@Size(min = 5, max = 32)
 	@Column(unique = true)
 	@Override
