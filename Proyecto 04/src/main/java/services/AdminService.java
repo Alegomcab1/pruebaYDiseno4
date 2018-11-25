@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import repositories.AdminRepository;
+import security.Authority;
 import security.LoginService;
 import security.UserAccount;
+import domain.Actor;
 import domain.Admin;
 import domain.Category;
 import domain.Customer;
@@ -31,17 +33,45 @@ public class AdminService {
 
 	@Autowired
 	private WarrantyService	warrantyService;
+	@Autowired
+	private CategoryService	categoryService;
+
+	@Autowired
+	private MessageService	messageService;
+	@Autowired
+	private ActorService	actorService;
 
 
 	//1. Create user accounts for new administrators.
+	public void loggedAsAdmin() {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	}
 
-	public Admin saveAdmin(final Admin admin) {
+	public Admin createAdmin(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password) {
+
+		Admin admin = new Admin();
+		admin = (Admin) this.actorService.createActor(name, middleName, surname, photo, email, phoneNumber, address, userName, password);
+		List<Authority> authorities = new ArrayList<Authority>();
+		admin.getUserAccount().setAuthorities(authorities);
+
+		UserAccount userAccountAdmin = new UserAccount();
+		Authority authority = new Authority();
+		authority.setAuthority(Authority.ADMIN);
+		authorities.add(authority);
+
+		return admin;
+	}
+
+	public Admin save(Admin admin) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
 
 		//Comprobacion en todos los SAVE de los ACTORES
 		Assert.isTrue(admin.getId() == 0 || userAccount.equals(admin.getUserAccount()));
+
 		return this.adminRepository.save(admin);
 	}
 
@@ -52,86 +82,65 @@ public class AdminService {
 	 * Only warranties that are saved in final mode can be referenced by fix-up tasks.
 	 */
 
-	public Warranty createWarranty(Warranty warranty) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public Warranty createWarranty(String tittle) {
+		Warranty warranty = new Warranty();
+		List<String> terms = new ArrayList<String>();
+		List<String> laws = new ArrayList<String>();
 
-		final Warranty w = this.warrantyService.create(warranty);
+		warranty.setTitle(tittle);
+		warranty.setLaws(laws);
+		warranty.setTerms(terms);
+		warranty.setIsDraftMode(true);
 
 		return warranty;
 	}
 
+	public Warranty saveWarranty(Warranty warranty) {
+		this.loggedAsAdmin();
+
+		Assert.isTrue(warranty.getIsDraftMode());
+		return this.warrantyService.save(warranty);
+	}
+
 	public List<Warranty> listWarranty() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
-
-		List<Warranty> lw = new ArrayList<>();
-		lw = this.warrantyService.findAllWarranties();
-
-		return lw;
+		this.loggedAsAdmin();
+		return this.warrantyService.findAll();
 	}
 
-	public Warranty updateWarranty(Warranty warranty) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public void updateWarranty(Warranty warranty, String tittle, Boolean draftMode, List<String> laws, List<String> terms) {
+		this.loggedAsAdmin();
+		warranty.setTitle(tittle);
 
-		List<Warranty> lw = this.listWarranty();
-		Warranty res = null;
+		warranty.setIsDraftMode(draftMode);
 
-		for (Warranty w : lw)
-			if (w == warranty) {
-				res = w;
-				break;
-			}
+		List<String> newLaws = warranty.getLaws();
+		newLaws.addAll(laws);
+		warranty.setLaws(newLaws);
 
-		Assert.isTrue(!res.equals(null));
-
-		if (warranty.getSave() == Save."DRAFTMODE")
-			Warranty updWarranty = this.warrantyService.save(warranty);
-
-		return updWarranty;
+		List<String> newTerms = warranty.getTerms();
+		newTerms.addAll(terms);
+		warranty.setTerms(newTerms);
 
 	}
-	public Warranty showWarranty(Warranty warranty) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public Map<String, Warranty> showWarranties() {
+		this.loggedAsAdmin();
+		Map<String, Warranty> result = new HashMap<String, Warranty>();
+		List<Warranty> warranties = new ArrayList<Warranty>();
 
-		List<Warranty> lw = this.listWarranty();
-		Warranty res = null;
+		warranties = this.listWarranty();
 
-		for (Warranty w : lw)
-			if (w == warranty) {
-				res = w;
-				break;
-			}
-
-		return res;
+		for (Warranty w : warranties)
+			result.put(w.getTitle(), w);
+		return result;
 
 	}
-
 	public void deleteWarranty(Warranty warranty) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
+		Assert.isTrue(warranty.getIsDraftMode());
 
-		List<Warranty> lw = this.listWarranty();
-		Warranty res = null;
-
-		for (Warranty w : lw)
-			if (w == warranty) {
-				res = w;
-				break;
-			}
-
-		Assert.isTrue(!warranty.equals(null));
-		
-		if (warranty.getSave() == Save."DRAFTMODE")
-			this.warrantyService.delete(warranty);
+		this.warrantyService.delete(warranty);
 	}
+
 	/*
 	 * 3. Manage the catalogue of categories, which includes listing, showing, creating, updating,
 	 * and deleting them. Note that categories evolve independently from fix-up
@@ -139,43 +148,51 @@ public class AdminService {
 	 * from whether they are referenced from a fix-up task or not.
 	 */
 
-	public void listCategorys() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public List<Category> listCategory() {
+		this.loggedAsAdmin();
+		return this.categoryService.findAll();
 	}
 
-	public void showCategory(Category category) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public Map<String, Category> showCategory() {
+		this.loggedAsAdmin();
+		Map<String, Category> result = new HashMap<String, Category>();
+		List<Category> categories = new ArrayList<Category>();
+
+		categories = this.listCategory();
+
+		for (Category c : categories)
+			result.put(c.getName(), c);
+		return result;
 	}
 
-	public void createCategory(Category category) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public Category createCategory(List<Category> subCategories, String name) {
+		this.loggedAsAdmin();
+
+		Category category = new Category();
+
+		category.setName(name);
+		category.setSubCategories(subCategories);
+
+		return category;
 	}
 
-	public void updateCategory(Category category) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+	public Category updateCategory(Category category) {
+		this.loggedAsAdmin();
+
+		return this.categoryService.save(category);
 	}
 
 	public void deleteCategory(Category category) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
+
+		CategoryService.delete(category);
 	}
 
 	//4. Broadcast a message to all of the actors of the system.
 
 	//Guardar copia del mensaje para cada uno de los usuarios
 	public void createGlobalMessage(Message message) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 	}
 
 	/*
@@ -200,10 +217,7 @@ public class AdminService {
 	 */
 
 	public Map<String, List<Float>> computeStatistics() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		final Map<String, List<Float>> result;
 		List<Float> calculations1;
@@ -233,10 +247,7 @@ public class AdminService {
 	 */
 
 	public Map<String, Float> computeStatisticsRatios() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		Float ratioPendingApplications, ratioAcceptedApplications, ratioRejectedApplications, ratioPendingElapsedApplications;
 		final Map<String, Float> result;
@@ -258,10 +269,7 @@ public class AdminService {
 	//than the average, ordered by number of applications.
 
 	public Map<String, List<Customer>> tenPercentMoreApplicationsCustomers() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		final Map<String, List<Customer>> result;
 		List<Customer> calculations1;
@@ -280,10 +288,7 @@ public class AdminService {
 	 * than the average, ordered by number of applications
 	 */
 	public Map<String, List<HandyWorker>> tenPercentMoreApplicationsHandyWorker() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		final Map<String, List<HandyWorker>> result;
 		//List<Customer> calculations1;
@@ -311,10 +316,7 @@ public class AdminService {
 	 * number of complaints per fix-up task.
 	 */
 	public Map<String, Float> computeStatistics2() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		Float numberComplaintsPerFixUpTask, notesPerReferee;
 		final Map<String, Float> result;
@@ -331,10 +333,8 @@ public class AdminService {
 
 	/* The ratio of fix-up tasks with a complaint. */
 	public Map<String, Float> fixUpTaskWithAComplain() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
+		this.loggedAsAdmin();
 
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
 		Float fixUpTaskWithComplain;
 		final Map<String, Float> result;
 		fixUpTaskWithComplain = this.adminRepository.fixUpTaskWithComplain();
@@ -345,10 +345,7 @@ public class AdminService {
 	}
 
 	public Map<String, List<Customer>> top3Customers() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		final Map<String, List<Customer>> result;
 		//List<Customer> calculations1;
@@ -365,14 +362,11 @@ public class AdminService {
 	}
 
 	public Map<String, List<HandyWorker>> top3HandyWorker() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		final Map<String, List<HandyWorker>> result;
 		//List<Customer> calculations1;
-		List<HandyWorker> calculations2;
+		List<HandyWorker> calculations2 = new ArrayList<HandyWorker>();
 
 		//calculations1 = this.adminRepository.customers10PercentMoreApplications();
 		calculations2 = this.adminRepository.HandyWorkerTermsofComplainsOrdered();
@@ -383,4 +377,14 @@ public class AdminService {
 		result.put("HandyWorkerTermsofComplainsOrdered", calculations2.subList(0, 3));
 		return result;
 	}
+
+	public void broadcastMessage(Message message) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		List<Actor> receivers = this.actorService.findAll();
+
+		this.messageService.sendMessage(message.getSubject(), message.getBody(), receivers);
+	}
+
 }

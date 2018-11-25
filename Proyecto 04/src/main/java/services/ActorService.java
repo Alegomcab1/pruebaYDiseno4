@@ -1,103 +1,186 @@
 
 package services;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import repositories.ActorRepository;
+import security.LoginService;
+import security.UserAccount;
 import domain.Actor;
+import domain.Box;
 import domain.HandyWorker;
+import domain.Message;
+import domain.SocialProfile;
+import domain.Tutorial;
 
 @Service
 @Transactional
 public class ActorService {
 
 	@Autowired
-	private ActorRepository	actorRepository;
+	private ActorRepository			actorRepository;
+
+	@Autowired
+	private SocialProfileService	socialProfileService;
+
+	@Autowired
+	private TutorialService			tutorialService;
+
+	@Autowired
+	private HandyWorkerService		handyWorkerService;
 
 
 	public HandyWorker saveHandyWorker(final HandyWorker handyWorker) {
 		return this.actorRepository.save(handyWorker);
 	}
 
-	public Collection<Actor> findAll() {
-		Collection<Actor> result;
-		result = this.actorRepository.findAll();
-		return result;
+	public List<Actor> findAll() {
+		return this.actorRepository.findAll();
+	}
+
+	public Actor getActorByUsername(String a) {
+		return this.actorRepository.getActorByUserName(a);
+	}
+
+	public void loggedAsActor() {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().size() > 0);
+	}
+
+	public Actor createActor(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password) {
+
+		Actor actor = new Actor();
+		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
+		List<Box> boxes = new ArrayList<Box>();
+
+		UserAccount userAccountActor = new UserAccount();
+
+		userAccountActor.setUsername(userName);
+		userAccountActor.setPassword(password);
+
+		Box spamBox = new Box();
+		List<Message> messages1 = new ArrayList<>();
+		spamBox.setIsSystem(true);
+		spamBox.setMessages(messages1);
+		spamBox.setName("Spam");
+
+		Box trashBox = new Box();
+		List<Message> messages2 = new ArrayList<>();
+		trashBox.setIsSystem(true);
+		trashBox.setMessages(messages2);
+		trashBox.setName("Trash");
+
+		Box sentBox = new Box();
+		List<Message> messages3 = new ArrayList<>();
+		sentBox.setIsSystem(true);
+		sentBox.setMessages(messages3);
+		sentBox.setName("Sent messages");
+
+		Box receivedBox = new Box();
+		List<Message> messages4 = new ArrayList<>();
+		receivedBox.setIsSystem(true);
+		receivedBox.setMessages(messages4);
+		receivedBox.setName("Received messages");
+
+		boxes.add(receivedBox);
+		boxes.add(sentBox);
+		boxes.add(spamBox);
+		boxes.add(trashBox);
+
+		actor.setName(name);
+		actor.setMiddleName(middleName);
+		actor.setSurname(surname);
+		actor.setPhoto(photo);
+		actor.setEmail(email);
+		actor.setPhoneNumber(phoneNumber);
+		actor.setAddress(address);
+		actor.setSocialProfiles(socialProfiles);
+		actor.setBoxes(boxes);
+		actor.setUserAccount(userAccountActor);
+
+		return actor;
+	}
+
+	public Actor updateActor(Actor actor, String name, String middleName, String surname, String photo, String email, String phoneNumber, String address) {
+
+		//LA COMPROBACION DE QUE ESTAS LOGUEADO SE HACE EN EL ACTOR
+		actor.setName(name);
+		actor.setMiddleName(middleName);
+		actor.setSurname(surname);
+		actor.setPhoto(photo);
+		actor.setEmail(email);
+		actor.setPhoneNumber(phoneNumber);
+		actor.setAddress(address);
+
+		this.actorRepository.save(actor);
+
+		return actor;
+	}
+
+	public SocialProfile updateSocialProfiles(SocialProfile socialProfile, String nick, String name, String profileLink) {
+		/*
+		 * UserAccount userAccount;
+		 * userAccount = LoginService.getPrincipal();
+		 * Actor actor = new Actor();
+		 * actor = ActorService.getActorByUsername(userAccount.getUsername());
+		 */
+
+		//List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
+		//socialProfiles = actor.getSocialProfiles();
+
+		//COMPROBAR EN CADA ACTOR QUE ES ESE EL ACTOR QUE ESTA LOGUEADO
+		socialProfile.setName(name);
+		socialProfile.setNick(nick);
+		socialProfile.setProfileLink(profileLink);
+
+		return this.socialProfileService.save(socialProfile);
+
 	}
 
 	/*
-	 * public HandyWorker createHandyWorker() {
-	 * 
-	 * HandyWorker handyWorker = new HandyWorker();
-	 * UserAccount userAccount = new UserAccount();
-	 * List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
-	 * List<Box> boxes = new ArrayList<Box>();
-	 * 
-	 * //Actor
-	 * handyWorker.setName("Alejandro");
-	 * handyWorker.setMiddleName("");
-	 * handyWorker.setSurname("Gomez Caballero");
-	 * handyWorker.setPhoto("https://trello.com/b/MD1aM3qn/proyecto-4-dp");
-	 * handyWorker.setEmail("alegomcab1@gmail.com");
-	 * handyWorker.setPhoneNumber("+34615392784");
-	 * handyWorker.setAddress("C/Piruleta");
-	 * 
-	 * handyWorker.setBoxes(boxes);
-	 * handyWorker.setSocialProfiles(socialProfiles);
-	 * handyWorker.setUserAccount(userAccount);
-	 * 
-	 * //UserAccount
-	 * userAccount.setUsername("alegomcab1");
-	 * userAccount.setPassword("rutherfordio");
-	 * List<Authority> authorities = new ArrayList<Authority>();
-	 * Authority handyWorkerAut = new Authority();
-	 * handyWorkerAut.setAuthority("HANDYWORKER");
-	 * 
-	 * authorities.add(handyWorkerAut);
-	 * userAccount.setAuthorities(authorities);
-	 * 
-	 * //Boxes
-	 * Box spamBox = new Box();
-	 * List<Message> messages1 = new ArrayList<>();
-	 * spamBox.setIsSystem(true);
-	 * spamBox.setMessages(messages1);
-	 * spamBox.setName("Spam Box");
-	 * 
-	 * Box trashBox = new Box();
-	 * List<Message> messages2 = new ArrayList<>();
-	 * trashBox.setIsSystem(true);
-	 * trashBox.setMessages(messages2);
-	 * trashBox.setName("Trash Box");
-	 * 
-	 * Box sentBox = new Box();
-	 * List<Message> messages3 = new ArrayList<>();
-	 * sentBox.setIsSystem(true);
-	 * sentBox.setMessages(messages3);
-	 * sentBox.setName("Sent Box");
-	 * 
-	 * Box receivedBox = new Box();
-	 * List<Message> messages4 = new ArrayList<>();
-	 * receivedBox.setIsSystem(true);
-	 * receivedBox.setMessages(messages4);
-	 * receivedBox.setName("Received Box");
-	 * 
-	 * //addBoxes
-	 * boxes.add(receivedBox);
-	 * boxes.add(sentBox);
-	 * boxes.add(spamBox);
-	 * boxes.add(trashBox);
-	 * 
-	 * //HandyWorker
-	 * handyWorker.setMake(handyWorker.getName() + handyWorker.getMiddleName() + handyWorker.getSurname());
-	 * handyWorker.setScore(Score.NOT);
-	 * //Tener en cuenta Application y Curriculum
-	 * 
-	 * return handyWorker;
-	 * }
+	 * 2. Browse the catalogue of tutorials in the system and display any of them. Note that
+	 * actors must be able to see the profile of the corresponding handy workers, which includes
+	 * his or her personal data and the list of tutorials that he or she’s written.
 	 */
+
+	public Map<String, Tutorial> showTutorials() {
+		Map<String, Tutorial> result = new HashMap<String, Tutorial>();
+
+		List<Tutorial> tutorials = new ArrayList<Tutorial>();
+
+		tutorials = this.tutorialService.findAll();
+
+		for (Tutorial t : tutorials)
+			result.put(t.getTitle(), t);
+
+		return result;
+	}
+
+	public Map<HandyWorker, List<Tutorial>> showHandyWorkers(Tutorial tutorial) {
+		Map<HandyWorker, List<Tutorial>> result = new HashMap<HandyWorker, List<Tutorial>>();
+
+		List<HandyWorker> handyWorkers = new ArrayList<HandyWorker>();
+
+		handyWorkers = this.handyWorkerService.findAll();
+		HandyWorker requiredHandyWorker = new HandyWorker();
+
+		for (HandyWorker h : handyWorkers)
+			if (h.getApplications().contains(tutorial))
+				requiredHandyWorker = h;
+
+		result.put(requiredHandyWorker, requiredHandyWorker.getTutorials());
+
+		return result;
+
+	}
 }

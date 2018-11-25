@@ -8,13 +8,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.HandyWorkerRepository;
 import security.LoginService;
 import security.UserAccount;
 import domain.Application;
-import domain.Customer;
 import domain.Endorser;
 import domain.Finder;
 import domain.FixUpTask;
@@ -110,25 +108,7 @@ public class HandyWorkerService {
 		return this.handyWorkerRepository.save(handyWorker);
 	}
 
-	public List<FixUpTask> listFixUpTask() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-
-		List<FixUpTask> res = new ArrayList<FixUpTask>();
-		res = (List<FixUpTask>) this.handyWorkerRepository.getFixUpTasks();
-
-		return res;
-
-	}
-
-	public Customer getCustomerProfile(FixUpTask f) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-
-		Customer res = this.handyWorkerRepository.getCustomerFromFixUpTask(f);
-
-		return res;
+	public List<HandyWorker> findAll() {
+		return this.handyWorkerRepository.findAll();
 	}
 }

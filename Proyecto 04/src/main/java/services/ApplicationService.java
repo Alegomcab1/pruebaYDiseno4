@@ -33,6 +33,8 @@ public class ApplicationService {
 		final Application result = new Application();
 		final Date thisMoment = new Date();
 
+		thisMoment.setTime(thisMoment.getTime() - 1);
+
 		result.setComments(comments);
 		result.setFixUpTask(fixUpTask);
 		result.setHandyWorker(handyWorker);
@@ -41,10 +43,6 @@ public class ApplicationService {
 		result.setStatus(Status.PENDING);
 
 		return result;
-	}
-
-	public Application saveApplication(final Application application) {
-		return this.applicationRepository.save(application);
 	}
 
 	//Simple CRUD methods

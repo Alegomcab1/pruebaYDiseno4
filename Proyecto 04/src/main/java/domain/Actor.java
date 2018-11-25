@@ -23,8 +23,6 @@ import security.UserAccount;
 @Access(AccessType.PROPERTY)
 public class Actor extends DomainEntity {
 
-	private UserAccount			userAccount;
-
 	private String				name;
 	private String				middleName;
 	private String				surname;
@@ -129,7 +127,7 @@ public class Actor extends DomainEntity {
 	public void setAddress(final String address) {
 		this.address = address;
 	}
-  
+
 	@NotNull
 	@OneToOne(cascade = CascadeType.ALL)
 	public UserAccount getUserAccount() {

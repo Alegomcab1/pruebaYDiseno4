@@ -18,6 +18,7 @@ public class Warranty extends DomainEntity {
 	private String			title;
 	private List<String>	terms;
 	private List<String>	laws;
+	private Boolean			isDraftMode;
 
 
 	@NotBlank
@@ -47,6 +48,15 @@ public class Warranty extends DomainEntity {
 
 	public void setLaws(final List<String> laws) {
 		this.laws = laws;
+	}
+
+	@Valid
+	public Boolean getIsDraftMode() {
+		return this.isDraftMode;
+	}
+
+	public void setIsDraftMode(Boolean isDraftMode) {
+		this.isDraftMode = isDraftMode;
 	}
 
 }
