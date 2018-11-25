@@ -1181,14 +1181,15 @@
 		<property name="phoneNumber" value="+34609235521" />
 		<property name="address" value="Almendralejo" />
 		<property name="reports">
+		
 			<list>
 				<ref bean="report1" />
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount12" />
-		
-
+		<property name="hasSpam" value = "false"/>
 	</bean>
+	
 	<bean id="referee2" class="domain.Referee">
 
 		<property name="name" value="refeero" />
@@ -1204,8 +1205,9 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount13" />
-
+		<property name="hasSpam" value = "false"/>
 	</bean>
+	
 	<bean id="referee3" class="domain.Referee">
 		<property name="name" value="refeero2314" />
 		<property name="middleName" value="" />
@@ -1220,8 +1222,9 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount14" />
-
+		<property name="hasSpam" value = "false"/>
 	</bean>
+	
 	<bean id="referee4" class="domain.Referee">
 		<property name="name" value="refe12ero" />
 		<property name="middleName" value="" />
@@ -1236,6 +1239,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount15" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 	<!-- END OF REFEREE -->
 
@@ -1256,9 +1260,13 @@
 		<property name="boxes">
 			<list>
 				<ref bean="box1" />
+				<ref bean="box2" />
+				<ref bean="box3" />
+				<ref bean="box4" />
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount18" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 	<!-- ADMIN -->
 
@@ -1274,11 +1282,6 @@
 		<property name="socialProfiles">
 			<list>
 				<ref bean="socialProfile3" />
-			</list>
-		</property>
-		<property name="boxes">
-			<list>
-				<ref bean="box3" />
 			</list>
 		</property>
 		<property name="score" value="GOOD" />
@@ -1298,11 +1301,7 @@
 				<ref bean="application9" />
 			</list>
 		</property>
-		<property name="finders">
-			<set>
-				<ref bean="finder1" />
-			</set>
-		</property>
+		<property name="finder" ref ="finder1" />
 		<property name="tutorials">
 			<list>
 				<ref bean="tutorial1" />
@@ -1310,6 +1309,7 @@
 		</property>
 		<property name="curriculum" ref="curriculum1" />
 		<property name="userAccount" ref="userAccount8" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 	
 	
@@ -1330,6 +1330,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount9" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 		
 	<bean id="handyWorker3" class="domain.HandyWorker">
@@ -1349,6 +1350,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount10" />
+		<property name="hasSpam" value = "false"/>
 	</bean>	
 	
 	<bean id="handyWorker4" class="domain.HandyWorker">
@@ -1368,6 +1370,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount11" />
+		<property name="hasSpam" value = "false"/>
 	</bean>	
 		
 	<!-- END OF HANDY WORKER -->
@@ -1455,11 +1458,6 @@
 				<ref bean="socialProfile2" />
 			</list>
 		</property>
-		<property name="boxes">
-			<list>
-				<ref bean="box2" />
-			</list>
-		</property>
 		<property name="score" value="FANTASTIC" />
 		<property name="endorsments">
 			<list>
@@ -1475,6 +1473,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount4" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 
 	<bean id="customer2" class="domain.Customer">
@@ -1492,6 +1491,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount5" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 
 	<bean id="customer3" class="domain.Customer">
@@ -1509,6 +1509,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount6" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 
 	<bean id="customer4" class="domain.Customer">
@@ -1526,6 +1527,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount7" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 	<!-- END OF CUSTOMER -->
 
@@ -1599,6 +1601,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount16" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 
 	<bean id="sponsor2" class="domain.Sponsor">
@@ -1615,6 +1618,7 @@
 			</list>
 		</property>
 		<property name="userAccount" ref="userAccount17" />
+		<property name="hasSpam" value = "false"/>
 	</bean>
 	<!-- END OF SPONSOR -->
 

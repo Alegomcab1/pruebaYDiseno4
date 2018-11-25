@@ -26,6 +26,6 @@ public interface ActorRepository extends JpaRepository<Actor, Integer> {
 	public Actor getActorByUserName(String a);
 
 	@Query("select c.boxes from Actor c where c = ?1")
-	public List<Box> listOfBoxes();
+	public List<Box> listOfBoxes(Actor actor);
 
 }
