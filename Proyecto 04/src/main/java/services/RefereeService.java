@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import repositories.RefereeRepository;
+import security.Authority;
 import security.LoginService;
 import security.UserAccount;
 import domain.Complaint;
@@ -33,6 +34,7 @@ public class RefereeService {
 	private ComplaintService	complaintService;
 	private NoteService			noteService;
 	private ReportService		reportService;
+	private ActorService		actorService;
 
 
 	//Aux
@@ -47,6 +49,39 @@ public class RefereeService {
 	}
 
 	// CRUD Methods -------------------------------------------------
+
+	public Referee create(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password) {
+
+		Referee referee = new Referee();
+		referee = (Referee) this.actorService.createActor(name, middleName, surname, photo, email, phoneNumber, address, userName, password);
+		List<Authority> authorities = new ArrayList<Authority>();
+		referee.getUserAccount().setAuthorities(authorities);
+
+		UserAccount userAccountReferee = new UserAccount();
+		Authority authority = new Authority();
+		authority.setAuthority(Authority.REFEREE);
+		authorities.add(authority);
+
+		return referee;
+	}
+
+	public Referee save(Referee referee) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("REFEREE"));
+
+		// Comprobacion en todos los SAVE de los ACTORES
+		Assert.isTrue(referee.getId() == 0 || userAccount.equals(referee.getUserAccount()));
+		return this.refereeRepository.save(referee);
+	}
+
+	public Referee update(Referee referee) {
+		return this.save(referee);
+	}
+
+	public void delete(Referee referee) {
+		this.refereeRepository.delete(referee);
+	}
 
 	public List<Referee> findAll() {
 		return this.refereeRepository.findAll();
@@ -84,12 +119,12 @@ public class RefereeService {
 			if (c.getReferee() == r)
 				c = comp;
 		Assert.notNull(comp);
-		res.add(c);
+		res.add(comp);
 		this.refereeRepository.save(r);
 		return res;
 	}
 
-	public Note writeNoteReport(Report report, Note note) {
+	public Note writeNoteReport(Report report, String mandatoryComment) {
 		final Referee loggedReferee = this.securityAndReferee();
 		List<Report> lr = loggedReferee.getReports();
 		Report rep = null;
@@ -97,7 +132,7 @@ public class RefereeService {
 			if (r == report)
 				r = rep;
 		Assert.notNull(rep);
-		this.noteService.create(note);
+		Note note = this.noteService.create(mandatoryComment);
 		report.getNotes().add(note);
 		this.reportService.save(report);
 		return note;
