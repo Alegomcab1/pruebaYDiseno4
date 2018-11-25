@@ -311,4 +311,8 @@ public class HandyWorkerService {
 
 		return endorsments;
 	}
+
+	public List<HandyWorker> findAll() {
+		return this.handyWorkerRepository.findAll();
+	}
 }

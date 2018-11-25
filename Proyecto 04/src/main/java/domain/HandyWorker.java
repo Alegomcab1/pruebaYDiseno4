@@ -35,7 +35,7 @@ public class HandyWorker extends Endorser {
 		this.applications = applications;
 	}
 
-	@OneToMany
+	@OneToOne
 	@Valid
 	public Finder getFinder() {
 		return this.finder;

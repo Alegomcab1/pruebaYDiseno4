@@ -1,4 +1,3 @@
-
 package domain;
 
 import java.util.List;
@@ -17,49 +16,48 @@ import org.hibernate.validator.constraints.NotBlank;
 @Access(AccessType.PROPERTY)
 public class Box extends DomainEntity {
 
-	private String			name;
-	private Boolean			isSystem;
+    private String name;
+    private Boolean isSystem;
 
-	private Box				fatherBox;
-	private List<Message>	messages;
+    private Box fatherBox;
+    private List<Message> messages;
 
+    @Valid
+    @ManyToMany
+    public List<Message> getMessages() {
+	return this.messages;
+    }
 
-	@Valid
-	@ManyToMany
-	public List<Message> getMessages() {
-		return this.messages;
-	}
+    public void setMessages(final List<Message> messages) {
+	this.messages = messages;
+    }
 
-	public void setMessages(final List<Message> messages) {
-		this.messages = messages;
-	}
+    @Valid
+    @ManyToOne(optional = true)
+    public Box getFatherBox() {
+	return this.fatherBox;
+    }
 
-	@Valid
-	@ManyToOne(optional = true)
-	public Box getFatherBox() {
-		return this.fatherBox;
-	}
+    public void setFatherBox(final Box fatherBox) {
+	this.fatherBox = fatherBox;
+    }
 
-	public void setFatherBox(final Box fatherBox) {
-		this.fatherBox = fatherBox;
-	}
+    @NotBlank
+    public String getName() {
+	return this.name;
+    }
 
-	@NotBlank
-	public String getName() {
-		return this.name;
-	}
+    public void setName(final String name) {
+	this.name = name;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    @NotNull
+    public Boolean getIsSystem() {
+	return this.isSystem;
+    }
 
-	@NotNull
-	public Boolean getIsSystem() {
-		return this.isSystem;
-	}
-
-	public void setIsSystem(final Boolean isSystem) {
-		this.isSystem = isSystem;
-	}
+    public void setIsSystem(final Boolean isSystem) {
+	this.isSystem = isSystem;
+    }
 
 }

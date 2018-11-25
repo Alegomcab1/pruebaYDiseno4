@@ -35,6 +35,8 @@ public class ApplicationService {
 		Date thisMoment = new Date();
 		List<String> comments = new ArrayList<String>();
 
+		thisMoment.setTime(thisMoment.getTime() - 1);
+
 		result.setComments(comments);
 		result.setFixUpTask(null);
 		result.setHandyWorker(null);
@@ -44,15 +46,13 @@ public class ApplicationService {
 
 		return result;
 	}
-
+	// Simple CRUD methods ------------------------------------------
+  
 	public static Collection<Application> findAll() {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
 		return ApplicationService.applicationRepository.findAll();
 	}
 
 	public static Application findOne(int id) {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-		//TODO id en Application?
 		return ApplicationService.applicationRepository.findOne(id);
 	}
 
@@ -61,20 +61,8 @@ public class ApplicationService {
 	}
 
 	public static void delete(Application application) {
-		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, ademï¿½s mirar si hay restricciones a la hora de eliminarlo
 		ApplicationService.applicationRepository.delete(application);
 	}
-
-	public static void updateApplication(int id, List<String> comments, FixUpTask fixUpTask, HandyWorker handyWorker, Integer offeredPrice, Status status) {
-		Application newApplication = ApplicationService.findOne(id);
-		newApplication.setComments(comments);
-		newApplication.setFixUpTask(fixUpTask);
-		newApplication.setHandyWorker(handyWorker);
-		newApplication.setOfferedPrice(offeredPrice);
-		newApplication.setStatus(status);
-
-		ApplicationService.save(newApplication);
-
-	}
-
+  
 }
