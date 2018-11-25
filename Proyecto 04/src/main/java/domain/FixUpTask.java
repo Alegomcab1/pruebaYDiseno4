@@ -98,7 +98,6 @@ public class FixUpTask extends DomainEntity {
 		this.realizationTime = realizationTime;
 	}
 
-	@NotNull
 	@OneToMany(mappedBy = "fixUpTask")
 	public Collection<Application> getApplications() {
 		return this.applications;
