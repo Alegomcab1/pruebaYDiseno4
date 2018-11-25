@@ -410,7 +410,7 @@ public class AdminService {
 	List<Actor> receivers = this.actorService.findAll();
 
 	this.messageService.sendMessage(message.getSubject(),
-		message.getBody(), receivers);
+		message.getBody(), message.getPriority(), receivers);
     }
 
     public void banSuspiciousActor(Actor a) {

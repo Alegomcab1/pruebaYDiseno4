@@ -25,8 +25,12 @@ public class MessageService {
     @Autowired
     private BoxService boxService;
 
+    @Autowired
+    private ConfigurationService configurationService;
+
     // Actualizar caja que tiene el mensaje EN ESTE ORDEN
     // ACTUALIZAR CAJA SIN EL MENSAJE
+    // BORRAR EL MENSAJE
     public void delete(Message m) {
 	this.messageRepository.delete(m);
     }
@@ -37,18 +41,25 @@ public class MessageService {
 	    List<Actor> recipients) {
 
 	this.actorService.loggedAsActor();
-
 	for (Actor a : recipients) {
 
-	    Box box = new Box();
+	    Box boxRecieved = new Box();
+	    Box boxSpam = new Box();
 	    Message message = new Message();
 	    message = this.create(subject, body, priority, recipients);
 	    message = this.save(message);
-	    box = this.boxService.getRecievedBoxByActor(a);
+	    boxRecieved = this.boxService.getRecievedBoxByActor(a);
+	    boxSpam = this.boxService.getSpamBoxByActor(a);
 
 	    // Guardar la box con ese mensaje;
-	    box.getMessages().add(message);
-	    this.boxService.save(box);
+
+	    if (this.configurationService.isActorSuspicious(a)) {
+		boxSpam.getMessages().add(message);
+		this.boxService.save(boxSpam);
+	    } else {
+		boxRecieved.getMessages().add(message);
+		this.boxService.save(boxRecieved);
+	    }
 	}
     }
 
@@ -97,13 +108,13 @@ public class MessageService {
 		List<Message> list = b.getMessages();
 		list.remove(message);
 		b.setMessages(list);
-		// this.messageRepository.delete(message);
+		this.boxService.save(b);
 	    }
 	    if (b.getName() == box.getName()) {
 		List<Message> list = b.getMessages();
 		list.add(message);
 		b.setMessages(list);
-		// this.messageRepository.save(message);
+		this.boxService.save(b);
 	    }
 	}
     }
@@ -114,20 +125,13 @@ public class MessageService {
 	Actor actor = this.actorService.getActorByUsername(userAccount
 		.getUsername());
 
-	Box currentBox = new Box();
-	Box trash = new Box();
+	Box currentBox = this.boxService.getCurrentBoxByMessage(message);
+	Box trash = this.boxService.getTrashBoxByActor(actor);
 
 	// When an actor removes a message from a box other than trash box, it
 	// is moved to the trash box;
-	for (Box b : actor.getBoxes()) {
-	    if (b.getName().equals("Trash"))
-		trash = b;
 
-	    if (b.getMessages().contains(message))
-		currentBox = b;
-	}
-
-	if (currentBox.getName().equals("Trash"))
+	if (currentBox.equals(trash))
 	    for (Box b : actor.getBoxes())
 		this.messageRepository.delete(message);
 	else

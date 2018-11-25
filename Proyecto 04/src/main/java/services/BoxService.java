@@ -23,7 +23,6 @@ public class BoxService {
 
 	Box box = new Box();
 	List<Message> messages = new ArrayList<Message>();
-
 	box.setName(name);
 	box.setIsSystem(false);
 	box.setMessages(messages);
@@ -37,18 +36,22 @@ public class BoxService {
 	return this.boxRepository.save(box);
     }
 
-    public Box updateBox(Box box, String name, Box fatherBox) {
+    public Box updateBox(Box box) {
 	Assert.isTrue(!box.getIsSystem());
-	box.setFatherBox(fatherBox);
-	box.setName(name);
 	return this.save(box);
     }
 
     public void deleteBox(Box box) {
 	Assert.isTrue(!box.getIsSystem());
-	for (Message m : box.getMessages())
-	    this.messageService.delete(m);
-	this.boxRepository.delete(box);
+	List<Box> sonBoxes = this.boxRepository.getSonsBox(box);
+	if (sonBoxes.size() == 0) {
+	    for (Message m : box.getMessages())
+		this.messageService.delete(m);
+	    this.boxRepository.delete(box);
+	} else
+	    for (Box sonBox : sonBoxes)
+		this.deleteBox(sonBox);
+	this.deleteBox(box);
     }
 
     public List<Box> findAll() {
@@ -57,6 +60,19 @@ public class BoxService {
 
     public Box getRecievedBoxByActor(Actor a) {
 	return this.boxRepository.getRecievedBoxByActor(a);
+    }
+
+    public Box getSpamBoxByActor(Actor a) {
+	return this.boxRepository.getSpamBoxByActor(a);
+    }
+
+    public Box getTrashBoxByActor(Actor a) {
+	return this.boxRepository.getTrashBoxByActor(a);
+    }
+
+    public Box getCurrentBoxByMessage(Message m) {
+	return this.boxRepository.getCurrentBoxByMessage(m);
+
     }
 
 }
