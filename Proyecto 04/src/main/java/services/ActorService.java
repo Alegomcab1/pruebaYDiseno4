@@ -114,6 +114,7 @@ public class ActorService {
 	return actor;
     }
 
+    // TODO: PREGUNTAR MARTES PUEDE QUE NO HAGA FALTA PORQUE TENEMOS EL SAVE
     public Actor updateActor(Actor actor, String name, String middleName,
 	    String surname, String photo, String email, String phoneNumber,
 	    String address) {
@@ -142,6 +143,7 @@ public class ActorService {
      * this.actorRepository.save(actor); }
      */
 
+    // TODO: PREGUNTAR MARTES PUEDE QUE NO HAGA FALTA PORQUE TENEMOS EL SAVE
     public SocialProfile updateSocialProfiles(SocialProfile socialProfile,
 	    String nick, String name, String profileLink) {
 	/*
