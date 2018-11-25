@@ -23,6 +23,7 @@ import domain.FixUpTask;
 import domain.HandyWorker;
 import domain.Note;
 import domain.Report;
+import domain.Status;
 
 @Service
 @Transactional
@@ -87,6 +88,27 @@ public class CustomerService {
 		Assert.isTrue(userAccount.getAuthorities().contains("CUSTOMER"));
 
 		return loggedCustomer;
+	}
+
+	private static boolean validateCreditCardNumber(String str) {
+
+		int[] ints = new int[str.length()];
+		for (int i = 0; i < str.length(); i++)
+			ints[i] = Integer.parseInt(str.substring(i, i + 1));
+		for (int i = ints.length - 2; i >= 0; i = i - 2) {
+			int j = ints[i];
+			j = j * 2;
+			if (j > 9)
+				j = j % 10 + 1;
+			ints[i] = j;
+		}
+		int sum = 0;
+		for (int i = 0; i < ints.length; i++)
+			sum += ints[i];
+		if (sum % 10 == 0)
+			return true;
+		else
+			return false;
 	}
 
 	//Métodos solicitados
@@ -250,9 +272,25 @@ public class CustomerService {
 		return this.customerRepository.findApplicationsById(loggedCustomer.getId());
 	}
 
-	//TODO Validación credit cards
 	public Application editApplication(final Application application) {
-		return null;
+		final Customer loggedCustomer = this.securityAndCustomer();
+
+		Collection<Application> applications = this.customerRepository.findApplicationsById(loggedCustomer.getId());
+
+		Application applicationFound = null;
+		for (final Application a : applications)
+			if (application.getId() == a.getId()) {
+				applicationFound = a;
+				break;
+			}
+
+		Assert.isTrue(!applicationFound.equals(null));
+		Assert.isTrue(applicationFound.getStatus().equals(Status.PENDING));
+
+		if (application.getStatus().equals(Status.ACCEPTED))
+			Assert.notNull(application.getCreditCard());
+
+		return this.applicationService.saveApplication(application);
 	}
 
 	//NOTES

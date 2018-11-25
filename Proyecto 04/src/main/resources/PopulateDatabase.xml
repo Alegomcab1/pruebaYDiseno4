@@ -265,6 +265,10 @@
 				<value>AMEX</value>
 			</list>
 		</property>
+		<property name="maxFinderResults" value="100"/>
+		<property name="minFinderResults" value="10" />
+		<property name="minTimeFinder" value="1" />
+		<property name="maxTimeFinder" value="24" />
 	</bean>
 	
 	
