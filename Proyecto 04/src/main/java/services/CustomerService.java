@@ -50,17 +50,16 @@ public class CustomerService {
 	private RefereeService		refereeService;
 	@Autowired
 	private EndorsmentService	endorsmentService;
+	@Autowired
+	private EndorserService		endorserService;
 
 
 	//Simple CRUD methods: TODO Verificaciones
 	public Customer create(Endorser endorser) {
 
-		final Customer customer = (Customer) this.actorService.createActor(endorser.getName(), endorser.getMiddleName(), endorser.getSurname(), endorser.getPhoto(), endorser.getEmail(), endorser.getPhoneNumber(), endorser.getAddress(), endorser
-			.getUserAccount().getUsername(), endorser.getUserAccount().getPassword());
+		Customer customer = (Customer) this.endorserService.createEndorser(endorser);
 
-		customer.setScore(endorser.getScore());
-
-		return this.customerRepository.save(customer);
+		return customer;
 	}
 
 	public Collection<Customer> findAll() {
