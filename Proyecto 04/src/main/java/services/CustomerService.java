@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.ArrayList;
@@ -28,417 +29,392 @@ import domain.Status;
 @Transactional
 public class CustomerService {
 
-    // Managed repository
-    @Autowired
-    private CustomerRepository customerRepository;
+	// Managed repository
+	@Autowired
+	private CustomerRepository	customerRepository;
 
-    // Supporting services
-    @Autowired
-    private FixUpTaskService fixUpTaskService;
-    @Autowired
-    private ActorService actorService;
-    @Autowired
-    private ComplaintService complaintService;
-    @Autowired
-    private ApplicationService applicationService;
-    @Autowired
-    private NoteService noteService;
-    @Autowired
-    private ReportService reportService;
-    @Autowired
-    private RefereeService refereeService;
-    @Autowired
-    private EndorsmentService endorsmentService;
-    @Autowired
-    private EndorserService endorserService;
+	// Supporting services
+	@Autowired
+	private FixUpTaskService	fixUpTaskService;
+	@Autowired
+	private ComplaintService	complaintService;
+	@Autowired
+	private ApplicationService	applicationService;
+	@Autowired
+	private NoteService			noteService;
+	@Autowired
+	private ReportService		reportService;
+	@Autowired
+	private EndorsmentService	endorsmentService;
+	@Autowired
+	private EndorserService		endorserService;
 
-    // Simple CRUD methods: TODO Verificaciones
-    public Customer create(Endorser endorser) {
 
-	Customer result = (Customer) this.endorserService
-		.createEndorser(endorser);
+	// Simple CRUD methods: TODO Verificaciones
+	public Customer create(Endorser endorser) {
 
-	return result;
+		Customer result = (Customer) this.endorserService.createEndorser(endorser);
 
-    }
+		return result;
 
-    public Collection<Customer> findAll() {
-	return this.customerRepository.findAll();
-    }
-
-    public Customer findOne(final int customerId) {
-	return this.customerRepository.findOne(customerId);
-    }
-
-    public Customer save(final Customer customer) {
-	return this.customerRepository.save(customer);
-    }
-
-    public void delete(final Customer customer) {
-	this.customerRepository.delete(customer);
-    }
-
-    // Auxiliar methods
-    private Customer securityAndCustomer() {
-	final UserAccount userAccount = LoginService.getPrincipal();
-	final String username = userAccount.getUsername();
-	final Customer loggedCustomer = this.customerRepository
-		.getCustomerByUsername(username);
-
-	Assert.isTrue(userAccount.getAuthorities().contains("CUSTOMER"));
-
-	return loggedCustomer;
-    }
-
-    private static boolean validateCreditCardNumber(String str) {
-
-	int[] ints = new int[str.length()];
-	for (int i = 0; i < str.length(); i++)
-	    ints[i] = Integer.parseInt(str.substring(i, i + 1));
-	for (int i = ints.length - 2; i >= 0; i = i - 2) {
-	    int j = ints[i];
-	    j = j * 2;
-	    if (j > 9)
-		j = j % 10 + 1;
-	    ints[i] = j;
 	}
-	int sum = 0;
-	for (int i = 0; i < ints.length; i++)
-	    sum += ints[i];
-	if (sum % 10 == 0)
-	    return true;
-	else
-	    return false;
-    }
 
-    // MÃ©todos solicitados
-    public Collection<FixUpTask> showFixUpTasks(int customerId) {
-	return this.customerRepository.findFixUpTasksById(customerId);
-    }
-
-    // FixUpTasks
-    public Collection<FixUpTask> showFixUpTasks() {
-	final Customer loggedCustomer = this.securityAndCustomer();
-
-	return this.customerRepository.findFixUpTasksById(loggedCustomer
-		.getId());
-    }
+	public Collection<Customer> findAll() {
+		return this.customerRepository.findAll();
+	}
+
+	public Customer findOne(final int customerId) {
+		return this.customerRepository.findOne(customerId);
+	}
 
-    public FixUpTask getFixUpTask(final int fixUpTaskId) {
-	final Customer loggedCustomer = this.securityAndCustomer();
-	final Collection<FixUpTask> fixUpTasks = this.customerRepository
-		.findFixUpTasksById(loggedCustomer.getId());
+	public Customer save(final Customer customer) {
+		return this.customerRepository.save(customer);
+	}
 
-	FixUpTask fixUpTask = null;
-	for (final FixUpTask f : fixUpTasks)
-	    if (f.getId() == fixUpTaskId) {
-		fixUpTask = f;
-		break;
-	    }
+	public void delete(final Customer customer) {
+		this.customerRepository.delete(customer);
+	}
+
+	//Auxiliar methods
+	private Customer securityAndCustomer() {
+		final UserAccount userAccount = LoginService.getPrincipal();
+		final String username = userAccount.getUsername();
+		final Customer loggedCustomer = this.customerRepository.getCustomerByUsername(username);
 
-	Assert.notNull(fixUpTask);
+		Assert.isTrue(userAccount.getAuthorities().contains("CUSTOMER"));
 
-	return fixUpTask;
-    }
+		return loggedCustomer;
+	}
 
-    public FixUpTask createFixUpTask(final FixUpTask fixUpTask) {
-	final Customer loggedCustomer = this.securityAndCustomer();
+	private static boolean validateCreditCardNumber(String str) {
 
-	final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask
-		.getId());
+		int[] ints = new int[str.length()];
+		for (int i = 0; i < str.length(); i++)
+			ints[i] = Integer.parseInt(str.substring(i, i + 1));
+		for (int i = ints.length - 2; i >= 0; i = i - 2) {
+			int j = ints[i];
+			j = j * 2;
+			if (j > 9)
+				j = j % 10 + 1;
+			ints[i] = j;
+		}
+		int sum = 0;
+		for (int i = 0; i < ints.length; i++)
+			sum += ints[i];
+		if (sum % 10 == 0)
+			return true;
+		else
+			return false;
+	}
 
-	final List<FixUpTask> listf = new ArrayList<>();
-	listf.addAll(loggedCustomer.getFixUpTasks());
-	listf.add(fixUpTask);
-	loggedCustomer.setFixUpTasks(listf);
+	//Métodos solicitados
+	public Collection<FixUpTask> showFixUpTasks(int customerId) {
+		return this.customerRepository.findFixUpTasksById(customerId);
+	}
+
+	//FixUpTasks
+	public Collection<FixUpTask> showFixUpTasks() {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	final Customer customerSaved = this.save(loggedCustomer);
+		return this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
+	}
 
-	return fixUpTaskSaved;
+	public FixUpTask getFixUpTask(final int fixUpTaskId) {
+		final Customer loggedCustomer = this.securityAndCustomer();
+		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
-    }
+		FixUpTask fixUpTask = null;
+		for (final FixUpTask f : fixUpTasks)
+			if (f.getId() == fixUpTaskId) {
+				fixUpTask = f;
+				break;
+			}
 
-    public FixUpTask updateFixUpTask(final FixUpTask fixUpTask) {
-	final Customer loggedCustomer = this.securityAndCustomer();
+		Assert.notNull(fixUpTask);
 
-	final Collection<FixUpTask> fixUpTasks = this.customerRepository
-		.findFixUpTasksById(loggedCustomer.getId());
+		return fixUpTask;
+	}
 
-	FixUpTask fixUpTaskFound = null;
-	for (final FixUpTask f : fixUpTasks)
-	    if (fixUpTask.getId() == f.getId()) {
-		fixUpTaskFound = f;
-		break;
-	    }
+	public FixUpTask createFixUpTask(final FixUpTask fixUpTask) {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	Assert.isTrue(!fixUpTaskFound.equals(null));
+		final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
 
-	final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
+		final List<FixUpTask> listf = new ArrayList<>();
+		listf.addAll(loggedCustomer.getFixUpTasks());
+		listf.add(fixUpTask);
+		loggedCustomer.setFixUpTasks(listf);
 
-	/*
-	 * final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
-	 * listf.remove(fixUpTaskFound); listf.add(fixUpTaskSaved);
-	 * loggedCustomer.setFixUpTasks(listf);
-	 * 
-	 * final Customer customerSaved = this.save(loggedCustomer);
-	 */
+		final Customer customerSaved = this.save(loggedCustomer);
 
-	return fixUpTaskSaved;
+		return fixUpTaskSaved;
 
-    }
+	}
 
-    public void deleteFixUpTask(FixUpTask fixUpTask) {
-	final Customer loggedCustomer = this.securityAndCustomer();
+	public FixUpTask updateFixUpTask(final FixUpTask fixUpTask) {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	final Collection<FixUpTask> fixUpTasks = this.customerRepository
-		.findFixUpTasksById(loggedCustomer.getId());
+		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
-	FixUpTask fixUpTaskFounded = null;
-	for (final FixUpTask f : fixUpTasks)
-	    if (fixUpTask.getId() == f.getId()) {
-		fixUpTaskFounded = f;
-		break;
-	    }
+		FixUpTask fixUpTaskFound = null;
+		for (final FixUpTask f : fixUpTasks)
+			if (fixUpTask.getId() == f.getId()) {
+				fixUpTaskFound = f;
+				break;
+			}
 
-	Assert.isTrue(!fixUpTaskFounded.equals(null));
+		Assert.isTrue(!fixUpTaskFound.equals(null));
 
-	this.fixUpTaskService.delete(fixUpTaskFounded);
+		final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
 
-	/*
-	 * final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
-	 * listf.remove(fixUpTaskFounded); loggedCustomer.setFixUpTasks(listf);
-	 * 
-	 * this.save(loggedCustomer);
-	 */
-    }
+		/*
+		 * final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
+		 * listf.remove(fixUpTaskFound);
+		 * listf.add(fixUpTaskSaved);
+		 * loggedCustomer.setFixUpTasks(listf);
+		 * 
+		 * final Customer customerSaved = this.save(loggedCustomer);
+		 */
 
-    // COMPLAINTS
-    public Collection<Complaint> showComplaints() {
-	final Customer loggedCustomer = this.securityAndCustomer();
+		return fixUpTaskSaved;
 
-	return this.customerRepository.findComplaintsById(loggedCustomer
-		.getId());
-    }
+	}
 
-    public Complaint getComplaint(int complaintId) {
-	final Customer loggedCustomer = this.securityAndCustomer();
+	public void deleteFixUpTask(FixUpTask fixUpTask) {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	final Collection<Complaint> complaints = this.customerRepository
-		.findComplaintsById(loggedCustomer.getId());
+		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
-	Complaint complaintFound = null;
-	for (final Complaint c : complaints)
-	    if (complaintId == c.getId()) {
-		complaintFound = c;
-		break;
-	    }
+		FixUpTask fixUpTaskFounded = null;
+		for (final FixUpTask f : fixUpTasks)
+			if (fixUpTask.getId() == f.getId()) {
+				fixUpTaskFounded = f;
+				break;
+			}
 
-	Assert.notNull(complaintFound);
+		Assert.isTrue(!fixUpTaskFounded.equals(null));
 
-	return complaintFound;
+		this.fixUpTaskService.delete(fixUpTaskFounded);
 
-    }
+		/*
+		 * final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
+		 * listf.remove(fixUpTaskFounded);
+		 * loggedCustomer.setFixUpTasks(listf);
+		 * 
+		 * this.save(loggedCustomer);
+		 */
+	}
 
-    public Complaint createComplaint(final FixUpTask fixUpTask,
-	    final Complaint complaint) {
-	final Customer loggedCustomer = this.securityAndCustomer();
+	//COMPLAINTS
+	public Collection<Complaint> showComplaints() {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	final Complaint complaintSaved = this.complaintService.save(complaint);
+		return this.customerRepository.findComplaintsById(loggedCustomer.getId());
+	}
 
-	final Collection<FixUpTask> fixUpTasks = this.customerRepository
-		.findFixUpTasksById(loggedCustomer.getId());
+	public Complaint getComplaint(int complaintId) {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	FixUpTask fixUpTaskFound = null;
-	for (final FixUpTask f : fixUpTasks)
-	    if (fixUpTask.getId() == f.getId()) {
-		fixUpTaskFound = f;
-		break;
-	    }
+		final Collection<Complaint> complaints = this.customerRepository.findComplaintsById(loggedCustomer.getId());
 
-	Assert.isTrue(!fixUpTaskFound.equals(null));
+		Complaint complaintFound = null;
+		for (final Complaint c : complaints)
+			if (complaintId == c.getId()) {
+				complaintFound = c;
+				break;
+			}
 
-	final List<Complaint> complaints = (List<Complaint>) fixUpTaskFound
-		.getComplaints();
-	complaints.add(complaint);
-	fixUpTaskFound.setComplaints(complaints);
+		Assert.notNull(complaintFound);
 
-	final FixUpTask fixUpTaskSaved = this.fixUpTaskService
-		.save(fixUpTaskFound);
+		return complaintFound;
 
-	final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
-	listf.add(fixUpTaskFound);
-	loggedCustomer.setFixUpTasks(listf);
+	}
 
-	final Customer customerSaved = this.save(loggedCustomer);
+	public Complaint createComplaint(final FixUpTask fixUpTask, final Complaint complaint) {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	return complaintSaved;
-    }
+		final Complaint complaintSaved = this.complaintService.save(complaint);
 
-    // APPLICATIONS
-    public Collection<Application> showApplications() {
-	final Customer loggedCustomer = this.securityAndCustomer();
+		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
-	return this.customerRepository.findApplicationsById(loggedCustomer
-		.getId());
-    }
+		FixUpTask fixUpTaskFound = null;
+		for (final FixUpTask f : fixUpTasks)
+			if (fixUpTask.getId() == f.getId()) {
+				fixUpTaskFound = f;
+				break;
+			}
 
-    public Application editApplication(final Application application) {
-	final Customer loggedCustomer = this.securityAndCustomer();
+		Assert.isTrue(!fixUpTaskFound.equals(null));
 
-	Collection<Application> applications = this.customerRepository
-		.findApplicationsById(loggedCustomer.getId());
+		final List<Complaint> complaints = (List<Complaint>) fixUpTaskFound.getComplaints();
+		complaints.add(complaint);
+		fixUpTaskFound.setComplaints(complaints);
 
-	Application applicationFound = null;
-	for (final Application a : applications)
-	    if (application.getId() == a.getId()) {
-		applicationFound = a;
-		break;
-	    }
+		final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTaskFound);
 
-	Assert.isTrue(!applicationFound.equals(null));
-	Assert.isTrue(applicationFound.getStatus().equals(Status.PENDING));
+		final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
+		listf.add(fixUpTaskFound);
+		loggedCustomer.setFixUpTasks(listf);
 
-	if (application.getStatus().equals(Status.ACCEPTED))
-	    Assert.notNull(application.getCreditCard());
-	Integer number = application.getCreditCard().getNumber();
-	Assert.isTrue(CustomerService.validateCreditCardNumber(number
-		.toString()));
+		final Customer customerSaved = this.save(loggedCustomer);
 
-	return this.applicationService.save(application);
-    }
+		return complaintSaved;
+	}
 
-    // NOTES
-    public Note createNote(Report report, Note note) {
-	Customer loggedCustomer = this.securityAndCustomer();
+	//APPLICATIONS
+	public Collection<Application> showApplications() {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	Collection<Report> reports = this.customerRepository
-		.findReportsById(loggedCustomer.getId());
+		return this.customerRepository.findApplicationsById(loggedCustomer.getId());
+	}
 
-	Report reportFound = null;
-	for (final Report r : reports)
-	    if (report.getId() == r.getId()) {
-		reportFound = r;
-		break;
-	    }
+	public Application editApplication(final Application application) {
+		final Customer loggedCustomer = this.securityAndCustomer();
 
-	Assert.notNull(reportFound);
+		Collection<Application> applications = this.customerRepository.findApplicationsById(loggedCustomer.getId());
 
-	List<Note> notes = report.getNotes();
-	notes.add(note);
+		Application applicationFound = null;
+		for (final Application a : applications)
+			if (application.getId() == a.getId()) {
+				applicationFound = a;
+				break;
+			}
 
-	report.setNotes(notes);
+		Assert.isTrue(!applicationFound.equals(null));
+		Assert.isTrue(applicationFound.getStatus().equals(Status.PENDING));
 
-	Note noteSaved = this.noteService.save(note);
-	this.reportService.save(report);
+		if (application.getStatus().equals(Status.ACCEPTED))
+			Assert.notNull(application.getCreditCard());
+		Integer number = application.getCreditCard().getNumber();
+		Assert.isTrue(CustomerService.validateCreditCardNumber(number.toString()));
 
-	return noteSaved;
-    }
+		return this.applicationService.save(application);
+	}
 
-    public Note addComent(Note note, String comment) {
-	Customer loggedCustomer = this.securityAndCustomer();
+	//NOTES
+	public Note createNote(Report report, Note note) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-	Collection<Note> notes = this.customerRepository
-		.findNotesById(loggedCustomer.getId());
+		Collection<Report> reports = this.customerRepository.findReportsById(loggedCustomer.getId());
 
-	Note noteFound = null;
-	for (final Note n : notes)
-	    if (note.getId() == n.getId()) {
-		noteFound = n;
-		break;
-	    }
+		Report reportFound = null;
+		for (final Report r : reports)
+			if (report.getId() == r.getId()) {
+				reportFound = r;
+				break;
+			}
 
-	Assert.notNull(noteFound);
+		Assert.notNull(reportFound);
 
-	List<String> comments = noteFound.getOptionalComments();
-	comments.add(comment);
+		List<Note> notes = report.getNotes();
+		notes.add(note);
 
-	Note noteSaved = this.noteService.save(noteFound);
+		report.setNotes(notes);
 
-	return noteSaved;
-    }
+		Note noteSaved = this.noteService.save(note);
+		this.reportService.save(report);
 
-    // ENDORSMENTS
-    public Collection<Endorsment> showEndorsments() {
-	Customer loggedCustomer = this.securityAndCustomer();
+		return noteSaved;
+	}
 
-	return this.customerRepository.AllEndorsmentsById(loggedCustomer
-		.getId());
-    }
+	public Note addComent(Note note, String comment) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-    public Endorsment getEndorsment(int endorsmentId) {
-	Customer loggedCustomer = this.securityAndCustomer();
+		Collection<Note> notes = this.customerRepository.findNotesById(loggedCustomer.getId());
 
-	Collection<Endorsment> endorsments = this.customerRepository
-		.AllEndorsmentsById(loggedCustomer.getId());
+		Note noteFound = null;
+		for (final Note n : notes)
+			if (note.getId() == n.getId()) {
+				noteFound = n;
+				break;
+			}
 
-	Endorsment endorsmentFound = null;
-	for (final Endorsment e : endorsments)
-	    if (e.getId() == endorsmentId) {
-		endorsmentFound = e;
-		break;
-	    }
+		Assert.notNull(noteFound);
 
-	Assert.notNull(endorsmentFound);
+		List<String> comments = noteFound.getOptionalComments();
+		comments.add(comment);
 
-	return endorsmentFound;
-    }
+		Note noteSaved = this.noteService.save(noteFound);
 
-    public Endorsment createEndorsment(Endorsment endorsment) {
-	Customer loggedCustomer = this.securityAndCustomer();
+		return noteSaved;
+	}
 
-	Assert.isTrue(endorsment.getWrittenTo().getClass()
-		.equals(HandyWorker.class));
+	//ENDORSMENTS
+	public Collection<Endorsment> showEndorsments() {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-	HandyWorker handyWorker = (HandyWorker) endorsment.getWrittenTo();
+		return this.customerRepository.AllEndorsmentsById(loggedCustomer.getId());
+	}
 
-	Collection<HandyWorker> handyWorkers = this.customerRepository
-		.handyWorkersById(loggedCustomer.getId());
+	public Endorsment getEndorsment(int endorsmentId) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-	HandyWorker handyWorkerFound = null;
-	for (final HandyWorker h : handyWorkers)
-	    if (h.getId() == handyWorker.getId()) {
-		handyWorkerFound = h;
-		break;
-	    }
+		Collection<Endorsment> endorsments = this.customerRepository.AllEndorsmentsById(loggedCustomer.getId());
 
-	Assert.notNull(handyWorkerFound);
+		Endorsment endorsmentFound = null;
+		for (final Endorsment e : endorsments)
+			if (e.getId() == endorsmentId) {
+				endorsmentFound = e;
+				break;
+			}
 
-	return this.endorsmentService.save(endorsment);
-    }
+		Assert.notNull(endorsmentFound);
 
-    public Endorsment updateEndorsment(Endorsment endorsment) {
-	Customer loggedCustomer = this.securityAndCustomer();
+		return endorsmentFound;
+	}
 
-	Collection<Endorsment> endorsments = this.customerRepository
-		.endorsmentsOfById(loggedCustomer.getId());
+	public Endorsment createEndorsment(Endorsment endorsment) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-	Endorsment endorsmentFound = null;
-	for (final Endorsment e : endorsments)
-	    if (e.getId() == endorsment.getId()) {
-		endorsmentFound = e;
-		break;
-	    }
+		Assert.isTrue(endorsment.getWrittenTo().getClass().equals(HandyWorker.class));
 
-	Assert.notNull(endorsmentFound);
+		HandyWorker handyWorker = (HandyWorker) endorsment.getWrittenTo();
 
-	return this.endorsmentService.save(endorsment);
-    }
+		Collection<HandyWorker> handyWorkers = this.customerRepository.handyWorkersById(loggedCustomer.getId());
 
-    public void deleteEndorsment(Endorsment endorsment) {
-	Customer loggedCustomer = this.securityAndCustomer();
+		HandyWorker handyWorkerFound = null;
+		for (final HandyWorker h : handyWorkers)
+			if (h.getId() == handyWorker.getId()) {
+				handyWorkerFound = h;
+				break;
+			}
 
-	Collection<Endorsment> endorsments = this.customerRepository
-		.endorsmentsOfById(loggedCustomer.getId());
+		Assert.notNull(handyWorkerFound);
 
-	Endorsment endorsmentFound = null;
-	for (final Endorsment e : endorsments)
-	    if (e.getId() == endorsment.getId()) {
-		endorsmentFound = e;
-		break;
-	    }
+		return this.endorsmentService.save(endorsment);
+	}
 
-	Assert.notNull(endorsmentFound);
+	public Endorsment updateEndorsment(Endorsment endorsment) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-	this.endorsmentService.delete(endorsment);
-    }
+		Collection<Endorsment> endorsments = this.customerRepository.endorsmentsOfById(loggedCustomer.getId());
+
+		Endorsment endorsmentFound = null;
+		for (final Endorsment e : endorsments)
+			if (e.getId() == endorsment.getId()) {
+				endorsmentFound = e;
+				break;
+			}
+
+		Assert.notNull(endorsmentFound);
+
+		return this.endorsmentService.save(endorsment);
+	}
+
+	public void deleteEndorsment(Endorsment endorsment) {
+		Customer loggedCustomer = this.securityAndCustomer();
+
+		Collection<Endorsment> endorsments = this.customerRepository.endorsmentsOfById(loggedCustomer.getId());
+
+		Endorsment endorsmentFound = null;
+		for (final Endorsment e : endorsments)
+			if (e.getId() == endorsment.getId()) {
+				endorsmentFound = e;
+				break;
+			}
+
+		Assert.notNull(endorsmentFound);
+
+		this.endorsmentService.delete(endorsment);
+	}
 }
