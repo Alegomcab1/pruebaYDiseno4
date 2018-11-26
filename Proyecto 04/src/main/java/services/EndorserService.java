@@ -1,4 +1,3 @@
-
 package services;
 
 import java.util.ArrayList;
@@ -14,69 +13,65 @@ import repositories.EndorserRepository;
 import domain.Actor;
 import domain.Endorser;
 import domain.Endorsment;
-import domain.Score;
 
 @Service
 @Transactional
 public class EndorserService {
 
-	// Managed repository ---------------------------------------------------------------------------------------------------
+    // Managed repository
+    // ---------------------------------------------------------------------------------------------------
 
-	@Autowired
-	private EndorserRepository	endorserRepository;
+    @Autowired
+    private EndorserRepository endorserRepository;
 
-	// Supporting Services --------------------------------------------------------------------------------------------------
+    // Supporting Services
+    // --------------------------------------------------------------------------------------------------
 
-	@Autowired
-	private EndorsmentService	endorsmentService;
+    @Autowired
+    private EndorsmentService endorsmentService;
 
-	//TODO Discutir sobre los Autowired en cuanto a padres e hijos
-	@Autowired
-	private HandyWorkerService	handyWorkerService;
-	@Autowired
-	private CustomerService		customerService;
+    // TODO Discutir sobre los Autowired en cuanto a padres e hijos
+    @Autowired
+    private HandyWorkerService handyWorkerService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private ActorService actorService;
 
+    // Simple CRUD methods
+    // --------------------------------------------------------------------------------------------------
 
-	// Simple CRUD methods --------------------------------------------------------------------------------------------------
+    public Endorser createEndorser(Actor a) {
+	Endorser result = new Endorser();
+	List<Endorsment> endorsments = new ArrayList<Endorsment>();
+	result = (Endorser) this.actorService.createActor(a.getName(), a
+		.getMiddleName(), a.getSurname(), a.getPhoto(), a.getEmail(), a
+		.getPhoneNumber(), a.getAddress(), a.getUserAccount()
+		.getUsername(), a.getUserAccount().getPassword());
+	result.setEndorsments(endorsments);
+	result.setScore(0);
 
-	public static Endorser createEndorser() {
-		Endorser result = new Endorser();
-		List<Endorsment> endorsments = new ArrayList<Endorsment>();
-		//TODO comprobar que se usa bien el createActor
-		Actor a = ActorService.createActor();
+	return result;
 
-		result.setAddress(a.getAddress());
-		result.setBoxes(a.getBoxes());
-		result.setEmail(a.getEmail());
-		result.setEndorsments(endorsments);
-		result.setMiddleName(a.getMiddleName());
-		result.setName(a.getName());
-		result.setPhoneNumber(a.getPhoneNumber());
-		result.setPhoto(a.getPhoto());
-		result.setScore(Score.AVERAGE);
-		result.setSocialProfiles(a.getSocialProfiles());
-		result.setSurname(a.getSurname());
+    }
 
-		return result;
+    public Collection<Endorser> findAll() {
+	// TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+	return this.endorserRepository.findAll();
+    }
 
-	}
+    public Endorser findOne(int id) {
+	// TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+	return this.endorserRepository.findOne(id);
+    }
 
-	public Collection<Endorser> findAll() {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-		return this.endorserRepository.findAll();
-	}
+    public Endorser save(Endorser endorser) {
+	return this.endorserRepository.save(endorser);
+    }
 
-	public Endorser findOne(int id) {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-		return this.endorserRepository.findOne(id);
-	}
-
-	public Endorser save(Endorser endorser) {
-		return this.endorserRepository.save(endorser);
-	}
-
-	public void delete(Endorser endorser) {
-		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
-		this.endorserRepository.delete(endorser);
-	}
+    public void delete(Endorser endorser) {
+	// TODO Bastante seguro de que esto solo lo deberia de poder hacer un
+	// ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+	this.endorserRepository.delete(endorser);
+    }
 }

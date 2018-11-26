@@ -3,7 +3,6 @@ package services;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +25,9 @@ public class ComplaintService {
 
 
 	//Consultar lo del ticker
-	public Complaint create(String description) {
+	public Complaint create(String description, List<String> attachments) {
 
 		Complaint complaint = new Complaint();
-		List<String> attachments = new ArrayList<String>();
 		Date thisMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() - 1);
 		complaint.setTicker(this.generateTicker());
@@ -68,8 +66,8 @@ public class ComplaintService {
 		return this.complaintRepository.save(complaint);
 	}
 
-	public Complaint update(Complaint complaint) {
-		return this.save(complaint);
+	public Complaint findOne(int complaintId) {
+		return this.complaintRepository.findOne(complaintId);
 	}
 
 	public void delete(Complaint complaint) {

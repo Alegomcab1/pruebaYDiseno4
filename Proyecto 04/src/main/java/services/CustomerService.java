@@ -3,6 +3,7 @@ package services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -15,6 +16,7 @@ import repositories.CustomerRepository;
 import security.LoginService;
 import security.UserAccount;
 import domain.Application;
+import domain.Category;
 import domain.Complaint;
 import domain.Customer;
 import domain.Endorser;
@@ -22,22 +24,22 @@ import domain.Endorsment;
 import domain.FixUpTask;
 import domain.HandyWorker;
 import domain.Note;
+import domain.Phase;
 import domain.Report;
 import domain.Status;
+import domain.Warranty;
 
 @Service
 @Transactional
 public class CustomerService {
 
-	//Managed repository
+	// Managed repository
 	@Autowired
 	private CustomerRepository	customerRepository;
 
-	//Supporting services
+	// Supporting services
 	@Autowired
 	private FixUpTaskService	fixUpTaskService;
-	@Autowired
-	private ActorService		actorService;
 	@Autowired
 	private ComplaintService	complaintService;
 	@Autowired
@@ -47,43 +49,40 @@ public class CustomerService {
 	@Autowired
 	private ReportService		reportService;
 	@Autowired
-	private RefereeService		refereeService;
-	@Autowired
 	private EndorsmentService	endorsmentService;
+	@Autowired
+	private EndorserService		endorserService;
 
 
-	//Simple CRUD methods: TODO Verificaciones
+	// Simple CRUD methods
 	public Customer create(Endorser endorser) {
 
-		final Customer customer = (Customer) this.actorService.createActor(endorser.getName(), endorser.getMiddleName(), endorser.getSurname(), endorser.getPhoto(), endorser.getEmail(), endorser.getPhoneNumber(), endorser.getAddress(), endorser
-			.getUserAccount().getUsername(), endorser.getUserAccount().getPassword());
+		Customer result = (Customer) this.endorserService.createEndorser(endorser);
 
-		customer.setScore(endorser.getScore());
-
-		return this.customerRepository.save(customer);
+		return result;
 	}
 
 	public Collection<Customer> findAll() {
 		return this.customerRepository.findAll();
 	}
 
-	public Customer findOne(final int customerId) {
+	public Customer findOne(int customerId) {
 		return this.customerRepository.findOne(customerId);
 	}
 
-	public Customer save(final Customer customer) {
+	public Customer save(Customer customer) {
 		return this.customerRepository.save(customer);
 	}
 
-	public void delete(final Customer customer) {
+	public void delete(Customer customer) {
 		this.customerRepository.delete(customer);
 	}
 
 	//Auxiliar methods
 	private Customer securityAndCustomer() {
-		final UserAccount userAccount = LoginService.getPrincipal();
-		final String username = userAccount.getUsername();
-		final Customer loggedCustomer = this.customerRepository.getCustomerByUsername(username);
+		UserAccount userAccount = LoginService.getPrincipal();
+		String username = userAccount.getUsername();
+		Customer loggedCustomer = this.customerRepository.getCustomerByUsername(username);
 
 		Assert.isTrue(userAccount.getAuthorities().contains("CUSTOMER"));
 
@@ -118,17 +117,17 @@ public class CustomerService {
 
 	//FixUpTasks
 	public Collection<FixUpTask> showFixUpTasks() {
-		final Customer loggedCustomer = this.securityAndCustomer();
+		Customer loggedCustomer = this.securityAndCustomer();
 
 		return this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 	}
 
-	public FixUpTask getFixUpTask(final int fixUpTaskId) {
-		final Customer loggedCustomer = this.securityAndCustomer();
-		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
+	public FixUpTask getFixUpTask(int fixUpTaskId) {
+		Customer loggedCustomer = this.securityAndCustomer();
+		Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
 		FixUpTask fixUpTask = null;
-		for (final FixUpTask f : fixUpTasks)
+		for (FixUpTask f : fixUpTasks)
 			if (f.getId() == fixUpTaskId) {
 				fixUpTask = f;
 				break;
@@ -139,29 +138,32 @@ public class CustomerService {
 		return fixUpTask;
 	}
 
-	public FixUpTask createFixUpTask(final FixUpTask fixUpTask) {
-		final Customer loggedCustomer = this.securityAndCustomer();
+	public FixUpTask createFixUpTask(String description, String address, Double maxPrice, Date realizationTime, Collection<Warranty> warranties, Collection<Phase> phases, Collection<Category> categories, Collection<Complaint> complaints,
+		Collection<Application> applications) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-		final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask.getId());
+		FixUpTask fixUpTask = this.fixUpTaskService.create(description, address, maxPrice, realizationTime, warranties, phases, categories, complaints, applications);
 
-		final List<FixUpTask> listf = new ArrayList<>();
+		FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
+
+		List<FixUpTask> listf = new ArrayList<>();
 		listf.addAll(loggedCustomer.getFixUpTasks());
 		listf.add(fixUpTask);
 		loggedCustomer.setFixUpTasks(listf);
 
-		final Customer customerSaved = this.save(loggedCustomer);
+		this.save(loggedCustomer);
 
 		return fixUpTaskSaved;
 
 	}
 
-	public FixUpTask updateFixUpTask(final FixUpTask fixUpTask) {
-		final Customer loggedCustomer = this.securityAndCustomer();
+	public FixUpTask updateFixUpTask(FixUpTask fixUpTask) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
+		Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
 		FixUpTask fixUpTaskFound = null;
-		for (final FixUpTask f : fixUpTasks)
+		for (FixUpTask f : fixUpTasks)
 			if (fixUpTask.getId() == f.getId()) {
 				fixUpTaskFound = f;
 				break;
@@ -169,28 +171,19 @@ public class CustomerService {
 
 		Assert.isTrue(!fixUpTaskFound.equals(null));
 
-		final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
-
-		/*
-		 * final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
-		 * listf.remove(fixUpTaskFound);
-		 * listf.add(fixUpTaskSaved);
-		 * loggedCustomer.setFixUpTasks(listf);
-		 * 
-		 * final Customer customerSaved = this.save(loggedCustomer);
-		 */
+		FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
 
 		return fixUpTaskSaved;
 
 	}
 
 	public void deleteFixUpTask(FixUpTask fixUpTask) {
-		final Customer loggedCustomer = this.securityAndCustomer();
+		Customer loggedCustomer = this.securityAndCustomer();
 
-		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
+		Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
 		FixUpTask fixUpTaskFounded = null;
-		for (final FixUpTask f : fixUpTasks)
+		for (FixUpTask f : fixUpTasks)
 			if (fixUpTask.getId() == f.getId()) {
 				fixUpTaskFounded = f;
 				break;
@@ -199,30 +192,22 @@ public class CustomerService {
 		Assert.isTrue(!fixUpTaskFounded.equals(null));
 
 		this.fixUpTaskService.delete(fixUpTaskFounded);
-
-		/*
-		 * final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
-		 * listf.remove(fixUpTaskFounded);
-		 * loggedCustomer.setFixUpTasks(listf);
-		 * 
-		 * this.save(loggedCustomer);
-		 */
 	}
 
 	//COMPLAINTS
 	public Collection<Complaint> showComplaints() {
-		final Customer loggedCustomer = this.securityAndCustomer();
+		Customer loggedCustomer = this.securityAndCustomer();
 
 		return this.customerRepository.findComplaintsById(loggedCustomer.getId());
 	}
 
 	public Complaint getComplaint(int complaintId) {
-		final Customer loggedCustomer = this.securityAndCustomer();
+		Customer loggedCustomer = this.securityAndCustomer();
 
-		final Collection<Complaint> complaints = this.customerRepository.findComplaintsById(loggedCustomer.getId());
+		Collection<Complaint> complaints = this.customerRepository.findComplaintsById(loggedCustomer.getId());
 
 		Complaint complaintFound = null;
-		for (final Complaint c : complaints)
+		for (Complaint c : complaints)
 			if (complaintId == c.getId()) {
 				complaintFound = c;
 				break;
@@ -231,18 +216,19 @@ public class CustomerService {
 		Assert.notNull(complaintFound);
 
 		return complaintFound;
-
 	}
 
-	public Complaint createComplaint(final FixUpTask fixUpTask, final Complaint complaint) {
-		final Customer loggedCustomer = this.securityAndCustomer();
+	public Complaint createComplaint(FixUpTask fixUpTask, String description, List<String> attachments) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
-		final Complaint complaintSaved = this.complaintService.save(complaint);
+		Complaint complaint = this.complaintService.create(description, attachments);
 
-		final Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
+		Complaint complaintSaved = this.complaintService.save(complaint);
+
+		Collection<FixUpTask> fixUpTasks = this.customerRepository.findFixUpTasksById(loggedCustomer.getId());
 
 		FixUpTask fixUpTaskFound = null;
-		for (final FixUpTask f : fixUpTasks)
+		for (FixUpTask f : fixUpTasks)
 			if (fixUpTask.getId() == f.getId()) {
 				fixUpTaskFound = f;
 				break;
@@ -250,35 +236,29 @@ public class CustomerService {
 
 		Assert.isTrue(!fixUpTaskFound.equals(null));
 
-		final List<Complaint> complaints = (List<Complaint>) fixUpTaskFound.getComplaints();
+		List<Complaint> complaints = (List<Complaint>) fixUpTaskFound.getComplaints();
 		complaints.add(complaint);
 		fixUpTaskFound.setComplaints(complaints);
 
-		final FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTaskFound);
-
-		final List<FixUpTask> listf = loggedCustomer.getFixUpTasks();
-		listf.add(fixUpTaskFound);
-		loggedCustomer.setFixUpTasks(listf);
-
-		final Customer customerSaved = this.save(loggedCustomer);
+		this.fixUpTaskService.save(fixUpTaskFound);
 
 		return complaintSaved;
 	}
 
 	//APPLICATIONS
 	public Collection<Application> showApplications() {
-		final Customer loggedCustomer = this.securityAndCustomer();
+		Customer loggedCustomer = this.securityAndCustomer();
 
 		return this.customerRepository.findApplicationsById(loggedCustomer.getId());
 	}
 
-	public Application editApplication(final Application application) {
-		final Customer loggedCustomer = this.securityAndCustomer();
+	public Application editApplication(Application application) {
+		Customer loggedCustomer = this.securityAndCustomer();
 
 		Collection<Application> applications = this.customerRepository.findApplicationsById(loggedCustomer.getId());
 
 		Application applicationFound = null;
-		for (final Application a : applications)
+		for (Application a : applications)
 			if (application.getId() == a.getId()) {
 				applicationFound = a;
 				break;
@@ -296,13 +276,15 @@ public class CustomerService {
 	}
 
 	//NOTES
-	public Note createNote(Report report, Note note) {
+	public Note createNote(Report report, String mandatoryComment, List<String> optionalComments) {
 		Customer loggedCustomer = this.securityAndCustomer();
+
+		Note note = this.noteService.create(mandatoryComment, optionalComments);
 
 		Collection<Report> reports = this.customerRepository.findReportsById(loggedCustomer.getId());
 
 		Report reportFound = null;
-		for (final Report r : reports)
+		for (Report r : reports)
 			if (report.getId() == r.getId()) {
 				reportFound = r;
 				break;
@@ -327,7 +309,7 @@ public class CustomerService {
 		Collection<Note> notes = this.customerRepository.findNotesById(loggedCustomer.getId());
 
 		Note noteFound = null;
-		for (final Note n : notes)
+		for (Note n : notes)
 			if (note.getId() == n.getId()) {
 				noteFound = n;
 				break;
@@ -356,7 +338,7 @@ public class CustomerService {
 		Collection<Endorsment> endorsments = this.customerRepository.AllEndorsmentsById(loggedCustomer.getId());
 
 		Endorsment endorsmentFound = null;
-		for (final Endorsment e : endorsments)
+		for (Endorsment e : endorsments)
 			if (e.getId() == endorsmentId) {
 				endorsmentFound = e;
 				break;
@@ -367,23 +349,23 @@ public class CustomerService {
 		return endorsmentFound;
 	}
 
-	public Endorsment createEndorsment(Endorsment endorsment) {
+	public Endorsment createEndorsment(List<String> comments, HandyWorker writtenTo) {
 		Customer loggedCustomer = this.securityAndCustomer();
 
-		Assert.isTrue(endorsment.getWrittenTo().getClass().equals(HandyWorker.class));
-
-		HandyWorker handyWorker = (HandyWorker) endorsment.getWrittenTo();
+		Assert.isTrue(writtenTo.getClass().equals(HandyWorker.class));
 
 		Collection<HandyWorker> handyWorkers = this.customerRepository.handyWorkersById(loggedCustomer.getId());
 
 		HandyWorker handyWorkerFound = null;
-		for (final HandyWorker h : handyWorkers)
-			if (h.getId() == handyWorker.getId()) {
+		for (HandyWorker h : handyWorkers)
+			if (h.getId() == writtenTo.getId()) {
 				handyWorkerFound = h;
 				break;
 			}
 
 		Assert.notNull(handyWorkerFound);
+
+		Endorsment endorsment = this.endorsmentService.createEndorsment(comments, loggedCustomer, writtenTo);
 
 		return this.endorsmentService.save(endorsment);
 	}
@@ -394,7 +376,7 @@ public class CustomerService {
 		Collection<Endorsment> endorsments = this.customerRepository.endorsmentsOfById(loggedCustomer.getId());
 
 		Endorsment endorsmentFound = null;
-		for (final Endorsment e : endorsments)
+		for (Endorsment e : endorsments)
 			if (e.getId() == endorsment.getId()) {
 				endorsmentFound = e;
 				break;
@@ -411,7 +393,7 @@ public class CustomerService {
 		Collection<Endorsment> endorsments = this.customerRepository.endorsmentsOfById(loggedCustomer.getId());
 
 		Endorsment endorsmentFound = null;
-		for (final Endorsment e : endorsments)
+		for (Endorsment e : endorsments)
 			if (e.getId() == endorsment.getId()) {
 				endorsmentFound = e;
 				break;

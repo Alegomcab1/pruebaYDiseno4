@@ -265,6 +265,27 @@
 				<value>AMEX</value>
 			</list>
 		</property>
+		<property name="goodWords">
+			<list>
+				<value>good</value>
+				<value>fantastic</value>
+				<value>excellent</value>
+				<value>great</value>
+				<value>amazing</value>
+				<value>terrific</value>
+				<value>beautiful</value>
+			</list>
+		</property>
+		<property name="badWords">
+			<list>
+				<value>not</value>
+				<value>bad</value>
+				<value>horrible</value>
+				<value>average</value>
+				<value>disaster</value>
+			</list>
+		</property>
+		
 		<property name="maxFinderResults" value="100"/>
 		<property name="minFinderResults" value="10" />
 		<property name="minTimeFinder" value="1" />
@@ -792,6 +813,7 @@
 				<ref bean="report1" />
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint2" class="domain.Complaint">
@@ -809,6 +831,7 @@
 				<ref bean="report2" />
 			</list>
 		</property>
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint3" class="domain.Complaint">
@@ -826,6 +849,7 @@
 				<ref bean="report3"/>
 			</list>
 		</property> 
+		<property name="referee" ref="referee3"/>
 	</bean>
 
 	<bean id="complaint4" class="domain.Complaint">
@@ -843,6 +867,7 @@
 				<ref bean="report4"/>
 			</list>
 		</property> 
+		<property name="referee" ref="referee4"/>
 	</bean>
 
 	<bean id="complaint5" class="domain.Complaint">
@@ -859,6 +884,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint6" class="domain.Complaint">
@@ -874,6 +900,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint7" class="domain.Complaint">
@@ -889,6 +916,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee3"/>
 	</bean>
 
 	<bean id="complaint8" class="domain.Complaint">
@@ -904,6 +932,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee4"/>
 	</bean>
 
 	<bean id="complaint9" class="domain.Complaint">
@@ -919,6 +948,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint10" class="domain.Complaint">
@@ -934,6 +964,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint11" class="domain.Complaint">
@@ -949,6 +980,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee3"/>
 	</bean>
 	<!-- END OF COMPLAINT -->
 
@@ -1367,7 +1399,7 @@
 				<ref bean="spamHandyWorker1" />
 			</list>
 		</property>
-		<property name="score" value="GOOD" />
+		<property name="score" value="0" />
 		<property name="endorsments">
 			<list>
 				<ref bean="endorsment2" />
@@ -1405,7 +1437,7 @@
 		<property name="email" value="pepe.luis2@gmail.com" />
 		<property name="phoneNumber" value="+34622256914" />
 		<property name="address" value="Sevilla" />
-		<property name="score" value="GOOD" />
+		<property name="score" value="0" />
 		<property name="make" value="Pepe Luis Martinez" />
 		<property name="applications">
 			<list>
@@ -1432,7 +1464,7 @@
 		<property name="email" value="pepe.luis3@gmail.com" />
 		<property name="phoneNumber" value="+34633256914" />
 		<property name="address" value="Sevilla" />
-		<property name="score" value="GOOD" />
+		<property name="score" value="0" />
 		<property name="make" value="Pepe Luis Martinez" />
 		<property name="applications">
 			<list>
@@ -1460,7 +1492,7 @@
 		<property name="email" value="pepe.luis4@gmail.com" />
 		<property name="phoneNumber" value="+34644456914" />
 		<property name="address" value="Sevilla" />
-		<property name="score" value="GOOD" />
+		<property name="score" value="0" />
 		<property name="make" value="Pepe Luis Martinez" />
 		<property name="applications">
 			<list>
@@ -1575,7 +1607,7 @@
 				<ref bean="socialProfile2" />
 			</list>
 		</property>
-		<property name="score" value="FANTASTIC" />
+		<property name="score" value="0" />
 		<property name="endorsments">
 			<list>
 				<ref bean="endorsment1" />
@@ -1609,7 +1641,7 @@
 		<property name="email" value="juan.david@gmail.com" />
 		<property name="phoneNumber" value="+34746952921" />
 		<property name="address" value="Reina Mercedes" />
-		<property name="score" value="FANTASTIC" />
+		<property name="score" value="0" />
 		<property name="fixUpTasks">
 			<list>
 				<ref bean="fixUpTasks5" />
@@ -1635,7 +1667,7 @@
 				<ref bean="trashCustomer3" />
 			</list>
 		</property>
-		<property name="score" value="FANTASTIC" />
+		<property name="score" value="0" />
 		<property name="fixUpTasks">
 			<list>
 				<ref bean="fixUpTasks6" />
@@ -1661,7 +1693,7 @@
 		<property name="email" value="Jose.luis.martin@gmail.com" />
 		<property name="phoneNumber" value="+34746989159" />
 		<property name="address" value="Reina Mercedes" />
-		<property name="score" value="FANTASTIC" />
+		<property name="score" value="0" />
 		<property name="fixUpTasks">
 			<list>
 				<ref bean="fixUpTasks7" />

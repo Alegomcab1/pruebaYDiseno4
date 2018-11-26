@@ -76,7 +76,7 @@ public class Complaint extends DomainEntity {
 		this.reports = reports;
 	}
 
-	@NotBlank
+	@NotNull
 	@ManyToOne(optional = true)
 	public Referee getReferee() {
 		return this.referee;

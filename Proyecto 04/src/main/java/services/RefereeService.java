@@ -31,9 +31,13 @@ public class RefereeService {
 
 	// Supporting Services ------------------------------------------
 
+	@Autowired
 	private ComplaintService	complaintService;
+	@Autowired
 	private NoteService			noteService;
+	@Autowired
 	private ReportService		reportService;
+	@Autowired
 	private ActorService		actorService;
 
 
@@ -124,7 +128,7 @@ public class RefereeService {
 		return res;
 	}
 
-	public Note writeNoteReport(Report report, String mandatoryComment) {
+	public Note writeNoteReport(Report report, String mandatoryComment, List<String> optionalComments) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Report> lr = loggedReferee.getReports();
 		Report rep = new Report();
@@ -132,7 +136,7 @@ public class RefereeService {
 			if (r == report)
 				r = rep;
 		Assert.notNull(rep);
-		Note note = this.noteService.create(mandatoryComment);
+		Note note = this.noteService.create(mandatoryComment, optionalComments);
 		report.getNotes().add(note);
 		this.reportService.save(report);
 		return note;
@@ -151,7 +155,7 @@ public class RefereeService {
 		return note;
 	}
 
-	public Report writeReportRegardingComplaint(Complaint complaint, String description) {
+	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> lc = this.complaintService.findAll();
 		Report res = new Report();
@@ -159,7 +163,7 @@ public class RefereeService {
 		for (Complaint c : lc)
 			if (c == complaint) {
 				com = c;
-				res = this.reportService.create(description);
+				res = this.reportService.create(description, attachments);
 				loggedReferee.getReports().add(res);
 				com.getReports().add(res);
 			}

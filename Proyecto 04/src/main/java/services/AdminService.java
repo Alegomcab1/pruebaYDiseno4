@@ -201,7 +201,7 @@ public class AdminService {
     public void deleteCategory(Category category) {
 	this.loggedAsAdmin();
 
-	CategoryService.delete(category);
+	this.categoryService.delete(category);
     }
 
     // 4. Broadcast a message to all of the actors of the system.

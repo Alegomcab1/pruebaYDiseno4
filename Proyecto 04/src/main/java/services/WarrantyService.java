@@ -1,7 +1,6 @@
 
 package services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -22,13 +21,11 @@ public class WarrantyService {
 
 	// CRUD Methods
 
-	public Warranty create(String title) {
+	public Warranty create(String title, List<String> terms, List<String> laws, boolean isDraftMode) {
 
 		Warranty warranty = new Warranty();
-		List<String> terms = new ArrayList<String>();
-		List<String> laws = new ArrayList<String>();
 		warranty.setTitle(title);
-		warranty.setIsDraftMode(true);
+		warranty.setIsDraftMode(isDraftMode);
 		warranty.setTerms(terms);
 		warranty.setLaws(laws);
 
@@ -42,11 +39,8 @@ public class WarrantyService {
 			throw new IllegalAccessError();
 	}
 
-	public Warranty update(Warranty warranty) {
-		if (warranty.getIsDraftMode() == true)
-			return this.save(warranty);
-		else
-			throw new IllegalAccessError();
+	public Warranty findOne(int warrantyId) {
+		return this.warrantyRepository.findOne(warrantyId);
 	}
 
 	public void delete(Warranty warranty) {
