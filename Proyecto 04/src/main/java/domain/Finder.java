@@ -7,7 +7,7 @@ import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.Valid;
@@ -41,7 +41,7 @@ public class Finder extends DomainEntity {
 	public void setKeyWord(String keyWord) {
 		this.keyWord = keyWord;
 	}
-	@OneToMany
+	@ManyToMany
 	@Valid
 	public List<FixUpTask> getFixUpTasks() {
 		return this.fixUpTasks;

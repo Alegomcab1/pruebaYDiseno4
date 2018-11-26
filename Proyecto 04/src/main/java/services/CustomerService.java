@@ -431,7 +431,7 @@ public class CustomerService {
 	//REPORTS
 	public Report showReport(Report report) {
 		Customer loggedCustomer = this.securityAndCustomer();
-		Assert.isTrue(report.isFinalMode());
+		Assert.isTrue(report.getFinalMode());
 		return this.reportService.findOne(report.getId());
 	}
 
@@ -439,7 +439,7 @@ public class CustomerService {
 		Customer loggedCustomer = this.securityAndCustomer();
 		List<Report> lr = this.reportService.findAll();
 		for (Report report : lr)
-			Assert.isTrue(report.isFinalMode());
+			Assert.isTrue(report.getFinalMode());
 		return lr;
 	}
 }

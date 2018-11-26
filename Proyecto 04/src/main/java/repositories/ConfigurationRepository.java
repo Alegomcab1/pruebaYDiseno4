@@ -13,4 +13,13 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, In
 	@Query("select c.spamWords from Configuration c")
 	public List<String> spamWords();
 
+	@Query("select c.goodWords from Configuration c")
+	public String goodWords();
+
+	@Query("select c.badWords from Configuration c")
+	public String badWords();
+
+	@Query("select c from Configuration c")
+	public Configuration configuration();
+
 }

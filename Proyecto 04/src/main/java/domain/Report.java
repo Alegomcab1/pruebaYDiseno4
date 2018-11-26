@@ -26,7 +26,7 @@ public class Report extends DomainEntity {
 	private String			description;
 	private List<String>	attachments;
 
-	private boolean			isFinalMode;
+	private boolean			finalMode;
 
 	private List<Note>		notes;
 
@@ -73,12 +73,11 @@ public class Report extends DomainEntity {
 	}
 
 	@NotNull
-	public boolean isFinalMode() {
-		return this.isFinalMode;
+	public boolean getFinalMode() {
+		return this.finalMode;
 	}
 
-	public void setFinalMode(boolean isFinalMode) {
-		this.isFinalMode = isFinalMode;
+	public void setFinalMode(boolean finalMode) {
+		this.finalMode = finalMode;
 	}
-
 }

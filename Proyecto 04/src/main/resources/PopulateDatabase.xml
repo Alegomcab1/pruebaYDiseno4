@@ -994,7 +994,7 @@
 		<property name="fixUpTasks">
 			<list>
 				<ref bean="fixUpTasks1" />
-				<ref bean="fixUpTasks2" />
+				<ref bean="fixUpTasks4" />
 			</list>
 		</property>
 	</bean>
@@ -1008,8 +1008,8 @@
 		<property name="endDate" value="02/01/2018 11:45" />
 		<property name="fixUpTasks">
 			<list>
-				<ref bean="fixUpTasks1" />
-				<ref bean="fixUpTasks2" />
+				<ref bean="fixUpTasks5" />
+				<ref bean="fixUpTasks6" />
 			</list>
 		</property>
 	</bean>
@@ -1023,8 +1023,7 @@
 		<property name="endDate" value="02/01/2018 11:45" />
 		<property name="fixUpTasks">
 			<list>
-				<ref bean="fixUpTasks1" />
-				<ref bean="fixUpTasks2" />
+				<ref bean="fixUpTasks7" />
 			</list>
 		</property>
 	</bean>
@@ -1174,7 +1173,7 @@
 				<ref bean="note1" />
 			</list>
 		</property>
-		<property name="isFinalMode" value="true"/>
+		<property name="finalMode" value="true"/>
 	</bean>
 
 	<bean id="report2" class="domain.Report">
@@ -1191,7 +1190,7 @@
 				<ref bean="note2" />
 			</list>
 		</property>
-		<property name="isFinalMode" value="true"/>
+		<property name="finalMode" value="true"/>
 	</bean>
 
 
@@ -1209,7 +1208,7 @@
 				<ref bean="note3" />
 			</list>
 		</property>
-		<property name="isFinalMode" value="true"/>
+		<property name="finalMode" value="true"/>
 	</bean>
 
 	<bean id="report4" class="domain.Report">
@@ -1226,7 +1225,7 @@
 				<ref bean="note4" />
 			</list>
 		</property>
-		<property name="isFinalMode" value="true"/>
+		<property name="finalMode" value="true"/>
 	</bean>
 	<!-- END OF REPORT -->
 
