@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import repositories.ComplaintRepository;
+import utilities.RandomString;
 import domain.Complaint;
 
 @Service
@@ -31,7 +32,7 @@ public class ComplaintService {
 		List<String> attachments = new ArrayList<String>();
 		Date thisMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() - 1);
-		complaint.setTicker(ComplaintService.generateTicker());
+		complaint.setTicker(this.generateTicker());
 		complaint.setMoment(thisMoment);
 		complaint.setDescription(description);
 		complaint.setAttachments(attachments);
@@ -40,11 +41,13 @@ public class ComplaintService {
 	}
 
 	//Método auxiliar para generar el ticker-------------------------------
-	private static String generateTicker() {
+	private String generateTicker() {
 		String res = "";
 		Date date = null;
 		String date1;
 		String date2 = LocalDate.now().toString();
+		String gen = new RandomString(6).nextString();
+		List<Complaint> lc = this.complaintRepository.findAll();
 		SimpleDateFormat df_in = new SimpleDateFormat("yyMMdd");
 		SimpleDateFormat df_output = new SimpleDateFormat("yyyy-MM-dd");
 		try {
@@ -53,17 +56,11 @@ public class ComplaintService {
 			e.printStackTrace();
 		}
 		date1 = df_in.format(date);
-		res = res + date1 + "-";
-		for (int i = 0; i < 6; i++)
-			res = res + ComplaintService.rndChar();
+		res = res + date1 + "-" + gen;
+		for (Complaint c : lc)
+			if (c.getTicker() == res)
+				return this.generateTicker();
 		return res;
-	}
-
-	private static char rndChar() {
-		int rnd = (int) (Math.random() * 52); // or use Random or whatever
-		char base = (rnd < 26) ? 'A' : 'a';
-		return (char) (base + rnd % 26);
-
 	}
 	//-----------------------------------------------------------------------
 

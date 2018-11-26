@@ -8,6 +8,7 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -25,6 +26,7 @@ public class Complaint extends DomainEntity {
 	private List<String>	attachments;
 
 	private List<Report>	reports;
+	private Referee			referee;
 
 
 	@NotBlank
@@ -69,9 +71,19 @@ public class Complaint extends DomainEntity {
 	public List<Report> getReports() {
 		return this.reports;
 	}
-	
+
 	public void setReports(final List<Report> reports) {
 		this.reports = reports;
+	}
+
+	@NotBlank
+	@ManyToOne(optional = true)
+	public Referee getReferee() {
+		return this.referee;
+	}
+
+	public void setReferee(Referee referee) {
+		this.referee = referee;
 	}
 
 }

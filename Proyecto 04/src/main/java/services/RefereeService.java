@@ -39,9 +39,9 @@ public class RefereeService {
 
 	//Aux
 	private Referee securityAndReferee() {
-		final UserAccount userAccount = LoginService.getPrincipal();
-		final String username = userAccount.getUsername();
-		final Referee loggedReferee = this.refereeRepository.getRefereeByUsername(username);
+		UserAccount userAccount = LoginService.getPrincipal();
+		String username = userAccount.getUsername();
+		Referee loggedReferee = this.refereeRepository.getRefereeByUsername(username);
 
 		Assert.isTrue(userAccount.getAuthorities().contains("REFEREE"));
 
@@ -90,18 +90,18 @@ public class RefereeService {
 	// Methods ------------------------------------------------------
 
 	public List<Complaint> unassignedComplaints() {
-		final Referee loggedReferee = this.securityAndReferee();
+		Referee loggedReferee = this.securityAndReferee();
 		return (List<Complaint>) this.refereeRepository.complaintsUnassigned();
 	}
 
 	public void assingComplaint(Complaint complaint) {
-		final Referee loggedReferee = this.securityAndReferee();
+		Referee loggedReferee = this.securityAndReferee();
 		List<Referee> lr = this.findAll();
 		Random rnd = new Random();
 		int i = rnd.nextInt(lr.size());
 		Referee r = lr.get(i);
 		List<Complaint> unassignedComplaints = (List<Complaint>) this.refereeRepository.complaintsUnassigned();
-		Complaint comp = null;
+		Complaint comp = new Complaint();
 		for (Complaint c : unassignedComplaints)
 			if (c == complaint)
 				c = comp;
@@ -111,10 +111,10 @@ public class RefereeService {
 	}
 
 	public List<Complaint> selfAssignedComplaint(Referee r) {
-		final Referee loggedReferee = this.securityAndReferee();
+		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> res = new ArrayList<>();
 		List<Complaint> complaints = this.complaintService.findAll();
-		Complaint comp = null;
+		Complaint comp = new Complaint();
 		for (Complaint c : complaints)
 			if (c.getReferee() == r)
 				c = comp;
@@ -125,9 +125,9 @@ public class RefereeService {
 	}
 
 	public Note writeNoteReport(Report report, String mandatoryComment) {
-		final Referee loggedReferee = this.securityAndReferee();
+		Referee loggedReferee = this.securityAndReferee();
 		List<Report> lr = loggedReferee.getReports();
-		Report rep = null;
+		Report rep = new Report();
 		for (Report r : lr)
 			if (r == report)
 				r = rep;
@@ -139,9 +139,9 @@ public class RefereeService {
 	}
 
 	public Note writeComment(String comment, Note note) {
-		final Referee loggedReferee = this.securityAndReferee();
+		Referee loggedReferee = this.securityAndReferee();
 		List<Note> notes = (List<Note>) this.refereeRepository.notesReferee(loggedReferee.getId());
-		Note no = null;
+		Note no = new Note();
 		for (Note n : notes)
 			if (n == note)
 				n = no;
@@ -149,6 +149,24 @@ public class RefereeService {
 		note.getOptionalComments().add(comment);
 		this.noteService.save(note);
 		return note;
+	}
+
+	public Report writeReportRegardingComplaint(Complaint complaint, String description) {
+		Referee loggedReferee = this.securityAndReferee();
+		List<Complaint> lc = this.complaintService.findAll();
+		Report res = new Report();
+		Complaint com = new Complaint();
+		for (Complaint c : lc)
+			if (c == complaint) {
+				com = c;
+				res = this.reportService.create(description);
+				loggedReferee.getReports().add(res);
+				com.getReports().add(res);
+			}
+		this.complaintService.save(com);
+		this.refereeRepository.save(loggedReferee);
+		this.reportService.save(res);
+		return res;
 	}
 
 }
