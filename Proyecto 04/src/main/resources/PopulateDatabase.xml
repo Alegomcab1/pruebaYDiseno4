@@ -813,6 +813,7 @@
 				<ref bean="report1" />
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint2" class="domain.Complaint">
@@ -830,6 +831,7 @@
 				<ref bean="report2" />
 			</list>
 		</property>
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint3" class="domain.Complaint">
@@ -847,6 +849,7 @@
 				<ref bean="report3"/>
 			</list>
 		</property> 
+		<property name="referee" ref="referee3"/>
 	</bean>
 
 	<bean id="complaint4" class="domain.Complaint">
@@ -864,6 +867,7 @@
 				<ref bean="report4"/>
 			</list>
 		</property> 
+		<property name="referee" ref="referee4"/>
 	</bean>
 
 	<bean id="complaint5" class="domain.Complaint">
@@ -880,6 +884,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint6" class="domain.Complaint">
@@ -895,6 +900,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint7" class="domain.Complaint">
@@ -910,6 +916,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee3"/>
 	</bean>
 
 	<bean id="complaint8" class="domain.Complaint">
@@ -925,6 +932,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee4"/>
 	</bean>
 
 	<bean id="complaint9" class="domain.Complaint">
@@ -940,6 +948,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint10" class="domain.Complaint">
@@ -955,6 +964,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint11" class="domain.Complaint">
@@ -970,6 +980,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee3"/>
 	</bean>
 	<!-- END OF COMPLAINT -->
 
