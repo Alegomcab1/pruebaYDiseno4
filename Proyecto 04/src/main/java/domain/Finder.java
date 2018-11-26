@@ -38,7 +38,7 @@ public class Finder extends DomainEntity {
 		return this.keyWord;
 	}
 
-	public void setKeyWord(final String keyWord) {
+	public void setKeyWord(String keyWord) {
 		this.keyWord = keyWord;
 	}
 	@OneToMany
@@ -47,7 +47,7 @@ public class Finder extends DomainEntity {
 		return this.fixUpTasks;
 	}
 
-	public void setFixUpTasks(final List<FixUpTask> fixUpTasks) {
+	public void setFixUpTasks(List<FixUpTask> fixUpTasks) {
 		this.fixUpTasks = fixUpTasks;
 	}
 
@@ -56,7 +56,7 @@ public class Finder extends DomainEntity {
 		return this.category;
 	}
 
-	public void setCategory(final String category) {
+	public void setCategory(String category) {
 		this.category = category;
 	}
 
@@ -65,7 +65,7 @@ public class Finder extends DomainEntity {
 		return this.warranty;
 	}
 
-	public void setWarranty(final String warranty) {
+	public void setWarranty(String warranty) {
 		this.warranty = warranty;
 	}
 
@@ -76,7 +76,7 @@ public class Finder extends DomainEntity {
 		return this.minPrice;
 	}
 
-	public void setMinPrice(final double minPrice) {
+	public void setMinPrice(double minPrice) {
 		this.minPrice = minPrice;
 	}
 
@@ -86,7 +86,7 @@ public class Finder extends DomainEntity {
 		return this.maxPrice;
 	}
 
-	public void setMaxPrice(final double maxPrice) {
+	public void setMaxPrice(double maxPrice) {
 		if (maxPrice >= this.minPrice)
 			this.maxPrice = maxPrice;
 	}
@@ -98,7 +98,7 @@ public class Finder extends DomainEntity {
 		return this.startDate;
 	}
 
-	public void setStartDate(final Date startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 	@Temporal(TemporalType.TIMESTAMP)
@@ -107,7 +107,7 @@ public class Finder extends DomainEntity {
 		return this.endDate;
 	}
 
-	public void setEndDate(final Date endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 

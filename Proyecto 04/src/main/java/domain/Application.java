@@ -29,6 +29,8 @@ public class Application extends DomainEntity {
 	private FixUpTask			fixUpTask;
 	private HandyWorker			handyWorker;
 
+	private CreditCard			creditCard;
+
 
 	@NotNull
 	@ManyToOne(optional = false)
@@ -89,6 +91,16 @@ public class Application extends DomainEntity {
 
 	public void setHandyWorker(final HandyWorker handyWorker) {
 		this.handyWorker = handyWorker;
+	}
+
+	@Valid
+	public CreditCard getCreditCard() {
+		// TODO Auto-generated method stub
+		return this.creditCard;
+	}
+
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
 	}
 
 }

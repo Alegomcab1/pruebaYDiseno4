@@ -2,6 +2,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -19,30 +20,30 @@ import domain.Score;
 @Transactional
 public class EndorserService {
 
-	// Managed repository ------------------------------------------
+	// Managed repository ---------------------------------------------------------------------------------------------------
 
 	@Autowired
 	private EndorserRepository	endorserRepository;
 
-	// Supporting Services ------------------------------------------
+	// Supporting Services --------------------------------------------------------------------------------------------------
 
 	@Autowired
 	private EndorsmentService	endorsmentService;
 
 	//TODO Discutir sobre los Autowired en cuanto a padres e hijos
 	@Autowired
-	private ActorService		actorService;
+	private HandyWorkerService	handyWorkerService;
 	@Autowired
 	private CustomerService		customerService;
 
 
-	// Simple CRUD methods ------------------------------------------
+	// Simple CRUD methods --------------------------------------------------------------------------------------------------
 
-	public Endorser createEndorser(final Actor a, final Score score) {
-		final Endorser result = new Endorser();
-		final List<Endorsment> endorsments = new ArrayList<Endorsment>();
-
-		//TODO Eliminar los parametros de entrada?
+	public static Endorser createEndorser() {
+		Endorser result = new Endorser();
+		List<Endorsment> endorsments = new ArrayList<Endorsment>();
+		//TODO comprobar que se usa bien el createActor
+		Actor a = ActorService.createActor();
 
 		result.setAddress(a.getAddress());
 		result.setBoxes(a.getBoxes());
@@ -52,8 +53,7 @@ public class EndorserService {
 		result.setName(a.getName());
 		result.setPhoneNumber(a.getPhoneNumber());
 		result.setPhoto(a.getPhoto());
-		//TODO Si inicializo a AVERAGE el Score podria eliminar el parametro de entrada y usar este create en HandyWorker
-		result.setScore(score);
+		result.setScore(Score.AVERAGE);
 		result.setSocialProfiles(a.getSocialProfiles());
 		result.setSurname(a.getSurname());
 
@@ -61,7 +61,22 @@ public class EndorserService {
 
 	}
 
-	public Endorser saveEndorser(final Endorser endorser) {
+	public Collection<Endorser> findAll() {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		return this.endorserRepository.findAll();
+	}
+
+	public Endorser findOne(int id) {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		return this.endorserRepository.findOne(id);
+	}
+
+	public Endorser save(Endorser endorser) {
 		return this.endorserRepository.save(endorser);
+	}
+
+	public void delete(Endorser endorser) {
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+		this.endorserRepository.delete(endorser);
 	}
 }
