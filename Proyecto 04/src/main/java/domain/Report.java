@@ -1,7 +1,6 @@
 
 package domain;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Access;
@@ -17,12 +16,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.joda.time.LocalDate;
 
 @Entity
 @Access(AccessType.PROPERTY)
 public class Report extends DomainEntity {
 
-	private Date			moment;
+	private LocalDate		moment;
 	private String			description;
 	private List<String>	attachments;
 
@@ -43,12 +43,12 @@ public class Report extends DomainEntity {
 	@NotNull
 	@Past
 	@Temporal(TemporalType.TIMESTAMP)
-	public Date getMoment() {
+	public LocalDate getMoment() {
 		return this.moment;
 	}
 
-	public void setMoment(final Date moment) {
-		this.moment = moment;
+	public void setMoment(final LocalDate localDate) {
+		this.moment = localDate;
 	}
 
 	@NotBlank

@@ -16,8 +16,6 @@ import repositories.ApplicationRepository;
 import security.LoginService;
 import security.UserAccount;
 import domain.Application;
-import domain.FixUpTask;
-import domain.HandyWorker;
 import domain.Status;
 
 @Service

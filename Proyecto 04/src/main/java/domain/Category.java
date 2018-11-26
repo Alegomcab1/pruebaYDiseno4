@@ -7,6 +7,7 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
 
@@ -19,9 +20,21 @@ public class Category extends DomainEntity {
 	private List<Category>	subCategories;
 	private String			name;
 
+	private Category		fatherCategory;
+
 
 	public Category() {		//Created for Json purposes
 		super();
+	}
+
+	@Valid
+	@ManyToOne(optional = true)
+	public Category getFatherCategory() {
+		return this.fatherCategory;
+	}
+
+	public void setFatherCategory(Category fatherCategory) {
+		this.fatherCategory = fatherCategory;
 	}
 
 	@OneToMany
