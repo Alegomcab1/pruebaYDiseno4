@@ -1,4 +1,3 @@
-
 package domain;
 
 import java.util.List;
@@ -15,93 +14,106 @@ import org.hibernate.validator.constraints.NotBlank;
 @Access(AccessType.PROPERTY)
 public class Configuration extends DomainEntity {
 
-	private List<String>	spamWords;
-	private Integer			iva21;
+    private List<String> spamWords;
+    private Integer iva21;
+    private List<String> cardType;
+    private String spainTelephoneCode;
+    private Integer minFinderResults;
+    private Integer maxFinderResults;
+    private Integer minTimeFinder;
+    private Integer maxTimeFinder;
 
+    private List<String> goodWords;
+    private List<String> badWords;
 
-	@NotNull
-	public Integer getmaxFinderResults() {
-		return this.maxFinderResults;
-	}
+    @NotNull
+    public Integer getmaxFinderResults() {
+	return this.maxFinderResults;
+    }
 
-	public void setmaxFinderResults(Integer maxFinderResults) {
-		this.maxFinderResults = maxFinderResults;
-	}
+    public void setmaxFinderResults(Integer maxFinderResults) {
+	this.maxFinderResults = maxFinderResults;
+    }
 
-	@NotNull
-	public Integer getMinTimeFinder() {
-		return this.minTimeFinder;
-	}
+    @NotNull
+    public Integer getMinTimeFinder() {
+	return this.minTimeFinder;
+    }
 
-	public void setMinTimeFinder(Integer minTimeFinder) {
-		this.minTimeFinder = minTimeFinder;
-	}
+    public void setMinTimeFinder(Integer minTimeFinder) {
+	this.minTimeFinder = minTimeFinder;
+    }
 
-	@NotNull
-	public Integer getMaxTimeFinder() {
-		return this.maxTimeFinder;
-	}
+    @NotNull
+    public Integer getMaxTimeFinder() {
+	return this.maxTimeFinder;
+    }
 
-	public void setMaxTimeFinder(Integer maxTimeFinder) {
-		this.maxTimeFinder = maxTimeFinder;
-	}
+    public void setMaxTimeFinder(Integer maxTimeFinder) {
+	this.maxTimeFinder = maxTimeFinder;
+    }
 
+    @NotNull
+    public Integer getMinFinderResults() {
+	return this.minFinderResults;
+    }
 
-	private List<String>	cardType;
-	private String			spainTelephoneCode;
+    public void setMinFinderResults(Integer minFinderResults) {
+	this.minFinderResults = minFinderResults;
+    }
 
-	private Integer			minFinderResults;
+    @ElementCollection(targetClass = String.class)
+    public List<String> getSpamWords() {
+	return this.spamWords;
+    }
 
+    public void setSpamWords(List<String> spamWords) {
+	this.spamWords = spamWords;
+    }
 
-	@NotNull
-	public Integer getMinFinderResults() {
-		return this.minFinderResults;
-	}
+    @NotNull
+    public Integer getIva21() {
+	return this.iva21;
+    }
 
-	public void setMinFinderResults(Integer minFinderResults) {
-		this.minFinderResults = minFinderResults;
-	}
+    public void setIva21(Integer iva21) {
+	this.iva21 = iva21;
+    }
 
+    @ElementCollection(targetClass = String.class)
+    public List<String> getCardType() {
+	return this.cardType;
+    }
 
-	private Integer	maxFinderResults;
-	private Integer	minTimeFinder;
-	private Integer	maxTimeFinder;
+    public void setCardType(List<String> cardType) {
+	this.cardType = cardType;
+    }
 
+    @NotBlank
+    public String getSpainTelephoneCode() {
+	return this.spainTelephoneCode;
+    }
 
-	@ElementCollection(targetClass = String.class)
-	public List<String> getSpamWords() {
-		return this.spamWords;
-	}
+    public void setSpainTelephoneCode(String spainTelephoneCode) {
+	this.spainTelephoneCode = spainTelephoneCode;
+    }
 
-	public void setSpamWords(List<String> spamWords) {
-		this.spamWords = spamWords;
-	}
+    @ElementCollection(targetClass = String.class)
+    public List<String> getGoodWords() {
+	return this.goodWords;
+    }
 
-	@NotNull
-	public Integer getIva21() {
-		return this.iva21;
-	}
+    public void setGoodWords(List<String> goodWords) {
+	this.goodWords = goodWords;
+    }
 
-	public void setIva21(Integer iva21) {
-		this.iva21 = iva21;
-	}
+    @ElementCollection(targetClass = String.class)
+    public List<String> getBadWords() {
+	return this.badWords;
+    }
 
-	@ElementCollection(targetClass = String.class)
-	public List<String> getCardType() {
-		return this.cardType;
-	}
-
-	public void setCardType(List<String> cardType) {
-		this.cardType = cardType;
-	}
-
-	@NotBlank
-	public String getSpainTelephoneCode() {
-		return this.spainTelephoneCode;
-	}
-
-	public void setSpainTelephoneCode(String spainTelephoneCode) {
-		this.spainTelephoneCode = spainTelephoneCode;
-	}
+    public void setBadWords(List<String> badWords) {
+	this.badWords = badWords;
+    }
 
 }
