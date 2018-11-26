@@ -1,4 +1,3 @@
-
 package domain;
 
 import java.util.List;
@@ -15,28 +14,27 @@ import javax.validation.constraints.NotNull;
 @Access(AccessType.PROPERTY)
 public class Endorser extends Actor {
 
-	private Score				score;
-	private List<Endorsment>	endorsments;
+    private Integer score;
+    private List<Endorsment> endorsments;
 
+    @Valid
+    @OneToMany
+    @ElementCollection(targetClass = Endorsment.class)
+    public List<Endorsment> getEndorsments() {
+	return this.endorsments;
+    }
 
-	@Valid
-	@OneToMany
-	@ElementCollection(targetClass = Endorsment.class)
-	public List<Endorsment> getEndorsments() {
-		return this.endorsments;
-	}
+    public void setEndorsments(final List<Endorsment> endorsments) {
+	this.endorsments = endorsments;
+    }
 
-	public void setEndorsments(final List<Endorsment> endorsments) {
-		this.endorsments = endorsments;
-	}
+    @NotNull
+    public Integer getScore() {
+	return this.score;
+    }
 
-	@NotNull
-	public Score getScore() {
-		return this.score;
-	}
-
-	public void setScore(final Score score) {
-		this.score = score;
-	}
+    public void setScore(final Integer score) {
+	this.score = score;
+    }
 
 }
