@@ -265,27 +265,8 @@
 				<value>AMEX</value>
 			</list>
 		</property>
-		<property name="goodWords">
-			<list>
-				<value>good</value>
-				<value>fantastic</value>
-				<value>excellent</value>
-				<value>great</value>
-				<value>amazing</value>
-				<value>terrific</value>
-				<value>beautiful</value>
-			</list>
-		</property>
-		<property name="badWords">
-			<list>
-				<value>not</value>
-				<value>bad</value>
-				<value>horrible</value>
-				<value>average</value>
-				<value>disaster</value>
-			</list>
-		</property>
-		
+		<property name="goodWords" value="good, fantastic, excellent, great, amazing, terrific, beautiful" />
+		<property name="badWords" value="not, bad, horrible, average, disaster" />
 		<property name="maxFinderResults" value="100"/>
 		<property name="minFinderResults" value="10" />
 		<property name="minTimeFinder" value="1" />
@@ -813,6 +794,7 @@
 				<ref bean="report1" />
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint2" class="domain.Complaint">
@@ -830,6 +812,7 @@
 				<ref bean="report2" />
 			</list>
 		</property>
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint3" class="domain.Complaint">
@@ -847,6 +830,7 @@
 				<ref bean="report3"/>
 			</list>
 		</property> 
+		<property name="referee" ref="referee3"/>
 	</bean>
 
 	<bean id="complaint4" class="domain.Complaint">
@@ -864,6 +848,7 @@
 				<ref bean="report4"/>
 			</list>
 		</property> 
+		<property name="referee" ref="referee4"/>
 	</bean>
 
 	<bean id="complaint5" class="domain.Complaint">
@@ -880,6 +865,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint6" class="domain.Complaint">
@@ -895,6 +881,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint7" class="domain.Complaint">
@@ -910,6 +897,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee3"/>
 	</bean>
 
 	<bean id="complaint8" class="domain.Complaint">
@@ -925,6 +913,7 @@
 			<list>
 			</list>
 		</property> 
+		<property name="referee" ref="referee4"/>
 	</bean>
 
 	<bean id="complaint9" class="domain.Complaint">
@@ -940,6 +929,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee1"/>
 	</bean>
 
 	<bean id="complaint10" class="domain.Complaint">
@@ -955,6 +945,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee2"/>
 	</bean>
 
 	<bean id="complaint11" class="domain.Complaint">
@@ -970,6 +961,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="referee" ref="referee3"/>
 	</bean>
 	<!-- END OF COMPLAINT -->
 
@@ -988,6 +980,50 @@
 			<list>
 				<ref bean="fixUpTasks1" />
 				<ref bean="fixUpTasks2" />
+			</list>
+		</property>
+	</bean>
+	<bean id="finder2" class="domain.Finder">
+		<property name="keyWord" value="keyWord1" />
+		<property name="category" value="categoryFinder1" />
+		<property name="warranty" value="warrantyFinder1" />
+		<property name="minPrice" value="0.0" />
+		<property name="maxPrice" value="1.0" />
+		<property name="startDate" value="02/01/2018 11:30" />
+		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="fixUpTasks">
+			<list>
+				<ref bean="fixUpTasks1" />
+				<ref bean="fixUpTasks4" />
+			</list>
+		</property>
+	</bean>
+	<bean id="finder3" class="domain.Finder">
+		<property name="keyWord" value="keyWord1" />
+		<property name="category" value="categoryFinder1" />
+		<property name="warranty" value="warrantyFinder1" />
+		<property name="minPrice" value="0.0" />
+		<property name="maxPrice" value="1.0" />
+		<property name="startDate" value="02/01/2018 11:30" />
+		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="fixUpTasks">
+			<list>
+				<ref bean="fixUpTasks5" />
+				<ref bean="fixUpTasks6" />
+			</list>
+		</property>
+	</bean>
+	<bean id="finder4" class="domain.Finder">
+		<property name="keyWord" value="keyWord1" />
+		<property name="category" value="categoryFinder1" />
+		<property name="warranty" value="warrantyFinder1" />
+		<property name="minPrice" value="0.0" />
+		<property name="maxPrice" value="1.0" />
+		<property name="startDate" value="02/01/2018 11:30" />
+		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="fixUpTasks">
+			<list>
+				<ref bean="fixUpTasks7" />
 			</list>
 		</property>
 	</bean>
@@ -1137,6 +1173,7 @@
 				<ref bean="note1" />
 			</list>
 		</property>
+		<property name="finalMode" value="true"/>
 	</bean>
 
 	<bean id="report2" class="domain.Report">
@@ -1153,6 +1190,7 @@
 				<ref bean="note2" />
 			</list>
 		</property>
+		<property name="finalMode" value="true"/>
 	</bean>
 
 
@@ -1170,6 +1208,7 @@
 				<ref bean="note3" />
 			</list>
 		</property>
+		<property name="finalMode" value="true"/>
 	</bean>
 
 	<bean id="report4" class="domain.Report">
@@ -1186,6 +1225,7 @@
 				<ref bean="note4" />
 			</list>
 		</property>
+		<property name="finalMode" value="true"/>
 	</bean>
 	<!-- END OF REPORT -->
 
@@ -1443,6 +1483,7 @@
 		</property>
 		<property name="userAccount" ref="userAccount9" />
 		<property name="hasSpam" value = "false"/>
+		<property name="finder" ref ="finder2" />
 	</bean>
 		
 	<bean id="handyWorker3" class="domain.HandyWorker">
@@ -1471,6 +1512,7 @@
 		</property>
 		<property name="userAccount" ref="userAccount10" />
 		<property name="hasSpam" value = "false"/>
+		<property name="finder" ref ="finder3" />
 	</bean>	
 	
 	<bean id="handyWorker4" class="domain.HandyWorker">
@@ -1501,6 +1543,7 @@
 		</property>
 		<property name="userAccount" ref="userAccount11" />
 		<property name="hasSpam" value = "false"/>
+		<property name="finder" ref ="finder4" />
 	</bean>	
 		
 	<!-- END OF HANDY WORKER -->
