@@ -29,8 +29,10 @@ public class ComplaintService {
 
 		Complaint complaint = new Complaint();
 		List<String> attachments = new ArrayList<String>();
+		Date thisMoment = new Date();
+		thisMoment.setTime(thisMoment.getTime() - 1);
 		complaint.setTicker(ComplaintService.generateTicker());
-		complaint.setMoment(LocalDate.now());
+		complaint.setMoment(thisMoment);
 		complaint.setDescription(description);
 		complaint.setAttachments(attachments);
 

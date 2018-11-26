@@ -2,11 +2,11 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,9 @@ public class NoteService {
 
 		Note note = new Note();
 		List<String> optionalComments = new ArrayList<String>();
-		note.setMoment(LocalDate.now());
+		Date thisMoment = new Date();
+		thisMoment.setTime(thisMoment.getTime() - 1);
+		note.setMoment(thisMoment);
 		note.setMandatoryComment(mandatoryComment);
 		note.setOptionalComments(optionalComments);
 

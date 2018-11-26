@@ -1,6 +1,7 @@
 
 package services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -22,8 +23,9 @@ public class CategoryService {
 	public Category create(String name, Category fatherCategory) {
 
 		Category category = new Category();
+		List<Category> subCategories = new ArrayList<Category>();
 		category.setName(name);
-		category.setFatherCategory(fatherCategory);
+		category.setSubCategories(subCategories);
 
 		return category;
 	}
