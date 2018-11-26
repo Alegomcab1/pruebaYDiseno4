@@ -111,7 +111,7 @@ public class CustomerService {
 	    return false;
     }
 
-    // Métodos solicitados
+    // MÃ©todos solicitados
     public Collection<FixUpTask> showFixUpTasks(int customerId) {
 	return this.customerRepository.findFixUpTasksById(customerId);
     }
