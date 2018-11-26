@@ -1002,6 +1002,51 @@
 			</list>
 		</property>
 	</bean>
+	<bean id="finder2" class="domain.Finder">
+		<property name="keyWord" value="keyWord1" />
+		<property name="category" value="categoryFinder1" />
+		<property name="warranty" value="warrantyFinder1" />
+		<property name="minPrice" value="0.0" />
+		<property name="maxPrice" value="1.0" />
+		<property name="startDate" value="02/01/2018 11:30" />
+		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="fixUpTasks">
+			<list>
+				<ref bean="fixUpTasks1" />
+				<ref bean="fixUpTasks2" />
+			</list>
+		</property>
+	</bean>
+	<bean id="finder3" class="domain.Finder">
+		<property name="keyWord" value="keyWord1" />
+		<property name="category" value="categoryFinder1" />
+		<property name="warranty" value="warrantyFinder1" />
+		<property name="minPrice" value="0.0" />
+		<property name="maxPrice" value="1.0" />
+		<property name="startDate" value="02/01/2018 11:30" />
+		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="fixUpTasks">
+			<list>
+				<ref bean="fixUpTasks1" />
+				<ref bean="fixUpTasks2" />
+			</list>
+		</property>
+	</bean>
+	<bean id="finder4" class="domain.Finder">
+		<property name="keyWord" value="keyWord1" />
+		<property name="category" value="categoryFinder1" />
+		<property name="warranty" value="warrantyFinder1" />
+		<property name="minPrice" value="0.0" />
+		<property name="maxPrice" value="1.0" />
+		<property name="startDate" value="02/01/2018 11:30" />
+		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="fixUpTasks">
+			<list>
+				<ref bean="fixUpTasks1" />
+				<ref bean="fixUpTasks2" />
+			</list>
+		</property>
+	</bean>
 	<!-- END OF FINDER -->
 
 	<!-- APPLICATION -->
@@ -1148,6 +1193,7 @@
 				<ref bean="note1" />
 			</list>
 		</property>
+		<property name="isFinalMode" value="true"/>
 	</bean>
 
 	<bean id="report2" class="domain.Report">
@@ -1164,6 +1210,7 @@
 				<ref bean="note2" />
 			</list>
 		</property>
+		<property name="isFinalMode" value="true"/>
 	</bean>
 
 
@@ -1181,6 +1228,7 @@
 				<ref bean="note3" />
 			</list>
 		</property>
+		<property name="isFinalMode" value="true"/>
 	</bean>
 
 	<bean id="report4" class="domain.Report">
@@ -1197,6 +1245,7 @@
 				<ref bean="note4" />
 			</list>
 		</property>
+		<property name="isFinalMode" value="true"/>
 	</bean>
 	<!-- END OF REPORT -->
 
@@ -1454,6 +1503,7 @@
 		</property>
 		<property name="userAccount" ref="userAccount9" />
 		<property name="hasSpam" value = "false"/>
+		<property name="finder" ref ="finder2" />
 	</bean>
 		
 	<bean id="handyWorker3" class="domain.HandyWorker">
@@ -1482,6 +1532,7 @@
 		</property>
 		<property name="userAccount" ref="userAccount10" />
 		<property name="hasSpam" value = "false"/>
+		<property name="finder" ref ="finder3" />
 	</bean>	
 	
 	<bean id="handyWorker4" class="domain.HandyWorker">
@@ -1512,6 +1563,7 @@
 		</property>
 		<property name="userAccount" ref="userAccount11" />
 		<property name="hasSpam" value = "false"/>
+		<property name="finder" ref ="finder4" />
 	</bean>	
 		
 	<!-- END OF HANDY WORKER -->

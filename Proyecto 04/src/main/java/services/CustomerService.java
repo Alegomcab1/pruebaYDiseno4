@@ -35,23 +35,25 @@ public class CustomerService {
 
 	// Managed repository
 	@Autowired
-	private CustomerRepository	customerRepository;
+	private CustomerRepository		customerRepository;
 
 	// Supporting services
 	@Autowired
-	private FixUpTaskService	fixUpTaskService;
+	private FixUpTaskService		fixUpTaskService;
 	@Autowired
-	private ComplaintService	complaintService;
+	private ComplaintService		complaintService;
 	@Autowired
-	private ApplicationService	applicationService;
+	private ApplicationService		applicationService;
 	@Autowired
-	private NoteService			noteService;
+	private NoteService				noteService;
 	@Autowired
-	private ReportService		reportService;
+	private ReportService			reportService;
 	@Autowired
-	private EndorsmentService	endorsmentService;
+	private EndorsmentService		endorsmentService;
 	@Autowired
-	private EndorserService		endorserService;
+	private EndorserService			endorserService;
+	@Autowired
+	private ConfigurationService	configurationService;
 
 
 	// Simple CRUD methods
@@ -153,6 +155,8 @@ public class CustomerService {
 
 		this.save(loggedCustomer);
 
+		this.configurationService.isActorSuspicious(loggedCustomer);
+
 		return fixUpTaskSaved;
 
 	}
@@ -172,6 +176,8 @@ public class CustomerService {
 		Assert.isTrue(!fixUpTaskFound.equals(null));
 
 		FixUpTask fixUpTaskSaved = this.fixUpTaskService.save(fixUpTask);
+
+		this.configurationService.isActorSuspicious(loggedCustomer);
 
 		return fixUpTaskSaved;
 
@@ -242,6 +248,8 @@ public class CustomerService {
 
 		this.fixUpTaskService.save(fixUpTaskFound);
 
+		this.configurationService.isActorSuspicious(loggedCustomer);
+
 		return complaintSaved;
 	}
 
@@ -272,7 +280,11 @@ public class CustomerService {
 		Integer number = application.getCreditCard().getNumber();
 		Assert.isTrue(CustomerService.validateCreditCardNumber(number.toString()));
 
-		return this.applicationService.save(application);
+		Application applicationSave = this.applicationService.save(application);
+
+		this.configurationService.isActorSuspicious(loggedCustomer);
+
+		return applicationSave;
 	}
 
 	//NOTES
@@ -300,6 +312,8 @@ public class CustomerService {
 		Note noteSaved = this.noteService.save(note);
 		this.reportService.save(report);
 
+		this.configurationService.isActorSuspicious(loggedCustomer);
+
 		return noteSaved;
 	}
 
@@ -321,6 +335,8 @@ public class CustomerService {
 		comments.add(comment);
 
 		Note noteSaved = this.noteService.save(noteFound);
+
+		this.configurationService.isActorSuspicious(loggedCustomer);
 
 		return noteSaved;
 	}
@@ -365,9 +381,13 @@ public class CustomerService {
 
 		Assert.notNull(handyWorkerFound);
 
-		Endorsment endorsment = this.endorsmentService.createEndorsment(comments, loggedCustomer, writtenTo);
+		Endorsment endorsment = this.endorsmentService.createEndorsment(comments, writtenTo);
 
-		return this.endorsmentService.save(endorsment);
+		Endorsment endorsmentSave = this.endorsmentService.save(endorsment);
+
+		this.configurationService.isActorSuspicious(loggedCustomer);
+
+		return endorsmentSave;
 	}
 
 	public Endorsment updateEndorsment(Endorsment endorsment) {
@@ -384,7 +404,11 @@ public class CustomerService {
 
 		Assert.notNull(endorsmentFound);
 
-		return this.endorsmentService.save(endorsment);
+		Endorsment endorsmentSave = this.endorsmentService.save(endorsment);
+
+		this.configurationService.isActorSuspicious(loggedCustomer);
+
+		return endorsmentSave;
 	}
 
 	public void deleteEndorsment(Endorsment endorsment) {
@@ -402,5 +426,20 @@ public class CustomerService {
 		Assert.notNull(endorsmentFound);
 
 		this.endorsmentService.delete(endorsment);
+	}
+
+	//REPORTS
+	public Report showReport(Report report) {
+		Customer loggedCustomer = this.securityAndCustomer();
+		Assert.isTrue(report.isFinalMode());
+		return this.reportService.findOne(report.getId());
+	}
+
+	public List<Report> listReports() {
+		Customer loggedCustomer = this.securityAndCustomer();
+		List<Report> lr = this.reportService.findAll();
+		for (Report report : lr)
+			Assert.isTrue(report.isFinalMode());
+		return lr;
 	}
 }
