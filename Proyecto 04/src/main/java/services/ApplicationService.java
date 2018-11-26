@@ -10,11 +10,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.ApplicationRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.Application;
 import domain.Status;
 
@@ -25,20 +22,18 @@ public class ApplicationService {
 	// Managed repository ------------------------------------------
 
 	@Autowired
-	private ApplicationRepository	applicationRepository;
+	private static ApplicationRepository	applicationRepository;
 
 
 	// Supporting Services ------------------------------------------
 
-	//Simple CRUD methods ---------------------------------------------------------------------
-
-	public Application createApplication() {
+	public static Application createApplication() {
 
 		Application result = new Application();
 		Date thisMoment = new Date();
 		List<String> comments = new ArrayList<String>();
 
-		thisMoment.setTime(System.currentTimeMillis() - 1);
+		thisMoment.setTime(thisMoment.getTime() - 1);
 
 		result.setComments(comments);
 		result.setFixUpTask(null);
@@ -52,37 +47,20 @@ public class ApplicationService {
 	// Simple CRUD methods ------------------------------------------
 
 	public Collection<Application> findAll() {
-		return this.applicationRepository.findAll();
+		return ApplicationService.applicationRepository.findAll();
 	}
 
 	public Application findOne(int id) {
-		return this.applicationRepository.findOne(id);
+		return ApplicationService.applicationRepository.findOne(id);
 	}
 
 	public Application save(Application application) {
-		return this.applicationRepository.save(application);
+		return ApplicationService.applicationRepository.save(application);
 	}
 
 	public void delete(Application application) {
-		this.applicationRepository.delete(application);
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, adem�s mirar si hay restricciones a la hora de eliminarlo
+		ApplicationService.applicationRepository.delete(application);
 	}
 
-	public Application updateApplication(int idApplication, List<String> comments, FixUpTask fixUpTask, HandyWorker handyWorker, Integer offeredPrice, Status status) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-
-		Application application = new Application();
-		application = this.applicationRepository.getApplicationById(idApplication);
-
-		Assert.isTrue(application.getHandyWorker().equals(handyWorker));
-
-		application.setComments(comments);
-		application.setFixUpTask(fixUpTask);
-		application.setHandyWorker(handyWorker);
-		application.setOfferedPrice(offeredPrice);
-		application.setStatus(status);
-
-		return application;
-	}
 }

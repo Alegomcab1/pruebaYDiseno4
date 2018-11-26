@@ -33,22 +33,26 @@ public class EndorsmentService {
 		Endorsment result = new Endorsment();
 		Date thisMoment = new Date();
 		List<String> comments = new ArrayList<String>();
-		Endorser endorser = new Endorser();
+		Endorser writtenTo = EndorserService.createEndorser();
+		Endorser writtenBy = EndorserService.createEndorser();
 
 		result.setComments(comments);
 		result.setMoment(thisMoment);
-		result.setWrittenBy(endorser);
-		result.setWrittenTo(endorser);
+		result.setWrittenBy(writtenBy);
+		result.setWrittenTo(writtenTo);
 
 		return result;
 
 	}
 
 	public Collection<Endorsment> findAll() {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
 		return this.endorsmentRepository.findAll();
 	}
 
 	public Endorsment findOne(int id) {
+		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		//TODO id en Endorsment?
 		return this.endorsmentRepository.findOne(id);
 	}
 
@@ -57,6 +61,7 @@ public class EndorsmentService {
 	}
 
 	public void delete(Endorsment endorsment) {
+		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
 		this.endorsmentRepository.delete(endorsment);
 	}
 
