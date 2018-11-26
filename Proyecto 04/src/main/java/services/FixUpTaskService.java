@@ -7,23 +7,31 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import repositories.FixUpTaskRepository;
 import utilities.RandomString;
+import domain.Application;
 import domain.Category;
+import domain.Complaint;
 import domain.FixUpTask;
 import domain.Phase;
 import domain.Warranty;
 
+@Service
+@Transactional
 public class FixUpTaskService {
 
 	@Autowired
 	private FixUpTaskRepository	fixUpTaskRepository;
 
 
-	public FixUpTask create(String description, String address, Double maxPrice, Date realizationTime, Collection<Warranty> warranties, Collection<Phase> phases, Collection<Category> categories) {
+	public FixUpTask create(String description, String address, Double maxPrice, Date realizationTime, Collection<Warranty> warranties, Collection<Phase> phases, Collection<Category> categories, Collection<Complaint> complaints,
+		Collection<Application> applications) {
 		FixUpTask fixUpTask = new FixUpTask();
 		Date thisMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() - 1);
@@ -36,6 +44,8 @@ public class FixUpTaskService {
 		fixUpTask.setWarranties(warranties);
 		fixUpTask.setPhases(phases);
 		fixUpTask.setCategories(categories);
+		fixUpTask.setComplaints(complaints);
+		fixUpTask.setApplications(applications);
 		return fixUpTask;
 
 	}

@@ -34,8 +34,8 @@ public class CategoryService {
 		return this.categoryRepository.save(category);
 	}
 
-	public Category update(Category category) {
-		return this.save(category);
+	public Category findOne(int categoryId) {
+		return this.categoryRepository.findOne(categoryId);
 	}
 
 	public void delete(Category category) {

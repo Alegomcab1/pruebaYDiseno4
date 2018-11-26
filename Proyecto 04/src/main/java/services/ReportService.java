@@ -1,7 +1,6 @@
 
 package services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,10 +20,9 @@ public class ReportService {
 	private ReportRepository	reportRepository;
 
 
-	public Report create(String description) {
+	public Report create(String description, List<String> attachments) {
 
 		Report report = new Report();
-		List<String> attachments = new ArrayList<String>();
 		Date thisMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() - 1);
 		report.setMoment(thisMoment);
@@ -38,8 +36,8 @@ public class ReportService {
 		return this.reportRepository.save(report);
 	}
 
-	public Report update(Report report) {
-		return this.save(report);
+	public Report findOne(int reportId) {
+		return this.reportRepository.findOne(reportId);
 	}
 
 	public void delete(Report report) {

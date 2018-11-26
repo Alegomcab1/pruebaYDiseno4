@@ -1,7 +1,6 @@
 
 package services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,10 +20,9 @@ public class NoteService {
 	private NoteRepository	noteRepository;
 
 
-	public Note create(String mandatoryComment) {
+	public Note create(String mandatoryComment, List<String> optionalComments) {
 
 		Note note = new Note();
-		List<String> optionalComments = new ArrayList<String>();
 		Date thisMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() - 1);
 		note.setMoment(thisMoment);
@@ -38,8 +36,8 @@ public class NoteService {
 		return this.noteRepository.save(note);
 	}
 
-	public Note update(Note note) {
-		return this.save(note);
+	public Note findeOne(int noteId) {
+		return this.noteRepository.findOne(noteId);
 	}
 
 	public void delete(Note note) {
