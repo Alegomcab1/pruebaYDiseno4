@@ -3,7 +3,9 @@ package services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -12,10 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import repositories.HandyWorkerRepository;
+import security.Authority;
 import security.LoginService;
 import security.UserAccount;
 import domain.Application;
 import domain.Complaint;
+import domain.Customer;
 import domain.Endorser;
 import domain.Endorsment;
 import domain.Finder;
@@ -23,6 +27,8 @@ import domain.FixUpTask;
 import domain.HandyWorker;
 import domain.Note;
 import domain.Phase;
+import domain.Report;
+import domain.SocialProfile;
 import domain.Status;
 import domain.Tutorial;
 
@@ -37,72 +43,170 @@ public class HandyWorkerService {
 
 	// Supporting Services --------------------------------------------------------------------------------------------
 
-	//TODO Consultar quien tiene este Autowired
 	@Autowired
 	private TutorialService			tutorialService;
 	@Autowired
-	private FinderService			finderService;
-	@Autowired
-	private EndorserService			endorserService;
-	//TODO Consultar quien tiene este Autowired
+	private EndorsmentService		endorsmentService;
 	@Autowired
 	private CurriculumService		curriculumService;
 	@Autowired
+	private NoteService				noteService;
+	@Autowired
+	private ReportService			reportService;
+	@Autowired
+	private ActorService			actorService;
+	@Autowired
+	private PhaseService			phaseService;
+	@Autowired
 	private ApplicationService		applicationService;
 	@Autowired
-	private EndorsmentService		endorsmentService;
+	private FinderService			finderService;
+	@Autowired
+	private FixUpTaskService		fixUpTaskService;
 
 
 	// Simple CRUD methods --------------------------------------------------------------------------------------------
 
-	public HandyWorker createHandyWorker() {
+	public HandyWorker createHandyWorker(Endorser endorser) {
 
-		HandyWorker result = new HandyWorker();
-		List<Application> applications = new ArrayList<Application>();
-		List<Tutorial> tutorials = new ArrayList<Tutorial>();
-		Endorser a = EndorserService.createEndorser();
+		HandyWorker handyWorker = new HandyWorker();
+		handyWorker = (HandyWorker) this.actorService.createActor(endorser.getName(), endorser.getMiddleName(), endorser.getSurname(), endorser.getPhoto(), endorser.getEmail(), endorser.getPhoneNumber(), endorser.getAddress(), endorser.getUserAccount()
+			.getUsername(), endorser.getUserAccount().getPassword());
 
-		result.setAddress(a.getAddress());
-		result.setApplications(applications);
-		result.setBoxes(a.getBoxes());
-		result.setCurriculum(null);
-		result.setEmail(a.getEmail());
-		result.setEndorsments(a.getEndorsments());
-		result.setFinder(null);
-		result.setMake("make");
-		result.setMiddleName(a.getMiddleName());
-		result.setName(a.getName());
-		result.setPhoneNumber(a.getPhoneNumber());
-		result.setPhoto(a.getPhoto());
-		result.setScore(a.getScore());
-		result.setSocialProfiles(a.getSocialProfiles());
-		result.setSurname(a.getSurname());
-		result.setTutorials(tutorials);
+		handyWorker.setScore(endorser.getScore());
+		handyWorker.setMake(endorser.getName() + "" + endorser.getMiddleName() + "" + endorser.getSurname());
 
-		return result;
+		List<Authority> authorities = new ArrayList<Authority>();
+		handyWorker.getUserAccount().setAuthorities(authorities);
+
+		UserAccount userAccountAdmin = new UserAccount();
+		Authority authority = new Authority();
+		authority.setAuthority(Authority.HANDYWORKER);
+		authorities.add(authority);
+
+		return handyWorker;
 
 	}
 
 	public Collection<HandyWorker> findAll() {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		return this.handyWorkerRepository.findAll();
 	}
 
 	public HandyWorker findOne(int id) {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		return this.handyWorkerRepository.findOne(id);
 	}
 
 	public HandyWorker save(HandyWorker handyWorker) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		Assert.isTrue(handyWorker.getId() == 0 || userAccount.equals(handyWorker.getUserAccount()));
 		return this.handyWorkerRepository.save(handyWorker);
 	}
 
 	public void delete(HandyWorker handyWorker) {
-		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		Assert.isTrue(handyWorker.getId() == 0 || userAccount.equals(handyWorker.getUserAccount()));
+		this.curriculumService.delete(handyWorker.getCurriculum());
 		this.handyWorkerRepository.delete(handyWorker);
 	}
 
 	// Other business methods -------------------------------------------------------------------------------------------
+
+	//11.1 ------------------------------------------------------------------------------------------------------------------
+
+	public Collection<FixUpTask> showFixUpTasks() {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		return this.fixUpTaskService.findAll();
+	}
+
+	//TODO REVISAR
+
+	public Map<List<String>, Collection<FixUpTask>> getFixUpTaskPerCustomer(int idFixUpTask) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		Map<List<String>, Collection<FixUpTask>> res = new HashMap<List<String>, Collection<FixUpTask>>();
+
+		Customer customer = this.handyWorkerRepository.getCustomerByFixUpTask(idFixUpTask);
+
+		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
+		socialProfiles = customer.getSocialProfiles();
+
+		List<String> socialData = new ArrayList<String>();
+
+		for (SocialProfile s : socialProfiles)
+			socialData.add("Social Network nickname: " + s.getNick() + "\nSocial NetWork link: " + s.getProfileLink() + "\n");
+
+		List<String> personalData = new ArrayList<String>();
+		personalData.add("Full name of the customer: " + customer.getSurname() + "" + customer.getName() + "" + customer.getMiddleName() + ".\n" + "Email: " + customer.getEmail() + ".\n" + "Social Profiles: \n" + socialData);
+
+		res.put(personalData, customer.getFixUpTasks());
+
+		return res;
+
+	}
+	//11.2 ------------------------------------------------------------------------------------------------------------------
+
+	//TODO REVISAR
+	public Collection<FixUpTask> getFilterFixUpTasks(Finder finder) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+
+		Assert.isTrue(logguedHandyWorker.getFinder().getId() == finder.getId());
+
+		List<FixUpTask> result = new ArrayList<FixUpTask>();
+		result = this.fixUpTaskService.findAll();
+
+		Collection<FixUpTask> filter = new ArrayList<FixUpTask>();
+		filter = this.handyWorkerRepository.getFixUpTaskByKeyWord(finder.getKeyWord());
+		result.retainAll(filter);
+
+		if (finder.getCategory() != null) {
+			filter = this.handyWorkerRepository.getFixUpTaskByCategory(finder.getCategory());
+			result.retainAll(filter);
+		}
+		if (finder.getWarranty() != null) {
+			this.handyWorkerRepository.getFixUpTasksByWarranty(finder.getWarranty());
+			result.retainAll(filter);
+		}
+
+		filter = this.handyWorkerRepository.getFixUpTasksByMinPrice(finder.getMinPrice());
+		filter.retainAll(this.handyWorkerRepository.getFixUpTasksByMaxPrice(finder.getMaxPrice()));
+		result.retainAll(filter);
+
+		filter.clear();
+		for (FixUpTask f : result)
+			if ((finder.getStartDate().before(f.getRealizationTime()) || finder.getStartDate().equals(f.getRealizationTime())) && (finder.getEndDate().after(f.getRealizationTime()) || finder.getEndDate().equals(f.getRealizationTime())))
+				filter.add(f);
+
+		result.retainAll(filter);
+		Finder finderResult = new Finder();
+		finderResult = finder;
+		finderResult.setFixUpTasks(result);
+		this.finderService.save(finderResult);
+
+		return result;
+	}
+	//11.3 ------------------------------------------------------------------------------------------------------------------
 
 	public List<Application> showApplications() {
 		UserAccount userAccount;
@@ -118,63 +222,118 @@ public class HandyWorkerService {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-		//TODO Comprobar que el Assert es correcto
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
 		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
 
-		Application application = ApplicationService.createApplication();
+		Application application = this.applicationService.createApplication();
 
-		ApplicationService.updateApplication(application.getId(), comments, fixUpTask, logguedHandyWorker, offeredPrice, application.getStatus());
-		Assert.isTrue(ApplicationService.findOne(application.getId()).getHandyWorker().equals(logguedHandyWorker));
+		application = this.applicationService.updateApplication(application.getId(), comments, fixUpTask, logguedHandyWorker, offeredPrice, application.getStatus());
 
 		return application;
 	}
-	public Phase createPhaseForApplication(Application a) {
+
+	//11.4 ------------------------------------------------------------------------------------------------------------------
+	public Collection<Phase> showPhaseForHandyWorker(int idPhase) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+
+		Phase phase = new Phase();
+		phase = this.handyWorkerRepository.getPhaseById(idPhase);
+		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(userAccount.getId());
+		Assert.isTrue(phases.contains(phase));
+
+		return phases;
+	}
+
+	public void createPhaseForApplication(int applicationId, Phase newPhase) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-		//TODO Comprobar que el Assert es correcto
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		Assert.isTrue(a.getStatus().equals(Status.ACCEPTED));
+
 		HandyWorker logguedHandyWorker = new HandyWorker();
 		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
-		Assert.isTrue(a.getHandyWorker().equals(logguedHandyWorker));
 
-		Application application = ApplicationService.findOne(a.getId());
-		Phase phase = PhaseService.createPhase();
+		Application application = this.handyWorkerRepository.getApplicationById(applicationId);
+		Assert.isTrue(application.getHandyWorker().equals(logguedHandyWorker));
+		Assert.isTrue(application.getStatus().equals(Status.ACCEPTED));
+
 		Collection<Phase> newPhases = this.handyWorkerRepository.getPhasesByApplication(application.getId());
-		newPhases.add(phase);
+		newPhases.add(newPhase);
 
 		FixUpTask newFixUpTask = application.getFixUpTask();
 		Assert.notNull(newFixUpTask);
 		newFixUpTask.setPhases(newPhases);
 
-		FixUpTaskService.save(newFixUpTask);
+		this.fixUpTaskService.save(newFixUpTask);
 
-		return phase;
 	}
+
+	public void deletePhaseForApplication(int idPhase) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+
+		Phase phase = new Phase();
+		phase = this.handyWorkerRepository.getPhaseById(idPhase);
+		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(userAccount.getId());
+		Assert.isTrue(phases.contains(phase));
+
+		this.phaseService.delete(phase);
+	}
+
+	public void updatePhaseForHandyWorker(Phase phase) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+
+		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(userAccount.getId());
+		Assert.isTrue(phases.contains(phase));
+
+		this.phaseService.save(phase);
+	}
+	//REQUISITO FUNCIONAL 37 *******************************************************************************************************************
+
+	//37.1 --------------------------------------------------------------------------------------------------------------------------------------
 
 	public void updateFinderFromHandyWorker(Finder finder) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-		//TODO Comprobar que el Assert es correcto
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
-		Finder newFinder = new Finder();
-		newFinder = this.handyWorkerRepository.getFinderFromAHandyWorker(userAccount.getId());
-		newFinder.setCategory(finder.getCategory());
-		newFinder.setEndDate(finder.getEndDate());
-		newFinder.setKeyWord(finder.getKeyWord());
-		newFinder.setMaxPrice(finder.getMaxPrice());
-		newFinder.setMinPrice(finder.getMinPrice());
-		newFinder.setStartDate(finder.getStartDate());
-		newFinder.setWarranty(finder.getWarranty());
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
 
-		FinderService.save(newFinder);
+		Assert.isTrue(logguedHandyWorker.getFinder().getId() == finder.getId());
+
+		/*
+		 * Finder newFinder = new Finder();
+		 * newFinder = this.handyWorkerRepository.getFinderFromAHandyWorker(userAccount.getId());
+		 * newFinder.setCategory(finder.getCategory());
+		 * newFinder.setEndDate(finder.getEndDate());
+		 * newFinder.setKeyWord(finder.getKeyWord());
+		 * newFinder.setMaxPrice(finder.getMaxPrice());
+		 * newFinder.setMinPrice(finder.getMinPrice());
+		 * newFinder.setStartDate(finder.getStartDate());
+		 * newFinder.setWarranty(finder.getWarranty());
+		 */
+
+		this.finderService.save(finder);
 	}
 
+	//37.2 --------------------------------------------------------------------------------------------------------------------------------------
 	public List<FixUpTask> showFinderResult() {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -188,6 +347,7 @@ public class HandyWorkerService {
 		return resultFixUpTask;
 	}
 
+	//37.3 --------------------------------------------------------------------------------------------------------------------------------------
 	public List<Complaint> showComplaintsFromHandyWorker() {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -199,7 +359,8 @@ public class HandyWorkerService {
 		return complaints;
 	}
 
-	public void createNoteFromHandyWorker(int idComplaint, Note note) {
+	//37.4 --------------------------------------------------------------------------------------------------------------------------------------
+	public void createNoteFromHandyWorker(int idComplaint, Note note, int idReport) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -211,8 +372,63 @@ public class HandyWorkerService {
 		Assert.notNull(note.getMandatoryComment());
 		Assert.notNull(note.getMoment());
 
-		NoteService.save(note);
+		List<Complaint> complaints = new ArrayList<Complaint>();
+		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(userAccount.getId());
+		Complaint complaint = new Complaint();
+		complaint = this.handyWorkerRepository.getComplaintById(idComplaint);
+
+		Assert.isTrue(complaints.contains(complaint));
+
+		List<Report> reports = new ArrayList<Report>();
+		reports = complaint.getReports();
+		Report report = new Report();
+		report = this.handyWorkerRepository.getReportById(idReport);
+
+		Assert.isTrue(reports.contains(report));
+
+		this.noteService.save(note);
+
+		List<Notes> notes = new ArrayList<Notes>();
+		notes = report.getNotes();
+		notes.add(note);
+		report.setNotes(notes);
+
+		this.reportService.save(report);
+
 	}
+	//37.5 --------------------------------------------------------------------------------------------------------------------------------------
+	//TODO REVISAR
+	public void writeCommentFromHandyWorker(int idComplaint, String comment, int idReport, int idNote) {
+
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+
+		List<Complaint> complaints = new ArrayList<Complaint>();
+		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(userAccount.getId());
+		Complaint complaint = new Complaint();
+		complaint = this.handyWorkerRepository.getComplaintById(idComplaint);
+
+		Assert.isTrue(complaints.contains(complaint));
+
+		List<Report> reports = new ArrayList<Report>();
+		reports = complaint.getReports();
+		Report report = new Report();
+		report = this.handyWorkerRepository.getReportById(idReport);
+
+		Assert.isTrue(reports.contains(report));
+		Note note = new Note();
+		note = this.noteService.finOne(idNote);
+
+		Assert.isTrue(report.getNotes().contains(note));
+		note.getOptionalComments().add(comment);
+
+		this.noteService.save(note);
+
+	}
+	//REQUISITO FUNCIONAL 49--------------------------------------------------------------------------------------------------------------------
 
 	public List<Tutorial> showTutorials() {
 		UserAccount userAccount;
@@ -286,15 +502,22 @@ public class HandyWorkerService {
 		this.endorsmentService.save(endorsment);
 	}
 
-	public void createEndorsment(Endorsment newEndorsment) {
+	//TODO COMPROBAR
+	public void createEndorsment(Endorsment endorsment) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		Endorser logguedEndorser = new Endorser();
-		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
 
-		this.endorsmentService.save(newEndorsment);
+		Assert.isTrue(endorsment.getWrittenBy().getUserAccount().equals(userAccount));
+
+		Assert.isTrue(endorsment.getWrittenTo().getUserAccount().getAuthorities().contains("CUSTOMER"));
+		List<Integer> ids = new ArrayList<Integer>();
+		ids = this.handyWorkerRepository.getCustomersFromHandyWorker(userAccount.getId());
+
+		this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+
+		if (ids.contains(endorsment.getWrittenTo().getUserAccount().getId()))
+			this.endorsmentService.save(endorsment);
 
 	}
 
@@ -302,17 +525,12 @@ public class HandyWorkerService {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
+		this.handyWorkerRepository.getHandyWorkerById(userAccount.getId());
 
 		List<Endorsment> endorsments = new ArrayList<Endorsment>();
 
 		endorsments = this.handyWorkerRepository.getEndorsmentsByEndorser(userAccount.getId());
 
 		return endorsments;
-	}
-
-	public List<HandyWorker> findAll() {
-		return this.handyWorkerRepository.findAll();
 	}
 }
