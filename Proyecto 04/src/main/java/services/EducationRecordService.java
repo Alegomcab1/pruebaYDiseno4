@@ -26,7 +26,7 @@ public class EducationRecordService {
 
 	// Simple CRUD methods
 
-	public EducationRecord create(final EducationRecord educationRecord) {
+	public EducationRecord create(EducationRecord educationRecord) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -44,19 +44,19 @@ public class EducationRecordService {
 
 		return result;
 	}
-	public EducationRecord findOne(final Integer id) {
-		final EducationRecord result = this.educationRecordRepository.findOne(id);
+	public EducationRecord findOne(Integer id) {
+		EducationRecord result = this.educationRecordRepository.findOne(id);
 		return result;
 	}
 
-	public void save(final EducationRecord educationRecord) {
+	public void save(EducationRecord educationRecord) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.educationRecordRepository.save(educationRecord);
 	}
 
-	public void delete(final EducationRecord educationRecord) {
+	public void delete(EducationRecord educationRecord) {
 		this.educationRecordRepository.delete(educationRecord);
 	}
 }

@@ -26,7 +26,7 @@ public class PersonalRecordService {
 
 	// Simple CRUD methods
 
-	public PersonalRecord create(final PersonalRecord personalRecord) {
+	public PersonalRecord create(PersonalRecord personalRecord) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -44,19 +44,19 @@ public class PersonalRecordService {
 
 		return result;
 	}
-	public PersonalRecord findOne(final Integer id) {
-		final PersonalRecord result = this.personalRecordRepository.findOne(id);
+	public PersonalRecord findOne(Integer id) {
+		PersonalRecord result = this.personalRecordRepository.findOne(id);
 		return result;
 	}
 
-	public void save(final PersonalRecord personalRecord) {
+	public void save(PersonalRecord personalRecord) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.personalRecordRepository.save(personalRecord);
 	}
 
-	public void delete(final PersonalRecord personalRecord) {
+	public void delete(PersonalRecord personalRecord) {
 		this.personalRecordRepository.delete(personalRecord);
 	}
 

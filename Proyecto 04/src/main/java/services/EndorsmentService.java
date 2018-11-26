@@ -1,7 +1,6 @@
 
 package services;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -10,8 +9,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import repositories.EndorsmentRepository;
+import security.LoginService;
+import security.UserAccount;
 import domain.Endorser;
 import domain.Endorsment;
 
@@ -23,36 +25,40 @@ public class EndorsmentService {
 
 	@Autowired
 	private EndorsmentRepository	endorsmentRepository;
+	@Autowired
+	private ActorService			actorService;
 
 
 	// Supporting Services ------------------------------------------
 
 	// Simple CRUD methods ------------------------------------------
 
-	public Endorsment createEndorsment() {
-		Endorsment result = new Endorsment();
+	public Endorsment createEndorsment(Endorser writtenTo, List<String> comments) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Assert.isTrue(userAccount.getAuthorities().contains("ENDORSER"));
+
+		Endorser sender = (Endorser) this.actorService.getActorByUsername(userAccount.getUsername());
+
+		Endorsment endorsment = new Endorsment();
+
 		Date thisMoment = new Date();
-		List<String> comments = new ArrayList<String>();
-		Endorser writtenTo = EndorserService.createEndorser();
-		Endorser writtenBy = EndorserService.createEndorser();
+		thisMoment.setTime(thisMoment.getTime() - 1);
 
-		result.setComments(comments);
-		result.setMoment(thisMoment);
-		result.setWrittenBy(writtenBy);
-		result.setWrittenTo(writtenTo);
+		endorsment.setComments(comments);
+		endorsment.setMoment(thisMoment);
+		endorsment.setWrittenBy(sender);
+		endorsment.setWrittenTo(writtenTo);
 
-		return result;
+		return endorsment;
 
 	}
 
 	public Collection<Endorsment> findAll() {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
 		return this.endorsmentRepository.findAll();
 	}
 
 	public Endorsment findOne(int id) {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-		//TODO id en Endorsment?
 		return this.endorsmentRepository.findOne(id);
 	}
 
@@ -61,7 +67,6 @@ public class EndorsmentService {
 	}
 
 	public void delete(Endorsment endorsment) {
-		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
 		this.endorsmentRepository.delete(endorsment);
 	}
 

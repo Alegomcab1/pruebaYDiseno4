@@ -26,7 +26,7 @@ public class ProfessionalRecordService {
 
 	// Simple CRUD methods
 
-	public ProfessionalRecord create(final ProfessionalRecord professionalRecord) {
+	public ProfessionalRecord create(ProfessionalRecord professionalRecord) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -44,19 +44,19 @@ public class ProfessionalRecordService {
 
 		return result;
 	}
-	public ProfessionalRecord findOne(final Integer id) {
-		final ProfessionalRecord result = this.professionalRecordRepository.findOne(id);
+	public ProfessionalRecord findOne(Integer id) {
+		ProfessionalRecord result = this.professionalRecordRepository.findOne(id);
 		return result;
 	}
 
-	public void save(final ProfessionalRecord professionalRecord) {
+	public void save(ProfessionalRecord professionalRecord) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.professionalRecordRepository.save(professionalRecord);
 	}
 
-	public void delete(final ProfessionalRecord professionalRecord) {
+	public void delete(ProfessionalRecord professionalRecord) {
 		this.professionalRecordRepository.delete(professionalRecord);
 	}
 }

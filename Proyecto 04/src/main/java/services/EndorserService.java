@@ -1,8 +1,7 @@
+
 package services;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -10,68 +9,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import repositories.EndorserRepository;
-import domain.Actor;
 import domain.Endorser;
-import domain.Endorsment;
 
 @Service
 @Transactional
 public class EndorserService {
 
-    // Managed repository
-    // ---------------------------------------------------------------------------------------------------
+	// Managed repository ---------------------------------------------------------------------------------------------------
 
-    @Autowired
-    private EndorserRepository endorserRepository;
+	@Autowired
+	private EndorserRepository	endorserRepository;
 
-    // Supporting Services
-    // --------------------------------------------------------------------------------------------------
+	// Supporting Services --------------------------------------------------------------------------------------------------
+	@Autowired
+	private ActorService		actorService;
 
-    @Autowired
-    private EndorsmentService endorsmentService;
 
-    // TODO Discutir sobre los Autowired en cuanto a padres e hijos
-    @Autowired
-    private HandyWorkerService handyWorkerService;
-    @Autowired
-    private CustomerService customerService;
-    @Autowired
-    private ActorService actorService;
+	// Simple CRUD methods --------------------------------------------------------------------------------------------------
 
-    // Simple CRUD methods
-    // --------------------------------------------------------------------------------------------------
+	public Endorser createEndorser(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score) {
+		Endorser endorser = new Endorser();
+		endorser = (Endorser) this.actorService.createActor(name, middleName, surname, photo, email, phoneNumber, address, userName, password);
 
-    public Endorser createEndorser(Actor a) {
-	Endorser result = new Endorser();
-	List<Endorsment> endorsments = new ArrayList<Endorsment>();
-	result = (Endorser) this.actorService.createActor(a.getName(), a
-		.getMiddleName(), a.getSurname(), a.getPhoto(), a.getEmail(), a
-		.getPhoneNumber(), a.getAddress(), a.getUserAccount()
-		.getUsername(), a.getUserAccount().getPassword());
-	result.setEndorsments(endorsments);
-	result.setScore(0);
+		endorser.setScore(score);
 
-	return result;
+		return endorser;
 
-    }
+	}
 
-    public Collection<Endorser> findAll() {
-	// TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-	return this.endorserRepository.findAll();
-    }
+	public Collection<Endorser> findAll() {
+		return this.endorserRepository.findAll();
+	}
 
-    public Endorser findOne(int id) {
-	// TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-	return this.endorserRepository.findOne(id);
-    }
+	public Endorser findOne(int id) {
+		return this.endorserRepository.findOne(id);
+	}
 
-    public Endorser save(Endorser endorser) {
-	return this.endorserRepository.save(endorser);
-    }
+	public Endorser save(Endorser endorser) {
+		return this.endorserRepository.save(endorser);
+	}
 
-    public void delete(Endorser endorser) {
-	// TODO Bastante seguro de que esto solo lo deberia de poder hacer un
-	// ADMIN, además mirar si hay restricciones a la hora de eliminarlo
-	this.endorserRepository.delete(endorser);
-    }
+	public void delete(Endorser endorser) {
+		this.endorserRepository.delete(endorser);
+	}
 }

@@ -26,7 +26,7 @@ public class CurriculumService {
 
 	// Simple CRUD methods
 
-	public Curriculum create(final Curriculum curriculum) {
+	public Curriculum create(Curriculum curriculum) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -45,14 +45,14 @@ public class CurriculumService {
 		return result;
 	}
 
-	public Curriculum findOne(final Integer id) {
+	public Curriculum findOne(Integer id) {
 
-		final Curriculum result = this.curriculumRepository.findOne(id);
+		Curriculum result = this.curriculumRepository.findOne(id);
 		return result;
 
 	}
 
-	public void save(final Curriculum curriculum) {
+	public void save(Curriculum curriculum) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
@@ -60,7 +60,7 @@ public class CurriculumService {
 
 	}
 
-	public void delete(final Curriculum curriculum) {
+	public void delete(Curriculum curriculum) {
 		this.curriculumRepository.delete(curriculum);
 
 	}

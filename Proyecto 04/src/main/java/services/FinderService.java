@@ -1,7 +1,6 @@
 
 package services;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -22,59 +21,45 @@ public class FinderService {
 	// Managed repository ------------------------------------------
 
 	@Autowired
-	private static FinderRepository	finderRepository;
+	private FinderRepository	finderRepository;
+
 
 	// Supporting Services ------------------------------------------
 
-	//TODO Dejar claro si este Autowired va aqui o en FixUpTask
-	@Autowired
-	private FixUpTaskService		fixUpTaskService;
-
-
 	// Simple CRUD methods ------------------------------------------
 
-	public static Finder createFinder() {
+	public Finder createFinder(String keyWord, String category, String warranty, double minPrice, double maxPrice, Date startDate, Date endDate, List<FixUpTask> fixUpTasks) {
 
 		Finder result = new Finder();
 
-		//TODO Esto es por si se quiere que solo se tenga que pasar por parametro a keyWord inicializando lo demas para que el Filter use solo el keyWord
+		//TODO Esto es por si se quiere que solo se tenga que pasar por parametro a 
+		//keyWord inicializando lo demas para que el Filter use solo el keyWord
 
-		List<FixUpTask> fixUpTasks2 = new ArrayList<FixUpTask>();
+		result.setCategory(category);
+		result.setEndDate(endDate);
+		result.setFixUpTasks(fixUpTasks);
+		result.setKeyWord(keyWord);
+		result.setMaxPrice(maxPrice);
+		result.setMinPrice(minPrice);
+		result.setStartDate(startDate);
+		result.setWarranty(warranty);
 
-		@SuppressWarnings("deprecation")
-		Date startDate2 = new Date(1, 1, 1);
-
-		@SuppressWarnings("deprecation")
-		Date endDate2 = new Date(1000, 1, 1);
-
-		result.setCategory("");
-		result.setEndDate(endDate2);
-		result.setFixUpTasks(fixUpTasks2);
-		result.setKeyWord("keyWord");
-		result.setMaxPrice(999999999.99);
-		result.setMinPrice(0.0);
-		result.setStartDate(startDate2);
-		result.setWarranty("");
-
+		return result;
 	}
 
-	public static Collection<Finder> findAll() {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-		return FinderService.finderRepository.findAll();
+	public Collection<Finder> findAll() {
+		return this.finderRepository.findAll();
 	}
 
-	public static Finder findOne(int id) {
-		//TODO Es necesario un Assert por si esto solo lo puede hacer un Admin?
-		//TODO id en Finder?
-		return FinderService.finderRepository.findOne(id);
+	public Finder findOne(int id) {
+		return this.finderRepository.findOne(id);
 	}
 
-	public static Finder save(Finder finder) {
-		return FinderService.finderRepository.save(finder);
+	public Finder save(Finder finder) {
+		return this.finderRepository.save(finder);
 	}
 
-	public static void delete(Finder finder) {
-		//TODO Bastante seguro de que esto solo lo deberia de poder hacer un ADMIN, además mirar si hay restricciones a la hora de eliminarlo
-		FinderService.finderRepository.delete(finder);
+	public void delete(Finder finder) {
+		this.finderRepository.delete(finder);
 	}
 }

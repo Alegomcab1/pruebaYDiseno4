@@ -26,7 +26,7 @@ public class MiscellaneousRecordService {
 
 	// Simple CRUD methods
 
-	public MiscellaneousRecord create(final MiscellaneousRecord miscellaneousRecord) {
+	public MiscellaneousRecord create(MiscellaneousRecord miscellaneousRecord) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -44,19 +44,19 @@ public class MiscellaneousRecordService {
 
 		return result;
 	}
-	public MiscellaneousRecord findOne(final Integer id) {
-		final MiscellaneousRecord result = this.miscellaneousRecordRepository.findOne(id);
+	public MiscellaneousRecord findOne(Integer id) {
+		MiscellaneousRecord result = this.miscellaneousRecordRepository.findOne(id);
 		return result;
 	}
 
-	public void save(final MiscellaneousRecord niscellaneousRecord) {
+	public void save(MiscellaneousRecord niscellaneousRecord) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.miscellaneousRecordRepository.save(niscellaneousRecord);
 	}
 
-	public void delete(final MiscellaneousRecord miscellaneousRecord) {
+	public void delete(MiscellaneousRecord miscellaneousRecord) {
 		this.miscellaneousRecordRepository.delete(miscellaneousRecord);
 	}
 }
