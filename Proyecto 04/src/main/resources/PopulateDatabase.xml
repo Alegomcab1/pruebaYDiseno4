@@ -265,27 +265,8 @@
 				<value>AMEX</value>
 			</list>
 		</property>
-		<property name="goodWords">
-			<list>
-				<value>good</value>
-				<value>fantastic</value>
-				<value>excellent</value>
-				<value>great</value>
-				<value>amazing</value>
-				<value>terrific</value>
-				<value>beautiful</value>
-			</list>
-		</property>
-		<property name="badWords">
-			<list>
-				<value>not</value>
-				<value>bad</value>
-				<value>horrible</value>
-				<value>average</value>
-				<value>disaster</value>
-			</list>
-		</property>
-		
+		<property name="goodWords" value="good, fantastic, excellent, great, amazing, terrific, beautiful" />
+		<property name="badWords" value="not, bad, horrible, average, disaster" />
 		<property name="maxFinderResults" value="100"/>
 		<property name="minFinderResults" value="10" />
 		<property name="minTimeFinder" value="1" />

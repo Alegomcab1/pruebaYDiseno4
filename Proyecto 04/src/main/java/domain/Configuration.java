@@ -23,8 +23,8 @@ public class Configuration extends DomainEntity {
     private Integer minTimeFinder;
     private Integer maxTimeFinder;
 
-    private List<String> goodWords;
-    private List<String> badWords;
+    private String goodWords;
+    private String badWords;
 
     @NotNull
     public Integer getmaxFinderResults() {
@@ -98,21 +98,21 @@ public class Configuration extends DomainEntity {
 	this.spainTelephoneCode = spainTelephoneCode;
     }
 
-    @ElementCollection(targetClass = String.class)
-    public List<String> getGoodWords() {
+    @NotBlank
+    public String getGoodWords() {
 	return this.goodWords;
     }
 
-    public void setGoodWords(List<String> goodWords) {
+    public void setGoodWords(String goodWords) {
 	this.goodWords = goodWords;
     }
 
-    @ElementCollection(targetClass = String.class)
-    public List<String> getBadWords() {
+    @NotBlank
+    public String getBadWords() {
 	return this.badWords;
     }
 
-    public void setBadWords(List<String> badWords) {
+    public void setBadWords(String badWords) {
 	this.badWords = badWords;
     }
 
