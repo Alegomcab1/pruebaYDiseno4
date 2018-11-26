@@ -20,6 +20,7 @@ import security.LoginService;
 import security.UserAccount;
 import domain.Application;
 import domain.Complaint;
+import domain.CreditCard;
 import domain.Customer;
 import domain.Endorsment;
 import domain.Finder;
@@ -150,7 +151,7 @@ public class HandyWorkerService {
 
 	public Report showReport(Report report) {
 		HandyWorker loggedHandy = this.securityAndHandy();
-		Assert.isTrue(report.isFinalMode());
+		Assert.isTrue(report.getFinalMode());
 		return this.reportService.findOne(report.getId());
 	}
 
@@ -158,7 +159,7 @@ public class HandyWorkerService {
 		HandyWorker loggedHandy = this.securityAndHandy();
 		List<Report> lr = this.reportService.findAll();
 		for (Report report : lr)
-			Assert.isTrue(report.isFinalMode());
+			Assert.isTrue(report.getFinalMode());
 		return lr;
 	}
 
@@ -247,7 +248,7 @@ public class HandyWorkerService {
 		return listApplications;
 	}
 
-	public Application createApplicationHandyWorker(Integer offeredPrice, List<String> comments, FixUpTask fixUpTask) {
+	public Application createApplicationHandyWorker(Integer offeredPrice, List<String> comments, FixUpTask fixUpTask, CreditCard creditCard) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -255,7 +256,7 @@ public class HandyWorkerService {
 		HandyWorker logguedHandyWorker = new HandyWorker();
 		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
 
-		Application application = this.applicationService.createApplication();
+		Application application = this.applicationService.createApplication(offeredPrice, fixUpTask, logguedHandyWorker, creditCard);
 
 		//Revisar
 		application = this.applicationService.updateApplication(application.getId(), comments, fixUpTask, logguedHandyWorker, offeredPrice, application.getStatus());

@@ -19,7 +19,6 @@ import domain.Application;
 import domain.Category;
 import domain.Complaint;
 import domain.Customer;
-import domain.Endorser;
 import domain.Endorsment;
 import domain.FixUpTask;
 import domain.HandyWorker;
@@ -57,9 +56,9 @@ public class CustomerService {
 
 
 	// Simple CRUD methods
-	public Customer create(Endorser endorser) {
+	public Customer create(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score) {
 
-		Customer result = (Customer) this.endorserService.createEndorser(endorser);
+		Customer result = (Customer) this.endorserService.createEndorser(name, middleName, surname, photo, email, phoneNumber, address, userName, password, score);
 
 		return result;
 	}

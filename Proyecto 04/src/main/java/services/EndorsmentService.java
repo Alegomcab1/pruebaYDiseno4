@@ -33,7 +33,7 @@ public class EndorsmentService {
 
 	// Simple CRUD methods ------------------------------------------
 
-	public Endorsment createEndorsment(Endorser writtenTo, List<String> comments) {
+	public Endorsment createEndorsment(List<String> comments, Endorser writtenTo) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("ENDORSER"));

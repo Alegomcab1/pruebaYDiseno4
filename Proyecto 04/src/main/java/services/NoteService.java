@@ -36,7 +36,7 @@ public class NoteService {
 		return this.noteRepository.save(note);
 	}
 
-	public Note findeOne(int noteId) {
+	public Note findOne(int noteId) {
 		return this.noteRepository.findOne(noteId);
 	}
 

@@ -20,7 +20,7 @@ public class ReportService {
 	private ReportRepository	reportRepository;
 
 
-	public Report create(String description, List<String> attachments, boolean isFinalMode) {
+	public Report create(String description, List<String> attachments) {
 
 		Report report = new Report();
 		Date thisMoment = new Date();
@@ -28,7 +28,7 @@ public class ReportService {
 		report.setMoment(thisMoment);
 		report.setDescription(description);
 		report.setAttachments(attachments);
-		report.setFinalMode(isFinalMode);
+		report.setFinalMode(false);
 
 		return report;
 	}
