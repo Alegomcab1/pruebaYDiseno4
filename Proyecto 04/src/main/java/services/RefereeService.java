@@ -27,18 +27,20 @@ public class RefereeService {
 	// Managed repository ------------------------------------------
 
 	@Autowired
-	private RefereeRepository	refereeRepository;
+	private RefereeRepository		refereeRepository;
 
 	// Supporting Services ------------------------------------------
 
 	@Autowired
-	private ComplaintService	complaintService;
+	private ComplaintService		complaintService;
 	@Autowired
-	private NoteService			noteService;
+	private NoteService				noteService;
 	@Autowired
-	private ReportService		reportService;
+	private ReportService			reportService;
 	@Autowired
-	private ActorService		actorService;
+	private ActorService			actorService;
+	@Autowired
+	private ConfigurationService	configurationService;
 
 
 	//Aux
@@ -68,7 +70,6 @@ public class RefereeService {
 
 		return referee;
 	}
-
 	public Referee save(Referee referee) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -112,6 +113,7 @@ public class RefereeService {
 		Assert.notNull(comp);
 		complaint.setReferee(r);
 		this.complaintService.save(complaint);
+		this.configurationService.isActorSuspicious(loggedReferee);
 	}
 
 	public List<Complaint> selfAssignedComplaint(Referee r) {
@@ -125,6 +127,7 @@ public class RefereeService {
 		Assert.notNull(comp);
 		res.add(comp);
 		this.refereeRepository.save(r);
+		this.configurationService.isActorSuspicious(loggedReferee);
 		return res;
 	}
 
@@ -139,6 +142,7 @@ public class RefereeService {
 		Note note = this.noteService.create(mandatoryComment, optionalComments);
 		report.getNotes().add(note);
 		this.reportService.save(report);
+		this.configurationService.isActorSuspicious(loggedReferee);
 		return note;
 	}
 
@@ -152,6 +156,7 @@ public class RefereeService {
 		Assert.notNull(no);
 		note.getOptionalComments().add(comment);
 		this.noteService.save(note);
+		this.configurationService.isActorSuspicious(loggedReferee);
 		return note;
 	}
 
@@ -170,7 +175,23 @@ public class RefereeService {
 		this.complaintService.save(com);
 		this.refereeRepository.save(loggedReferee);
 		this.reportService.save(res);
+		this.configurationService.isActorSuspicious(loggedReferee);
 		return res;
+	}
+
+	public Report modifiedReport(Report report) {
+		Referee loggedReferee = this.securityAndReferee();
+		Assert.isTrue(!report.isFinalMode());
+		Report rp = this.reportService.save(report);
+		this.configurationService.isActorSuspicious(loggedReferee);
+		return rp;
+	}
+
+	public void eliminateReport(Report report) {
+		Referee loggedReferee = this.securityAndReferee();
+		Assert.isTrue(!report.isFinalMode());
+		this.reportService.delete(report);
+		this.configurationService.isActorSuspicious(loggedReferee);
 	}
 
 }
