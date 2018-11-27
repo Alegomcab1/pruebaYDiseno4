@@ -90,7 +90,7 @@ public class HandyWorkerService {
 		List<Authority> authorities = new ArrayList<Authority>();
 		handyWorker.getUserAccount().setAuthorities(authorities);
 
-		UserAccount userAccountAdmin = new UserAccount();
+		UserAccount userAccountHandyWorker = new UserAccount();
 		Authority authority = new Authority();
 		authority.setAuthority(Authority.HANDYWORKER);
 		authorities.add(authority);
@@ -142,7 +142,7 @@ public class HandyWorkerService {
 	private HandyWorker securityAndHandy() {
 		UserAccount userAccount = LoginService.getPrincipal();
 		String username = userAccount.getUsername();
-		HandyWorker loggedHandy = this.handyWorkerRepository.getHandyByUsername(username);
+		HandyWorker loggedHandy = this.handyWorkerRepository.findOne(userAccount.getId());
 
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
@@ -191,7 +191,6 @@ public class HandyWorkerService {
 	}
 	//11.2 ------------------------------------------------------------------------------------------------------------------
 
-	//TODO REVISAR
 	public Collection<FixUpTask> getFilterFixUpTasks() {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -210,25 +209,22 @@ public class HandyWorkerService {
 		filter = this.handyWorkerRepository.getFixUpTaskByKeyWord(finder.getKeyWord());
 		result.retainAll(filter);
 
-		if (finder.getCategory() != null) {
+		if (finder.getCategory() != "") {
 			filter = this.handyWorkerRepository.getFixUpTaskByCategory(finder.getCategory());
 			result.retainAll(filter);
 		}
-		if (finder.getWarranty() != null) {
-			this.handyWorkerRepository.getFixUpTasksByWarranty(finder.getWarranty());
+		if (finder.getWarranty() != "") {
+			filter = this.handyWorkerRepository.getFixUpTasksByWarranty(finder.getWarranty());
 			result.retainAll(filter);
 		}
-
-		filter = this.handyWorkerRepository.getFixUpTasksByMinPrice(finder.getMinPrice());
-		filter.retainAll(this.handyWorkerRepository.getFixUpTasksByMaxPrice(finder.getMaxPrice()));
+		Assert.isTrue(finder.getMinPrice() < finder.getMaxPrice());
+		filter = this.handyWorkerRepository.getFixUpTasksByPrice(finder.getId());
 		result.retainAll(filter);
 
-		filter.clear();
-		for (FixUpTask f : result)
-			if ((finder.getStartDate().before(f.getRealizationTime()) || finder.getStartDate().equals(f.getRealizationTime())) && (finder.getEndDate().after(f.getRealizationTime()) || finder.getEndDate().equals(f.getRealizationTime())))
-				filter.add(f);
-
+		Assert.isTrue(finder.getStartDate().before(finder.getEndDate()));
+		filter = this.handyWorkerRepository.getFixUpTasksByDate(finder.getId());
 		result.retainAll(filter);
+
 		Finder finderResult = new Finder();
 		finderResult = finder;
 		finderResult.setFixUpTasks(result);
@@ -259,8 +255,8 @@ public class HandyWorkerService {
 		Application application = this.applicationService.createApplication(offeredPrice, fixUpTask, logguedHandyWorker, creditCard);
 
 		//Revisar
-		application = this.applicationService.updateApplication(application.getId(), comments, fixUpTask, logguedHandyWorker, offeredPrice, application.getStatus());
-
+		//application = this.applicationService.updateApplication(application.getId(), comments, fixUpTask, logguedHandyWorker, offeredPrice, application.getStatus());
+		application.setComments(comments);
 		return application;
 	}
 
@@ -360,7 +356,7 @@ public class HandyWorkerService {
 		Finder finder = new Finder();
 
 		finder = this.handyWorkerRepository.getFinderFromAHandyWorker(userAccount.getId());
-		resultFixUpTask = this.handyWorkerRepository.getResultFinder(finder.getId());
+		resultFixUpTask = finder.getFixUpTasks();
 		return resultFixUpTask;
 	}
 
