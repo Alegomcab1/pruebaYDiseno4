@@ -23,15 +23,26 @@ public class PersonalRecordService {
 	@Autowired
 	private PersonalRecordRepository	personalRecordRepository;
 
+	@Autowired
+	private HandyWorkerService			handyWorkerService;
+	@Autowired
+	private CurriculumService			curriculumService;
+
 
 	// Simple CRUD methods
 
-	public PersonalRecord create(PersonalRecord personalRecord) {
+	public PersonalRecord create(String fullName, String photo, String email, String phoneNumber, String urlLinkedInProfile) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.personalRecordRepository.save(personalRecord);
+
+		PersonalRecord personalRecord = new PersonalRecord();
+		personalRecord.setFullName(fullName);
+		personalRecord.setPhoto(photo);
+		personalRecord.setEmail(email);
+		personalRecord.setPhoneNumber(phoneNumber);
+		personalRecord.setUrlLinkedInProfile(urlLinkedInProfile);
 
 		return personalRecord;
 

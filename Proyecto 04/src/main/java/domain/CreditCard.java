@@ -4,7 +4,6 @@ package domain;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -34,7 +33,7 @@ public class CreditCard {
 		this.holderName = holderName;
 	}
 
-	@Valid
+	@NotBlank
 	public String getBrandName() {
 		return this.brandName;
 	}

@@ -2,6 +2,8 @@
 package services;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -23,15 +25,26 @@ public class EducationRecordService {
 	@Autowired
 	private EducationRecordRepository	educationRecordRepository;
 
+	@Autowired
+	private HandyWorkerService			handyWorkerService;
+	@Autowired
+	private CurriculumService			curriculumService;
+
 
 	// Simple CRUD methods
 
-	public EducationRecord create(EducationRecord educationRecord) {
+	public EducationRecord create(String title, Date startDateStudy, Date endDateStudy, String institution, String link, List<String> comments) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.educationRecordRepository.save(educationRecord);
+		EducationRecord educationRecord = new EducationRecord();
+		educationRecord.setTitle(title);
+		educationRecord.setStartDateStudy(startDateStudy);
+		educationRecord.setEndDateStudy(endDateStudy);
+		educationRecord.setInstitution(institution);
+		educationRecord.setUrl(link);
+		educationRecord.setComments(comments);
 
 		return educationRecord;
 

@@ -94,5 +94,4 @@ public class ApplicationService {
 	public void delete(Application application) {
 		this.applicationRepository.delete(application);
 	}
-
 }

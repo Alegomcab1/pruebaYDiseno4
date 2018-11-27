@@ -2,6 +2,7 @@
 package services;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -23,15 +24,26 @@ public class EndorserRecordService {
 	@Autowired
 	private EndorserRecordRepository	endorserRecordRepository;
 
+	@Autowired
+	private HandyWorkerService			handyWorkerService;
+	@Autowired
+	private CurriculumService			curriculumService;
+
 
 	// Simple CRUD methods
 
-	public EndorserRecord create(EndorserRecord endorserRecord) {
+	public EndorserRecord create(String fullName, String email, String phoneNumber, String linkLinkedInProfile, List<String> comments) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.endorserRecordRepository.save(endorserRecord);
+
+		EndorserRecord endorserRecord = new EndorserRecord();
+		endorserRecord.setFullName(fullName);
+		endorserRecord.setEmail(email);
+		endorserRecord.setPhoneNumber(phoneNumber);
+		endorserRecord.setLinkLinkedInProfile(linkLinkedInProfile);
+		endorserRecord.setComments(comments);
 
 		return endorserRecord;
 

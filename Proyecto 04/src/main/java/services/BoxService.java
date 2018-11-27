@@ -15,8 +15,8 @@ import domain.Actor;
 import domain.Box;
 import domain.Message;
 
-@Service
 @Transactional
+@Service
 public class BoxService {
 
 	@Autowired

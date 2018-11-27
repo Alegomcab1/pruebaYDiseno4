@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -13,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -29,6 +31,8 @@ public class Complaint extends DomainEntity {
 	private Referee			referee;
 
 
+	@Pattern(regexp = "[0-9]{2}[0-1]{1}[0-2]{1}[0-9]{2}(_[A-Za-z0-9]{6})")
+	@Column(unique = true)
 	@NotBlank
 	public String getTicker() {
 		return this.ticker;

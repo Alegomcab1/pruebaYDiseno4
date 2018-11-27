@@ -2,6 +2,7 @@
 package services;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -23,20 +24,28 @@ public class MiscellaneousRecordService {
 	@Autowired
 	private MiscellaneousRecordRepository	miscellaneousRecordRepository;
 
+	@Autowired
+	private HandyWorkerService				handyWorkerService;
+	@Autowired
+	private CurriculumService				curriculumService;
+
 
 	// Simple CRUD methods
 
-	public MiscellaneousRecord create(MiscellaneousRecord miscellaneousRecord) {
+	public MiscellaneousRecord create(String title, String linkAttachment, List<String> comments) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.miscellaneousRecordRepository.save(miscellaneousRecord);
+
+		MiscellaneousRecord miscellaneousRecord = new MiscellaneousRecord();
+		miscellaneousRecord.setTitle(title);
+		miscellaneousRecord.setLinkAttachment(linkAttachment);
+		miscellaneousRecord.setComments(comments);
 
 		return miscellaneousRecord;
 
 	}
-
 	public Collection<MiscellaneousRecord> findAll() {
 		Collection<MiscellaneousRecord> result;
 

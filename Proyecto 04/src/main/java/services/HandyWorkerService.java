@@ -21,6 +21,7 @@ import security.UserAccount;
 import domain.Application;
 import domain.Complaint;
 import domain.CreditCard;
+import domain.Curriculum;
 import domain.Customer;
 import domain.Endorsment;
 import domain.Finder;
@@ -71,7 +72,7 @@ public class HandyWorkerService {
 
 	// Simple CRUD methods --------------------------------------------------------------------------------------------
 
-	public HandyWorker createHandyWorker(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score) {
+	public HandyWorker createHandyWorker(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score, List<Tutorial> tutorials, Curriculum curriculum) {
 
 		HandyWorker handyWorker = new HandyWorker();
 		handyWorker = (HandyWorker) this.endorserSevice.createEndorser(name, middleName, surname, photo, email, phoneNumber, address, userName, password, score);
@@ -85,6 +86,8 @@ public class HandyWorkerService {
 		thisMoment.setTime(thisMoment.getTime() + 1);
 		Finder finder = this.finderService.createFinder("finder", "", "", 0.0, 0.0, thisMoment, afterMoment, f);
 		handyWorker.setFinder(finder);
+		handyWorker.setCurriculum(curriculum);
+		handyWorker.setTutorials(tutorials);
 
 		List<Authority> authorities = new ArrayList<Authority>();
 		handyWorker.getUserAccount().setAuthorities(authorities);
