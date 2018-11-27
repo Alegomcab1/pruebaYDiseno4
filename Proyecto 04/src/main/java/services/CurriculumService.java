@@ -13,6 +13,7 @@ import repositories.CurriculumRepository;
 import security.LoginService;
 import security.UserAccount;
 import domain.Curriculum;
+import domain.HandyWorker;
 
 @Service
 @Transactional
@@ -23,15 +24,24 @@ public class CurriculumService {
 	@Autowired
 	private CurriculumRepository	curriculumRepository;
 
+	@Autowired
+	private HandyWorkerService		handyWorkerService;
+
 
 	// Simple CRUD methods
 
-	public Curriculum create(Curriculum curriculum) {
+	public Curriculum create(String ticker) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.curriculumRepository.save(curriculum);
+
+		Curriculum curriculum = new Curriculum();
+		curriculum.setTicker(ticker);
+
+		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
+		logguedHandyWorker.setCurriculum(curriculum);
+		this.handyWorkerService.save(logguedHandyWorker);
 
 		return curriculum;
 
