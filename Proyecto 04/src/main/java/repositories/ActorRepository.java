@@ -22,7 +22,7 @@ public interface ActorRepository extends JpaRepository<Actor, Integer> {
 	// Un sponsor debe: ver el catalogo de tutoriales, Los actores deben de poder ver los profile de los
 	// Handy workers, incluyendo su personal data y una lista de tutoriales que hayan escrito
 
-	@Query("select a from Actor join a.userAccount b where b.userName = ?1")
+	@Query("select a from Actor a join a.userAccount b where b.username = ?1")
 	public Actor getActorByUserName(String a);
 
 	@Query("select c.boxes from Actor c where c = ?1")

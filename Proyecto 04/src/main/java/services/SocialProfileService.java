@@ -3,11 +3,16 @@ package services;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import repositories.SocialProfileRepository;
 import domain.SocialProfile;
 
+@Service
+@Transactional
 public class SocialProfileService {
 
 	@Autowired
@@ -28,8 +33,12 @@ public class SocialProfileService {
 		return socialProfile;
 	}
 
-	public List<SocialProfile> socialProfiles() {
+	public List<SocialProfile> findAll() {
 		return this.socialProfileRepository.findAll();
+	}
+
+	public SocialProfile findOne(int socialProfileId) {
+		return this.socialProfileRepository.findOne(socialProfileId);
 	}
 
 	public void delete(SocialProfile socialProfile) {
