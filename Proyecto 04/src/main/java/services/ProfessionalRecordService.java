@@ -72,4 +72,8 @@ public class ProfessionalRecordService {
 	public void delete(ProfessionalRecord professionalRecord) {
 		this.professionalRecordRepository.delete(professionalRecord);
 	}
+
+	public void deleteAll(List<ProfessionalRecord> professionalRecords) {
+		this.professionalRecordRepository.deleteInBatch(professionalRecords);
+	}
 }

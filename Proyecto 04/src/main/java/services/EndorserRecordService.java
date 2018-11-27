@@ -72,4 +72,8 @@ public class EndorserRecordService {
 		this.endorserRecordRepository.delete(endorserRecord);
 	}
 
+	public void deleteAll(List<EndorserRecord> endorserRecord) {
+		this.endorserRecordRepository.deleteInBatch(endorserRecord);
+	}
+
 }

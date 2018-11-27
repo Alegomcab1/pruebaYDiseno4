@@ -32,10 +32,27 @@ public class CurriculumService {
 	// Manged Repository
 
 	@Autowired
-	private CurriculumRepository	curriculumRepository;
+	private CurriculumRepository		curriculumRepository;
+
+	// Supporting service
 
 	@Autowired
-	private HandyWorkerService		handyWorkerService;
+	private EndorserRecordService		endorserRecordService;
+
+	@Autowired
+	private MiscellaneousRecordService	miscellandeousRecordService;
+
+	@Autowired
+	private EducationRecordService		educationalRecordService;
+
+	@Autowired
+	private ProfessionalRecordService	profesionalRecordService;
+
+	@Autowired
+	private PersonalRecordService		personalRecordService;
+
+	@Autowired
+	private HandyWorkerService			handyWorkerService;
 
 
 	// Simple CRUD methods
@@ -105,26 +122,13 @@ public class CurriculumService {
 	}
 
 	public void delete(Curriculum curriculum) {
+		this.educationalRecordService.deleteAll(curriculum.getEducationRecords());
+		this.endorserRecordService.deleteAll(curriculum.getEndorserRecords());
+		this.miscellandeousRecordService.deleteAll(curriculum.getMiscellaneousRecords());
+		this.profesionalRecordService.deleteAll(curriculum.getProfessionalRecords());
+		this.personalRecordService.delete(curriculum.getPersonalRecord());
 		this.curriculumRepository.delete(curriculum);
 
 	}
-
-
-	// Supporting service
-
-	@Autowired
-	private EndorserRecordService		endorserRecordService;
-
-	@Autowired
-	private MiscellaneousRecordService	miscellandeousRecordService;
-
-	@Autowired
-	private EducationRecordService		educationalRecordService;
-
-	@Autowired
-	private ProfessionalRecordService	profesionalRecordService;
-
-	@Autowired
-	private PersonalRecordService		personalRecordService;
 
 }
