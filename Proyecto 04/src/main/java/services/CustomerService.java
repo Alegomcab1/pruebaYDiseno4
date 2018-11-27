@@ -79,6 +79,10 @@ public class CustomerService {
 		this.customerRepository.delete(customer);
 	}
 
+	public Customer getCustomerByUserName(String username) {
+		return this.customerRepository.getCustomerByUsername(username);
+	}
+
 	//Auxiliar methods
 	private Customer securityAndCustomer() {
 		UserAccount userAccount = LoginService.getPrincipal();

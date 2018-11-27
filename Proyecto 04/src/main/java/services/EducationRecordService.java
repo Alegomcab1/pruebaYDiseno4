@@ -72,4 +72,8 @@ public class EducationRecordService {
 	public void delete(EducationRecord educationRecord) {
 		this.educationRecordRepository.delete(educationRecord);
 	}
+
+	public void deleteAll(List<EducationRecord> educationRecord) {
+		this.educationRecordRepository.deleteInBatch(educationRecord);
+	}
 }

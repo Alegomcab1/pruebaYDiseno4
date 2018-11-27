@@ -68,4 +68,8 @@ public class MiscellaneousRecordService {
 	public void delete(MiscellaneousRecord miscellaneousRecord) {
 		this.miscellaneousRecordRepository.delete(miscellaneousRecord);
 	}
+
+	public void deleteAll(List<MiscellaneousRecord> miscellaneousRecord) {
+		this.miscellaneousRecordRepository.deleteInBatch(miscellaneousRecord);
+	}
 }
