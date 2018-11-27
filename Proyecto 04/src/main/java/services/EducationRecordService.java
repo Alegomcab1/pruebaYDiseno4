@@ -14,9 +14,7 @@ import org.springframework.util.Assert;
 import repositories.EducationRecordRepository;
 import security.LoginService;
 import security.UserAccount;
-import domain.Curriculum;
 import domain.EducationRecord;
-import domain.HandyWorker;
 
 @Service
 @Transactional
@@ -47,13 +45,6 @@ public class EducationRecordService {
 		educationRecord.setInstitution(institution);
 		educationRecord.setUrl(link);
 		educationRecord.setComments(comments);
-
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		Curriculum newCurriculum = logguedHandyWorker.getCurriculum();
-		List<EducationRecord> newEducationRecord = newCurriculum.getEducationRecords();
-		newEducationRecord.add(educationRecord);
-		newCurriculum.setEducationRecords(newEducationRecord);
-		this.curriculumService.save(newCurriculum);
 
 		return educationRecord;
 

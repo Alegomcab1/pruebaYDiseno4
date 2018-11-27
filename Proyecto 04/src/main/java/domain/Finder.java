@@ -13,10 +13,7 @@ import javax.persistence.TemporalType;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-
-import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -33,7 +30,7 @@ public class Finder extends DomainEntity {
 	private List<FixUpTask>	fixUpTasks;
 
 
-	@NotBlank
+	@Valid
 	public String getKeyWord() {
 		return this.keyWord;
 	}
@@ -51,7 +48,7 @@ public class Finder extends DomainEntity {
 		this.fixUpTasks = fixUpTasks;
 	}
 
-	@NotNull
+	@Valid
 	public String getCategory() {
 		return this.category;
 	}
@@ -60,7 +57,7 @@ public class Finder extends DomainEntity {
 		this.category = category;
 	}
 
-	@NotNull
+	@Valid
 	public String getWarranty() {
 		return this.warranty;
 	}
@@ -69,7 +66,7 @@ public class Finder extends DomainEntity {
 		this.warranty = warranty;
 	}
 
-	@NotNull
+	@Valid
 	@Min(0)
 	@Digits(fraction = 2, integer = 9)
 	public double getMinPrice() {
@@ -80,7 +77,7 @@ public class Finder extends DomainEntity {
 		this.minPrice = minPrice;
 	}
 
-	@NotNull
+	@Valid
 	@Digits(fraction = 2, integer = 9)
 	public double getMaxPrice() {
 		return this.maxPrice;
@@ -92,7 +89,7 @@ public class Finder extends DomainEntity {
 	}
 
 	@Past
-	@NotNull
+	@Valid
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getStartDate() {
 		return this.startDate;
@@ -102,7 +99,7 @@ public class Finder extends DomainEntity {
 		this.startDate = startDate;
 	}
 	@Temporal(TemporalType.TIMESTAMP)
-	@NotNull
+	@Valid
 	public Date getEndDate() {
 		return this.endDate;
 	}

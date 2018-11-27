@@ -14,8 +14,6 @@ import org.springframework.util.Assert;
 import repositories.ProfessionalRecordRepository;
 import security.LoginService;
 import security.UserAccount;
-import domain.Curriculum;
-import domain.HandyWorker;
 import domain.ProfessionalRecord;
 
 @Service
@@ -47,13 +45,6 @@ public class ProfessionalRecordService {
 		professionalRecord.setRole(role);
 		professionalRecord.setLinkAttachment(linkAttachment);
 		professionalRecord.setComments(comments);
-
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		Curriculum newCurriculum = logguedHandyWorker.getCurriculum();
-		List<ProfessionalRecord> newProfessionalRecord = newCurriculum.getProfessionalRecords();
-		newProfessionalRecord.add(professionalRecord);
-		newCurriculum.setProfessionalRecords(newProfessionalRecord);
-		this.curriculumService.save(newCurriculum);
 
 		return professionalRecord;
 

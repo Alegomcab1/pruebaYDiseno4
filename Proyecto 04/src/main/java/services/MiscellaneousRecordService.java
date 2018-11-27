@@ -13,8 +13,6 @@ import org.springframework.util.Assert;
 import repositories.MiscellaneousRecordRepository;
 import security.LoginService;
 import security.UserAccount;
-import domain.Curriculum;
-import domain.HandyWorker;
 import domain.MiscellaneousRecord;
 
 @Service
@@ -44,13 +42,6 @@ public class MiscellaneousRecordService {
 		miscellaneousRecord.setTitle(title);
 		miscellaneousRecord.setLinkAttachment(linkAttachment);
 		miscellaneousRecord.setComments(comments);
-
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		Curriculum newCurriculum = logguedHandyWorker.getCurriculum();
-		List<MiscellaneousRecord> newMiscellaneousRecord = newCurriculum.getMiscellaneousRecords();
-		newMiscellaneousRecord.add(miscellaneousRecord);
-		newCurriculum.setMiscellaneousRecords(newMiscellaneousRecord);
-		this.curriculumService.save(newCurriculum);
 
 		return miscellaneousRecord;
 

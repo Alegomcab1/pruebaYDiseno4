@@ -1,11 +1,15 @@
 
 package services;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -13,10 +17,10 @@ import org.springframework.util.Assert;
 import repositories.CurriculumRepository;
 import security.LoginService;
 import security.UserAccount;
+import utilities.RandomString;
 import domain.Curriculum;
 import domain.EducationRecord;
 import domain.EndorserRecord;
-import domain.HandyWorker;
 import domain.MiscellaneousRecord;
 import domain.PersonalRecord;
 import domain.ProfessionalRecord;
@@ -36,26 +40,45 @@ public class CurriculumService {
 
 	// Simple CRUD methods
 
-	public Curriculum create(String ticker, List<EndorserRecord> endorserRecords, List<MiscellaneousRecord> miscellaneousRecords, List<EducationRecord> educationRecords, List<ProfessionalRecord> professionalRecords, PersonalRecord personalRecord) {
+	public Curriculum create(List<EndorserRecord> endorserRecords, List<MiscellaneousRecord> miscellaneousRecords, List<EducationRecord> educationRecords, List<ProfessionalRecord> professionalRecords, PersonalRecord personalRecord) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		Curriculum curriculum = new Curriculum();
-		curriculum.setTicker(ticker);
+		curriculum.setTicker(this.generateTicker());
 		curriculum.setEndorserRecords(endorserRecords);
 		curriculum.setMiscellaneousRecords(miscellaneousRecords);
 		curriculum.setEducationRecords(educationRecords);
 		curriculum.setPersonalRecord(personalRecord);
 		curriculum.setProfessionalRecords(professionalRecords);
 
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		logguedHandyWorker.setCurriculum(curriculum);
-		this.handyWorkerService.save(logguedHandyWorker);
-
 		return curriculum;
 
+	}
+
+	//Método auxiliar para generar el ticker-------------------------------
+	private String generateTicker() {
+		String res = "";
+		Date date = null;
+		String date1;
+		String date2 = LocalDate.now().toString();
+		String gen = new RandomString(6).nextString();
+		List<Curriculum> lc = this.curriculumRepository.findAll();
+		SimpleDateFormat df_in = new SimpleDateFormat("yyMMdd");
+		SimpleDateFormat df_output = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			date = df_output.parse(date2);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		date1 = df_in.format(date);
+		res = res + date1 + "-" + gen;
+		for (Curriculum c : lc)
+			if (c.getTicker() == res)
+				return this.generateTicker();
+		return res;
 	}
 
 	public Collection<Curriculum> findAll() {
