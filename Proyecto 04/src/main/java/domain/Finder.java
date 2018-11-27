@@ -13,7 +13,6 @@ import javax.persistence.TemporalType;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Past;
 
 @Entity
 @Access(AccessType.PROPERTY)
@@ -22,8 +21,8 @@ public class Finder extends DomainEntity {
 	private String			keyWord;
 	private String			category;
 	private String			warranty;
-	private double			minPrice;
-	private double			maxPrice;
+	private Double			minPrice;
+	private Double			maxPrice;
 	private Date			startDate;
 	private Date			endDate;
 
@@ -69,26 +68,25 @@ public class Finder extends DomainEntity {
 	@Valid
 	@Min(0)
 	@Digits(fraction = 2, integer = 9)
-	public double getMinPrice() {
+	public Double getMinPrice() {
 		return this.minPrice;
 	}
 
-	public void setMinPrice(double minPrice) {
+	public void setMinPrice(Double minPrice) {
 		this.minPrice = minPrice;
 	}
 
 	@Valid
 	@Digits(fraction = 2, integer = 9)
-	public double getMaxPrice() {
+	public Double getMaxPrice() {
 		return this.maxPrice;
 	}
 
-	public void setMaxPrice(double maxPrice) {
+	public void setMaxPrice(Double maxPrice) {
 		if (maxPrice >= this.minPrice)
 			this.maxPrice = maxPrice;
 	}
 
-	@Past
 	@Valid
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getStartDate() {

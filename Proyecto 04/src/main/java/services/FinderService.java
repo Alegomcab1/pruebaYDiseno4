@@ -28,7 +28,7 @@ public class FinderService {
 
 	// Simple CRUD methods ------------------------------------------
 
-	public Finder createFinder(String keyWord, String category, String warranty, double minPrice, double maxPrice, Date startDate, Date endDate, List<FixUpTask> fixUpTasks) {
+	public Finder createFinder(String keyWord, String category, String warranty, Double minPrice, Double maxPrice, Date startDate, Date endDate, List<FixUpTask> fixUpTasks) {
 
 		Finder result = new Finder();
 
