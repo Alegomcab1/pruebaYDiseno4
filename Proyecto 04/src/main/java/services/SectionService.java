@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.ArrayList;
@@ -8,43 +9,45 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import repositories.SectionRepository;
 import domain.Section;
 
 @Service
 @Transactional
 public class SectionService {
 
-    @Autowired
-    private SectionService sectionService;
+	@Autowired
+	private SectionRepository	sectionRepository;
 
-    public Section create(String title, String text, Integer number) {
-	Section section = new Section();
-	List<String> pictures = new ArrayList<String>();
 
-	section.setSectionTitle(title);
-	section.setText(text);
-	section.setSectionPictures(pictures);
+	public Section create(String title, String text, Integer number) {
+		Section section = new Section();
+		List<String> pictures = new ArrayList<String>();
 
-	return section;
-    }
+		section.setSectionTitle(title);
+		section.setText(text);
+		section.setSectionPictures(pictures);
 
-    public Section save(Section s) {
+		return section;
+	}
 
-	return this.sectionService.save(s);
-    }
+	public Section save(Section s) {
 
-    public List<Section> findAll() {
+		return this.sectionRepository.save(s);
+	}
 
-	return this.sectionService.findAll();
-    }
+	public List<Section> findAll() {
 
-    public Section findOne(Integer id) {
+		return this.sectionRepository.findAll();
+	}
 
-	return this.sectionService.findOne(id);
-    }
+	public Section findOne(Integer id) {
 
-    public void delete(Section s) {
-	this.sectionService.delete(s);
-    }
+		return this.sectionRepository.findOne(id);
+	}
+
+	public void delete(Section s) {
+		this.sectionRepository.delete(s);
+	}
 
 }

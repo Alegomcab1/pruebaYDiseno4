@@ -1,9 +1,13 @@
+
 package services;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import repositories.BoxRepository;
@@ -11,68 +15,71 @@ import domain.Actor;
 import domain.Box;
 import domain.Message;
 
+@Transactional
+@Service
 public class BoxService {
 
-    @Autowired
-    private BoxRepository boxRepository;
+	@Autowired
+	private BoxRepository	boxRepository;
 
-    @Autowired
-    private MessageService messageService;
+	@Autowired
+	private MessageService	messageService;
 
-    public Box create(String name, Box fatherBox) {
 
-	Box box = new Box();
-	List<Message> messages = new ArrayList<Message>();
-	box.setName(name);
-	box.setIsSystem(false);
-	box.setMessages(messages);
-	box.setFatherBox(fatherBox);
+	public Box create(String name, Box fatherBox) {
 
-	return box;
-    }
+		Box box = new Box();
+		List<Message> messages = new ArrayList<Message>();
+		box.setName(name);
+		box.setIsSystem(false);
+		box.setMessages(messages);
+		box.setFatherBox(fatherBox);
 
-    public Box save(Box box) {
-	Assert.isTrue(!box.getIsSystem());
-	return this.boxRepository.save(box);
-    }
+		return box;
+	}
 
-    public Box updateBox(Box box) {
-	Assert.isTrue(!box.getIsSystem());
-	return this.save(box);
-    }
+	public Box save(Box box) {
+		Assert.isTrue(!box.getIsSystem());
+		return this.boxRepository.save(box);
+	}
 
-    public void deleteBox(Box box) {
-	Assert.isTrue(!box.getIsSystem());
-	List<Box> sonBoxes = this.boxRepository.getSonsBox(box);
-	if (sonBoxes.size() == 0) {
-	    for (Message m : box.getMessages())
-		this.messageService.delete(m);
-	    this.boxRepository.delete(box);
-	} else
-	    for (Box sonBox : sonBoxes)
-		this.deleteBox(sonBox);
-	this.deleteBox(box);
-    }
+	public Box updateBox(Box box) {
+		Assert.isTrue(!box.getIsSystem());
+		return this.save(box);
+	}
 
-    public List<Box> findAll() {
-	return this.boxRepository.findAll();
-    }
+	public void deleteBox(Box box) {
+		Assert.isTrue(!box.getIsSystem());
+		List<Box> sonBoxes = this.boxRepository.getSonsBox(box);
+		if (sonBoxes.size() == 0) {
+			for (Message m : box.getMessages())
+				this.messageService.delete(m);
+			this.boxRepository.delete(box);
+		} else
+			for (Box sonBox : sonBoxes)
+				this.deleteBox(sonBox);
+		this.deleteBox(box);
+	}
 
-    public Box getRecievedBoxByActor(Actor a) {
-	return this.boxRepository.getRecievedBoxByActor(a);
-    }
+	public List<Box> findAll() {
+		return this.boxRepository.findAll();
+	}
 
-    public Box getSpamBoxByActor(Actor a) {
-	return this.boxRepository.getSpamBoxByActor(a);
-    }
+	public Box getRecievedBoxByActor(Actor a) {
+		return this.boxRepository.getRecievedBoxByActor(a);
+	}
 
-    public Box getTrashBoxByActor(Actor a) {
-	return this.boxRepository.getTrashBoxByActor(a);
-    }
+	public Box getSpamBoxByActor(Actor a) {
+		return this.boxRepository.getSpamBoxByActor(a);
+	}
 
-    public Box getCurrentBoxByMessage(Message m) {
-	return this.boxRepository.getCurrentBoxByMessage(m);
+	public Box getTrashBoxByActor(Actor a) {
+		return this.boxRepository.getTrashBoxByActor(a);
+	}
 
-    }
+	public Box getCurrentBoxByMessage(Message m) {
+		return this.boxRepository.getCurrentBoxByMessage(m);
+
+	}
 
 }

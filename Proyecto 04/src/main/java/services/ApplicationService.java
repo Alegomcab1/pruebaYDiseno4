@@ -103,7 +103,7 @@ public class ApplicationService {
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		Application application = new Application();
-		application = this.applicationRepository.getApplicationById(idApplication);
+		application = this.applicationRepository.findOne(idApplication);
 
 		Assert.isTrue(application.getHandyWorker().equals(handyWorker));
 
