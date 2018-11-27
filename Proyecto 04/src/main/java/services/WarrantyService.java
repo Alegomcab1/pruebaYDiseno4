@@ -33,7 +33,7 @@ public class WarrantyService {
 	}
 
 	public Warranty save(Warranty warranty) {
-		if (warranty.getIsDraftMode() == true)
+		if (warranty.getIsDraftMode())
 			return this.warrantyRepository.save(warranty);
 		else
 			throw new IllegalAccessError();
@@ -44,7 +44,7 @@ public class WarrantyService {
 	}
 
 	public void delete(Warranty warranty) {
-		if (warranty.getIsDraftMode() == true)
+		if (warranty.getIsDraftMode())
 			this.warrantyRepository.delete(warranty);
 	}
 

@@ -2,6 +2,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -44,12 +45,13 @@ public class RefereeService {
 
 
 	//Aux
-	private Referee securityAndReferee() {
+	public Referee securityAndReferee() {
 		UserAccount userAccount = LoginService.getPrincipal();
 		String username = userAccount.getUsername();
 		Referee loggedReferee = this.refereeRepository.getRefereeByUsername(username);
 
-		Assert.isTrue(userAccount.getAuthorities().contains("REFEREE"));
+		List<Authority> authorities = (List<Authority>) loggedReferee.getUserAccount().getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("REFEREE"));
 
 		return loggedReferee;
 	}
@@ -92,6 +94,18 @@ public class RefereeService {
 		return this.refereeRepository.findAll();
 	}
 
+	public Referee getRefereeByUsername(String username) {
+		return this.refereeRepository.getRefereeByUsername(username);
+	}
+
+	public Collection<Complaint> complaintsUnassigned() {
+		return this.refereeRepository.complaintsUnassigned();
+	}
+
+	public Collection<Note> notesReferee(int refereeId) {
+		return this.refereeRepository.notesReferee(refereeId);
+	}
+
 	// Methods ------------------------------------------------------
 
 	public List<Complaint> unassignedComplaints() {
@@ -99,7 +113,7 @@ public class RefereeService {
 		return (List<Complaint>) this.refereeRepository.complaintsUnassigned();
 	}
 
-	public void assingComplaint(Complaint complaint) {
+	public Complaint assingComplaint(Complaint complaint) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Referee> lr = this.findAll();
 		Random rnd = new Random();
@@ -112,8 +126,9 @@ public class RefereeService {
 				c = comp;
 		Assert.notNull(comp);
 		complaint.setReferee(r);
-		this.complaintService.save(complaint);
+		Complaint complaintSaved = this.complaintService.save(complaint);
 		this.configurationService.isActorSuspicious(loggedReferee);
+		return complaintSaved;
 	}
 
 	public List<Complaint> selfAssignedComplaint(Referee r) {
