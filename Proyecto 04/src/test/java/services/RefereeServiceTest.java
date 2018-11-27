@@ -24,9 +24,20 @@ import domain.Referee;
 @Transactional
 public class RefereeServiceTest extends AbstractTest {
 
-	@Autowired
-	private RefereeService	refereeService;
+	//arbitrasoRF id = 1435;
 
+	@Autowired
+	private RefereeService		refereeService;
+	@Autowired
+	private ComplaintService	complaintService;
+
+
+	@Test(expected = NullPointerException.class)
+	public void testSecurity() {
+		super.authenticate("admin");
+		this.refereeService.securityAndReferee();
+		super.authenticate(null);
+	}
 
 	@Test
 	public void testGetLoggedReferee() {
@@ -50,7 +61,26 @@ public class RefereeServiceTest extends AbstractTest {
 	public void testAssignComplaint() {
 		super.authenticate("arbitrasoRF");
 		List<Complaint> complaints = (List<Complaint>) this.refereeService.complaintsUnassigned();
+		Complaint complaintUnassigned = complaints.get(0);
+		Complaint complaintAssigned = this.refereeService.assingComplaint(complaintUnassigned);
+		List<Complaint> complaints2 = (List<Complaint>) this.refereeService.complaintsUnassigned();
+		Assert.isTrue(complaints2.isEmpty());
+
+		complaintAssigned.setReferee(null);
+		this.complaintService.save(complaintAssigned);
+		List<Complaint> complaints3 = (List<Complaint>) this.refereeService.complaintsUnassigned();
+		Assert.isTrue(!complaints3.isEmpty());
 
 		super.authenticate(null);
 	}
+
+	@Test
+	public void selfAssignedComplaints() {
+		super.authenticate("arbitrasoRF");
+		List<Complaint> complaintsAssigned = this.refereeService.selfAssignedComplaints();
+		Assert.isTrue(complaintsAssigned.size() == 3); //Tiene 3 asignados
+
+		super.authenticate(null);
+	}
+
 }

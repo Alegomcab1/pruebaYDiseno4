@@ -4,7 +4,6 @@ package services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import javax.transaction.Transactional;
 
@@ -115,34 +114,27 @@ public class RefereeService {
 
 	public Complaint assingComplaint(Complaint complaint) {
 		Referee loggedReferee = this.securityAndReferee();
-		List<Referee> lr = this.findAll();
-		Random rnd = new Random();
-		int i = rnd.nextInt(lr.size());
-		Referee r = lr.get(i);
 		List<Complaint> unassignedComplaints = (List<Complaint>) this.refereeRepository.complaintsUnassigned();
 		Complaint comp = new Complaint();
 		for (Complaint c : unassignedComplaints)
 			if (c == complaint)
 				c = comp;
 		Assert.notNull(comp);
-		complaint.setReferee(r);
+		complaint.setReferee(loggedReferee);
 		Complaint complaintSaved = this.complaintService.save(complaint);
 		this.configurationService.isActorSuspicious(loggedReferee);
 		return complaintSaved;
 	}
 
-	public List<Complaint> selfAssignedComplaint(Referee r) {
+	public List<Complaint> selfAssignedComplaints() {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> res = new ArrayList<>();
 		List<Complaint> complaints = this.complaintService.findAll();
-		Complaint comp = new Complaint();
 		for (Complaint c : complaints)
-			if (c.getReferee() == r)
-				c = comp;
-		Assert.notNull(comp);
-		res.add(comp);
-		this.refereeRepository.save(r);
-		this.configurationService.isActorSuspicious(loggedReferee);
+			if (c.getReferee() == loggedReferee) {
+				Assert.notNull(c);
+				res.add(c);
+			}
 		return res;
 	}
 
