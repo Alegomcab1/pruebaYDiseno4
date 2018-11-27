@@ -80,8 +80,8 @@ public class RefereeService {
 		return this.refereeRepository.save(referee);
 	}
 
-	public Referee update(Referee referee) {
-		return this.save(referee);
+	public Referee findOne(int refereeId) {
+		return this.findOne(refereeId);
 	}
 
 	public void delete(Referee referee) {
