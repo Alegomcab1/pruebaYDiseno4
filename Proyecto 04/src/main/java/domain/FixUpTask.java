@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -40,7 +41,7 @@ public class FixUpTask extends DomainEntity {
 
 	@NotBlank
 	@Pattern(regexp = "[0-9]{2}[0-1]{1}[0-2]{1}[0-9]{2}(_[A-Za-z0-9]{6})")
-	//@Column(unique = true)
+	@Column(unique = true)
 	public String getTicker() {
 		return this.ticker;
 	}
