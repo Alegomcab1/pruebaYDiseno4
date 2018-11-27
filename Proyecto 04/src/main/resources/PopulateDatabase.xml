@@ -961,7 +961,6 @@
 			<list>
 			</list>
 		</property>
-		<property name="referee" ref="referee3"/>
 	</bean>
 	<!-- END OF COMPLAINT -->
 

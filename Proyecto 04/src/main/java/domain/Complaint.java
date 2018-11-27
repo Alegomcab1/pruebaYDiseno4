@@ -80,7 +80,6 @@ public class Complaint extends DomainEntity {
 		this.reports = reports;
 	}
 
-	@NotNull
 	@ManyToOne(optional = true)
 	public Referee getReferee() {
 		return this.referee;
