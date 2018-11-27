@@ -987,10 +987,10 @@
 		<property name="keyWord" value="keyWord1" />
 		<property name="category" value="categoryFinder1" />
 		<property name="warranty" value="warrantyFinder1" />
-		<property name="minPrice" value="0.0" />
-		<property name="maxPrice" value="1.0" />
+		<property name="minPrice" value="503.00" />
+		<property name="maxPrice" value="750.00" />
 		<property name="startDate" value="02/01/2018 11:30" />
-		<property name="endDate" value="02/01/2018 11:45" />
+		<property name="endDate" value="04/04/2019 11:45" />
 		<property name="fixUpTasks">
 			<list>
 				<ref bean="fixUpTasks1" />

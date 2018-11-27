@@ -60,14 +60,11 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	@Query("select a from FixUpTask a join a.warranties b where b.title = ?1")
 	public Collection<FixUpTask> getFixUpTasksByWarranty(String warranty);
 
-	@Query("select a from FixUpTask a where (a.maxPrice) >= ?1 order by a.maxPrice")
-	public Collection<FixUpTask> getFixUpTasksByMinPrice(double minPrice);
+	@Query("select a from FixUpTask a where (a.maxPrice) between (select b.minPrice from Finder b where b.id = ?1) and (select c.maxPrice from Finder c where c.id = ?1) order by a.maxPrice")
+	public Collection<FixUpTask> getFixUpTasksByPrice(int id);
 
-	@Query("select a from FixUpTask a where (a.maxPrice) <= ?1 order by a.maxPrice")
-	public Collection<FixUpTask> getFixUpTasksByMaxPrice(double maxPrice);
-
-	@Query("select a.fixUpTasks from Finder a where a.id = ?1")
-	public List<FixUpTask> getResultFinder(int id);
+	@Query("select a from FixUpTask a where (a.realizationTime) between (select b.startDate from Finder b where b.id = ?1) and (select c.endDate from Finder c where c.id = ?1) order by a.realizationTime")
+	public Collection<FixUpTask> getFixUpTasksByDate(int id);
 
 	@Query("select a.fixUpTask from Application a where a.id = ?1")
 	public FixUpTask getFixUpTaskFromApplication(int id);
@@ -78,6 +75,4 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	@Query("select f.phases from FixUpTask f where f.id=?!")
 	public List<Phase> getPhasesByFixUpTask(int id);
 
-	@Query("select h from HandyWorker h join h.userAccount u where u.username = ?1")
-	public HandyWorker getHandyByUsername(String username);
 }
