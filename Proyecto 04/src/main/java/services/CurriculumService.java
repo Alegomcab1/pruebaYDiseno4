@@ -2,6 +2,7 @@
 package services;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -13,7 +14,12 @@ import repositories.CurriculumRepository;
 import security.LoginService;
 import security.UserAccount;
 import domain.Curriculum;
+import domain.EducationRecord;
+import domain.EndorserRecord;
 import domain.HandyWorker;
+import domain.MiscellaneousRecord;
+import domain.PersonalRecord;
+import domain.ProfessionalRecord;
 
 @Service
 @Transactional
@@ -30,7 +36,7 @@ public class CurriculumService {
 
 	// Simple CRUD methods
 
-	public Curriculum create(String ticker) {
+	public Curriculum create(String ticker, List<EndorserRecord> endorserRecords, List<MiscellaneousRecord> miscellaneousRecords, List<EducationRecord> educationRecords, List<ProfessionalRecord> professionalRecords, PersonalRecord personalRecord) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -38,6 +44,11 @@ public class CurriculumService {
 
 		Curriculum curriculum = new Curriculum();
 		curriculum.setTicker(ticker);
+		curriculum.setEndorserRecords(endorserRecords);
+		curriculum.setMiscellaneousRecords(miscellaneousRecords);
+		curriculum.setEducationRecords(educationRecords);
+		curriculum.setPersonalRecord(personalRecord);
+		curriculum.setProfessionalRecords(professionalRecords);
 
 		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
 		logguedHandyWorker.setCurriculum(curriculum);
