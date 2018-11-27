@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import repositories.ApplicationRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.Application;
 import domain.CreditCard;
 import domain.FixUpTask;
@@ -95,24 +93,5 @@ public class ApplicationService {
 
 	public void delete(Application application) {
 		this.applicationRepository.delete(application);
-	}
-
-	public Application updateApplication(int idApplication, List<String> comments, FixUpTask fixUpTask, HandyWorker handyWorker, Integer offeredPrice, Status status) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-
-		Application application = new Application();
-		application = this.applicationRepository.findOne(idApplication);
-
-		Assert.isTrue(application.getHandyWorker().equals(handyWorker));
-
-		application.setComments(comments);
-		application.setFixUpTask(fixUpTask);
-		application.setHandyWorker(handyWorker);
-		application.setOfferedPrice(offeredPrice);
-		application.setStatus(status);
-
-		return application;
 	}
 }
