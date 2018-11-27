@@ -75,7 +75,6 @@ public class HandyWorkerService {
 
 		HandyWorker handyWorker = new HandyWorker();
 		handyWorker = (HandyWorker) this.endorserSevice.createEndorser(name, middleName, surname, photo, email, phoneNumber, address, userName, password, score);
-
 		handyWorker.setMake(handyWorker.getName() + "" + handyWorker.getMiddleName() + "" + handyWorker.getSurname());
 
 		List<FixUpTask> f = new ArrayList<FixUpTask>();
@@ -84,7 +83,7 @@ public class HandyWorkerService {
 		thisMoment.setTime(thisMoment.getTime());
 		Date afterMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() + 1);
-		Finder finder = this.finderService.createFinder("", "", "", 0.0, 0.0, thisMoment, afterMoment, f);
+		Finder finder = this.finderService.createFinder("finder", "", "", 0.0, 0.0, thisMoment, afterMoment, f);
 		handyWorker.setFinder(finder);
 
 		List<Authority> authorities = new ArrayList<Authority>();
@@ -183,6 +182,8 @@ public class HandyWorkerService {
 		Map<Customer, Collection<FixUpTask>> res = new HashMap<Customer, Collection<FixUpTask>>();
 
 		Customer customer = this.handyWorkerRepository.getCustomerByFixUpTask(idFixUpTask);
+		FixUpTask fixUpTask = this.fixUpTaskService.findOne(idFixUpTask);
+		Assert.isTrue(customer.getFixUpTasks().contains(fixUpTask));
 
 		res.put(customer, customer.getFixUpTasks());
 
@@ -191,7 +192,7 @@ public class HandyWorkerService {
 	}
 	//11.2 ------------------------------------------------------------------------------------------------------------------
 
-	public Collection<FixUpTask> getFilterFixUpTasks() {
+	public void filterFixUpTasksByFinder() {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
 		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
@@ -204,33 +205,35 @@ public class HandyWorkerService {
 
 		List<FixUpTask> result = new ArrayList<FixUpTask>();
 		result = this.fixUpTaskService.findAll();
-
 		Collection<FixUpTask> filter = new ArrayList<FixUpTask>();
-		filter = this.handyWorkerRepository.getFixUpTaskByKeyWord(finder.getKeyWord());
-		result.retainAll(filter);
 
-		if (finder.getCategory() != "") {
+		if (finder.getKeyWord().equals(null)) {
+			filter = this.handyWorkerRepository.getFixUpTaskByKeyWord(finder.getKeyWord());
+			result.retainAll(filter);
+		}
+		if (finder.getCategory().equals(null)) {
 			filter = this.handyWorkerRepository.getFixUpTaskByCategory(finder.getCategory());
 			result.retainAll(filter);
 		}
-		if (finder.getWarranty() != "") {
+		if (finder.getWarranty().equals(null)) {
 			filter = this.handyWorkerRepository.getFixUpTasksByWarranty(finder.getWarranty());
 			result.retainAll(filter);
 		}
-		Assert.isTrue(finder.getMinPrice() < finder.getMaxPrice());
-		filter = this.handyWorkerRepository.getFixUpTasksByPrice(finder.getId());
-		result.retainAll(filter);
-
-		Assert.isTrue(finder.getStartDate().before(finder.getEndDate()));
-		filter = this.handyWorkerRepository.getFixUpTasksByDate(finder.getId());
-		result.retainAll(filter);
-
+		if (finder.getMinPrice().equals(null) || finder.getMaxPrice().equals(null)) {
+			Assert.isTrue(finder.getMinPrice() <= finder.getMaxPrice());
+			filter = this.handyWorkerRepository.getFixUpTasksByPrice(finder.getId());
+			result.retainAll(filter);
+		}
+		if (finder.getStartDate().equals(null) || finder.getEndDate().equals(null)) {
+			Assert.isTrue(finder.getStartDate().before(finder.getEndDate()));
+			filter = this.handyWorkerRepository.getFixUpTasksByDate(finder.getId());
+			result.retainAll(filter);
+		}
 		Finder finderResult = new Finder();
 		finderResult = finder;
 		finderResult.setFixUpTasks(result);
 		this.finderService.save(finderResult);
 
-		return result;
 	}
 	//11.3 ------------------------------------------------------------------------------------------------------------------
 

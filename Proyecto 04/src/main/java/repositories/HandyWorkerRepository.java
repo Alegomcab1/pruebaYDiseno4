@@ -28,7 +28,7 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	public Customer getCustomerByFixUpTask(int id);
 
 	//Se utiliza en deletePhaseForApplication
-	@Query("select a.phases from FixUpTask a join a.application b where b.id = ?1")
+	@Query("select a.phases from FixUpTask a join a.applications b where b.id = ?1")
 	public Collection<Phase> getPhasesByApplication(int id);
 
 	//Se utiliza en deletePhaseForHandyWorker
@@ -47,7 +47,7 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	@Query("select a.tutorials from HandyWorker a where a.id = ?1")
 	public List<Tutorial> getAllTutorialsFromAHandyWorker(int id);
 
-	@Query("select a.endorsments from Endorser where a.id = ?1")
+	@Query("select a.endorsments from Endorser a where a.id = ?1")
 	public List<Endorsment> getEndorsmentsByEndorser(int id);
 
 	//Querys del Filtro de Finder
@@ -72,7 +72,7 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	@Query("select distinct a.fixUpTask from Application a join a.handyWorker b where b.id = ?1")
 	public List<FixUpTask> getFixUpTasksFromHandyWorker(int id);
 
-	@Query("select f.phases from FixUpTask f where f.id=?!")
+	@Query("select f.phases from FixUpTask f where f.id=?1")
 	public List<Phase> getPhasesByFixUpTask(int id);
 
 }

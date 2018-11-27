@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import domain.Application;
 import domain.Complaint;
@@ -15,6 +16,7 @@ import domain.HandyWorker;
 import domain.Note;
 import domain.Report;
 
+@Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
 	@Query("select c from Customer c join c.userAccount u where u.username = ?1")
@@ -43,7 +45,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 	@Query("select e from Endorsment e join e.writtenBy a where a.id = ?1")
 	Collection<Endorsment> endorsmentsOfById(int customerId);
 
-	@Query("select h from Customer c join c.fixUpTasks f join f.applications a join a.handyWorker where c.id = ?1")
+	@Query("select h from Customer c join c.fixUpTasks f join f.applications a join a.handyWorker h where c.id = ?1")
 	Collection<HandyWorker> handyWorkersById(int customerId);
 
 }
