@@ -13,9 +13,7 @@ import org.springframework.util.Assert;
 import repositories.EndorserRecordRepository;
 import security.LoginService;
 import security.UserAccount;
-import domain.Curriculum;
 import domain.EndorserRecord;
-import domain.HandyWorker;
 
 @Service
 @Transactional
@@ -46,13 +44,6 @@ public class EndorserRecordService {
 		endorserRecord.setPhoneNumber(phoneNumber);
 		endorserRecord.setLinkLinkedInProfile(linkLinkedInProfile);
 		endorserRecord.setComments(comments);
-
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		Curriculum newCurriculum = logguedHandyWorker.getCurriculum();
-		List<EndorserRecord> newEndorserRecord = newCurriculum.getEndorserRecords();
-		newEndorserRecord.add(endorserRecord);
-		newCurriculum.setEndorserRecords(newEndorserRecord);
-		this.curriculumService.save(newCurriculum);
 
 		return endorserRecord;
 

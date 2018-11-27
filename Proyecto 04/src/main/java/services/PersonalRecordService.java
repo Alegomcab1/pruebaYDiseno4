@@ -12,8 +12,6 @@ import org.springframework.util.Assert;
 import repositories.PersonalRecordRepository;
 import security.LoginService;
 import security.UserAccount;
-import domain.Curriculum;
-import domain.HandyWorker;
 import domain.PersonalRecord;
 
 @Service
@@ -45,11 +43,6 @@ public class PersonalRecordService {
 		personalRecord.setEmail(email);
 		personalRecord.setPhoneNumber(phoneNumber);
 		personalRecord.setUrlLinkedInProfile(urlLinkedInProfile);
-
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		Curriculum newCurriculum = logguedHandyWorker.getCurriculum();
-		newCurriculum.setPersonalRecord(personalRecord);
-		this.curriculumService.save(newCurriculum);
 
 		return personalRecord;
 

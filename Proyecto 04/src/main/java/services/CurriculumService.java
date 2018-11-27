@@ -16,7 +16,6 @@ import security.UserAccount;
 import domain.Curriculum;
 import domain.EducationRecord;
 import domain.EndorserRecord;
-import domain.HandyWorker;
 import domain.MiscellaneousRecord;
 import domain.PersonalRecord;
 import domain.ProfessionalRecord;
@@ -49,10 +48,6 @@ public class CurriculumService {
 		curriculum.setEducationRecords(educationRecords);
 		curriculum.setPersonalRecord(personalRecord);
 		curriculum.setProfessionalRecords(professionalRecords);
-
-		HandyWorker logguedHandyWorker = this.handyWorkerService.findOne(userAccount.getId());
-		logguedHandyWorker.setCurriculum(curriculum);
-		this.handyWorkerService.save(logguedHandyWorker);
 
 		return curriculum;
 
