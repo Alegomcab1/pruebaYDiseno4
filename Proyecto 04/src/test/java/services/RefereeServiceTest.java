@@ -1,6 +1,7 @@
 
 package services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,7 +16,9 @@ import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
 import domain.Complaint;
+import domain.Note;
 import domain.Referee;
+import domain.Report;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -91,7 +94,27 @@ public class RefereeServiceTest extends AbstractTest {
 
 	@Test
 	public void testWriteReportRegardingComplaint() {
+		super.authenticate("arbitrasoRF");
 
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+		Complaint complaint = this.complaintService.findOne(1403); //Complaint asignado al referee
+		Assert.notNull(complaint);
+
+		int numberOfReports = this.reportService.findAll().size();
+		int numberOfReportsOfReferee = loggedReferee.getReports().size();
+		int numberOfReportsOfComplaints = complaint.getReports().size();
+
+		Report reportSaved = this.refereeService.writeReportRegardingComplaint(complaint, "Descripcion", new ArrayList<String>(), new ArrayList<Note>());
+
+		int numberOfReports2 = this.reportService.findAll().size();
+		int numberOfReportsOfReferee2 = this.refereeService.securityAndReferee().getReports().size();
+		int numberOfReportsOfComplaints2 = this.complaintService.findOne(1403).getReports().size();
+
+		Assert.isTrue(numberOfReports + 1 == numberOfReports2);
+		Assert.isTrue(numberOfReportsOfReferee + 1 == numberOfReportsOfReferee2);
+		Assert.isTrue(numberOfReportsOfComplaints + 1 == numberOfReportsOfComplaints2);
+
+		super.authenticate(null);
 	}
 
 }

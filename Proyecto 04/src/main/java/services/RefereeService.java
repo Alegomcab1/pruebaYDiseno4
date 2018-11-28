@@ -171,7 +171,7 @@ public class RefereeService {
 	}
 
 	//Testing
-	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments) {
+	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments, List<Note> notes) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> lc = this.complaintService.findAll();
 		Report rep = null;
@@ -183,17 +183,18 @@ public class RefereeService {
 			}
 		Assert.notNull(com);
 
-		rep = this.reportService.create(description, attachments);
+		rep = this.reportService.create(description, attachments, notes);
 		Assert.notNull(rep);
 		Report reportSaved = this.reportService.save(rep);
 
 		List<Report> repList = loggedReferee.getReports();
 		repList.add(rep);
 		loggedReferee.setReports(repList);
-		this.refereeRepository.save(loggedReferee);
+		this.save(loggedReferee);
 
 		List<Report> repList2 = com.getReports();
 		repList2.add(rep);
+		com.setReports(repList2);
 		this.complaintService.save(com);
 
 		//SIN USAR POR AHORA, PENDIENTE DE REVISAR
