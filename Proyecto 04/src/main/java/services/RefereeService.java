@@ -107,11 +107,13 @@ public class RefereeService {
 
 	// Methods ------------------------------------------------------
 
+	//Testeado
 	public List<Complaint> unassignedComplaints() {
 		Referee loggedReferee = this.securityAndReferee();
 		return (List<Complaint>) this.refereeRepository.complaintsUnassigned();
 	}
 
+	//Testeado
 	public Complaint assingComplaint(Complaint complaint) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> unassignedComplaints = (List<Complaint>) this.refereeRepository.complaintsUnassigned();
@@ -126,6 +128,7 @@ public class RefereeService {
 		return complaintSaved;
 	}
 
+	//Testeado
 	public List<Complaint> selfAssignedComplaints() {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> res = new ArrayList<>();
@@ -167,23 +170,33 @@ public class RefereeService {
 		return note;
 	}
 
+	//Testing
 	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> lc = this.complaintService.findAll();
-		Report res = new Report();
-		Complaint com = new Complaint();
+		Report rep = null;
+		Complaint com = null;
 		for (Complaint c : lc)
-			if (c == complaint) {
+			if (c.getId() == complaint.getId() && c.getReferee().equals(loggedReferee) && complaint.getReferee().equals(loggedReferee)) {
 				com = c;
-				res = this.reportService.create(description, attachments);
-				loggedReferee.getReports().add(res);
-				com.getReports().add(res);
+				break;
 			}
-		this.complaintService.save(com);
+		Assert.notNull(com);
+
+		rep = this.reportService.create(description, attachments);
+		this.reportService.save(rep);
+
+		List<Report> repList = loggedReferee.getReports();
+		repList.add(rep);
+		loggedReferee.setReports(repList);
 		this.refereeRepository.save(loggedReferee);
-		this.reportService.save(res);
+
+		List<Report> repList2 = com.getReports();
+		repList2.add(rep);
+		this.complaintService.save(com);
+
 		this.configurationService.isActorSuspicious(loggedReferee);
-		return res;
+		return rep;
 	}
 
 	public Report modifiedReport(Report report) {
