@@ -1,7 +1,6 @@
 
 package services;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import org.springframework.util.Assert;
 import utilities.AbstractTest;
 import domain.Complaint;
 import domain.Referee;
-import domain.Report;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -29,11 +27,15 @@ public class RefereeServiceTest extends AbstractTest {
 	//arbitrasoRF id = 1435;
 
 	@Autowired
-	private RefereeService		refereeService;
+	private RefereeService			refereeService;
 	@Autowired
-	private ComplaintService	complaintService;
+	private ComplaintService		complaintService;
 	@Autowired
-	private ReportService		reportService;
+	private ReportService			reportService;
+	@Autowired
+	private ConfigurationService	configurationService;
+	@Autowired
+	private NoteService				noteService;
 
 
 	@Test(expected = NullPointerException.class)
@@ -89,29 +91,7 @@ public class RefereeServiceTest extends AbstractTest {
 
 	@Test
 	public void testWriteReportRegardingComplaint() {
-		super.authenticate("arbitrasoRF");
-		List<Complaint> complaintsAssigned = this.refereeService.selfAssignedComplaints();
-		Complaint com = complaintsAssigned.get(0);
 
-		Assert.notNull(com);
-
-		int reportsNumber1 = com.getReports().size();
-		int reportsNumber1_1 = this.refereeService.securityAndReferee().getReports().size();
-
-		Report reportCreated = this.refereeService.writeReportRegardingComplaint(com, "Descripción", new ArrayList<String>());
-
-		List<Complaint> complaintsAssigned2 = this.refereeService.selfAssignedComplaints();
-		Complaint com2 = complaintsAssigned2.get(0);
-
-		int reportsNumber2 = com2.getReports().size();
-		int reportsNumber2_2 = this.refereeService.securityAndReferee().getReports().size();
-
-		Assert.isTrue(reportsNumber1 == reportsNumber2 + 1);
-		Assert.isTrue(reportsNumber1_1 == reportsNumber2_2 + 1);
-
-		this.reportService.delete(reportCreated);
-
-		super.authenticate(null);
 	}
 
 }

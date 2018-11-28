@@ -184,7 +184,8 @@ public class RefereeService {
 		Assert.notNull(com);
 
 		rep = this.reportService.create(description, attachments);
-		this.reportService.save(rep);
+		Assert.notNull(rep);
+		Report reportSaved = this.reportService.save(rep);
 
 		List<Report> repList = loggedReferee.getReports();
 		repList.add(rep);
@@ -195,8 +196,9 @@ public class RefereeService {
 		repList2.add(rep);
 		this.complaintService.save(com);
 
-		this.configurationService.isActorSuspicious(loggedReferee);
-		return rep;
+		//SIN USAR POR AHORA, PENDIENTE DE REVISAR
+		//this.configurationService.isActorSuspicious(loggedReferee);
+		return reportSaved;
 	}
 
 	public Report modifiedReport(Report report) {
