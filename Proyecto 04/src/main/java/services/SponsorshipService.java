@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import repositories.SponsorshipRepository;
+import domain.CreditCard;
 import domain.Sponsorship;
 import domain.Tutorial;
 
@@ -15,40 +17,42 @@ import domain.Tutorial;
 @Transactional
 public class SponsorshipService {
 
-    @Autowired
-    private SponsorshipRepository sponsorshipRepository;
+	@Autowired
+	private SponsorshipRepository	sponsorshipRepository;
 
-    @Autowired
-    private SponsorService sponsorService;
+	@Autowired
+	private SponsorService			sponsorService;
 
-    public Sponsorship create(String banner, String link) {
-	Sponsorship sporsorship = new Sponsorship();
-	Tutorial tutorial = new Tutorial();
 
-	sporsorship.setBannerUrl(banner);
-	sporsorship.setLink(link);
-	sporsorship.setTutorials(tutorial);
+	public Sponsorship create(String banner, String link, CreditCard creditCard) {
+		Sponsorship sporsorship = new Sponsorship();
+		Tutorial tutorial = new Tutorial();
 
-	return sporsorship;
-    }
+		sporsorship.setCreditCard(creditCard);
+		sporsorship.setBannerUrl(banner);
+		sporsorship.setLink(link);
+		sporsorship.setTutorials(tutorial);
 
-    public Sponsorship save(Sponsorship s) {
-	this.sponsorService.loggedAsSponsor();
-	return this.sponsorshipRepository.save(s);
-    }
+		return sporsorship;
+	}
 
-    public List<Sponsorship> findAll() {
-	this.sponsorService.loggedAsSponsor();
-	return this.sponsorshipRepository.findAll();
-    }
+	public Sponsorship save(Sponsorship s) {
+		this.sponsorService.loggedAsSponsor();
+		return this.sponsorshipRepository.save(s);
+	}
 
-    public Sponsorship findOne(Integer id) {
-	this.sponsorService.loggedAsSponsor();
-	return this.sponsorshipRepository.findOne(id);
-    }
+	public List<Sponsorship> findAll() {
+		this.sponsorService.loggedAsSponsor();
+		return this.sponsorshipRepository.findAll();
+	}
 
-    public void delete(Sponsorship s) {
-	this.sponsorService.loggedAsSponsor();
-	this.sponsorshipRepository.delete(s);
-    }
+	public Sponsorship findOne(Integer id) {
+		this.sponsorService.loggedAsSponsor();
+		return this.sponsorshipRepository.findOne(id);
+	}
+
+	public void delete(Sponsorship s) {
+		this.sponsorService.loggedAsSponsor();
+		this.sponsorshipRepository.delete(s);
+	}
 }

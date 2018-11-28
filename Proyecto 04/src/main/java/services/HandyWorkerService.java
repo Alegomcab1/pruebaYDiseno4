@@ -20,7 +20,6 @@ import security.LoginService;
 import security.UserAccount;
 import domain.Application;
 import domain.Complaint;
-import domain.CreditCard;
 import domain.Curriculum;
 import domain.Customer;
 import domain.Endorsment;
@@ -239,7 +238,7 @@ public class HandyWorkerService {
 		return listApplications;
 	}
 
-	public Application createApplicationHandyWorker(Integer offeredPrice, List<String> comments, FixUpTask fixUpTask, CreditCard creditCard) {
+	public Application createApplicationHandyWorker(Integer offeredPrice, List<String> comments, FixUpTask fixUpTask) {
 
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -247,7 +246,7 @@ public class HandyWorkerService {
 		HandyWorker logguedHandyWorker = new HandyWorker();
 		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
 
-		Application application = this.applicationService.createApplication(offeredPrice, fixUpTask, logguedHandyWorker, creditCard);
+		Application application = this.applicationService.createApplication(offeredPrice, fixUpTask, logguedHandyWorker);
 
 		//Revisar
 		//application = this.applicationService.updateApplication(application.getId(), comments, fixUpTask, logguedHandyWorker, offeredPrice, application.getStatus());

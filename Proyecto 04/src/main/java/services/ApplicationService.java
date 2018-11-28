@@ -10,11 +10,9 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.ApplicationRepository;
 import domain.Application;
-import domain.CreditCard;
 import domain.FixUpTask;
 import domain.HandyWorker;
 import domain.Status;
@@ -33,10 +31,7 @@ public class ApplicationService {
 
 	//Simple CRUD methods ---------------------------------------------------------------------
 
-	public Application createApplication(double offeredPrice, FixUpTask fixUpTask, HandyWorker handyWorker, CreditCard creditCard) {
-		if (!creditCard.equals(null))
-			Assert.isTrue(ApplicationService.validateCreditCardNumber(creditCard.getNumber().toString()));
-
+	public Application createApplication(double offeredPrice, FixUpTask fixUpTask, HandyWorker handyWorker) {
 		Application application = new Application();
 
 		Date thisMoment = new Date();
@@ -49,7 +44,6 @@ public class ApplicationService {
 		application.setComments(comments);
 		application.setFixUpTask(fixUpTask);
 		application.setHandyWorker(handyWorker);
-		application.setCreditCard(creditCard);
 
 		return application;
 	}

@@ -18,6 +18,7 @@ import security.UserAccount;
 import domain.Application;
 import domain.Category;
 import domain.Complaint;
+import domain.CreditCard;
 import domain.Customer;
 import domain.Endorsment;
 import domain.FixUpTask;
@@ -263,7 +264,7 @@ public class CustomerService {
 		return this.customerRepository.findApplicationsById(loggedCustomer.getId());
 	}
 
-	public Application editApplication(Application application) {
+	public Application editApplication(Application application, CreditCard creditCard) {
 		Customer loggedCustomer = this.securityAndCustomer();
 
 		Collection<Application> applications = this.customerRepository.findApplicationsById(loggedCustomer.getId());
@@ -279,8 +280,8 @@ public class CustomerService {
 		Assert.isTrue(applicationFound.getStatus().equals(Status.PENDING));
 
 		if (application.getStatus().equals(Status.ACCEPTED))
-			Assert.notNull(application.getCreditCard());
-		Integer number = application.getCreditCard().getNumber();
+			Assert.notNull(creditCard);
+		Integer number = creditCard.getNumber();
 		Assert.isTrue(CustomerService.validateCreditCardNumber(number.toString()));
 
 		Application applicationSave = this.applicationService.save(application);
