@@ -144,4 +144,28 @@ public class RefereeServiceTest extends AbstractTest {
 		super.authenticate(null);
 	}
 
+	@Test
+	public void testEliminateReport() {
+		super.authenticate("arbitrasoRF");
+
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+		Report report = null;
+		for (Report r : loggedReferee.getReports())
+			if (!r.getFinalMode()) {
+				report = r;
+				break;
+			}
+		Assert.notNull(report);
+
+		int numberOfReports = this.reportService.findAll().size();
+
+		this.refereeService.eliminateReport(report);
+
+		int numberOfReports2 = this.reportService.findAll().size();
+
+		Assert.isTrue(numberOfReports == numberOfReports2 + 1);
+
+		super.authenticate(null);
+	}
+
 }
