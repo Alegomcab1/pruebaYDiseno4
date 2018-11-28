@@ -1172,7 +1172,7 @@
 				<ref bean="note1" />
 			</list>
 		</property>
-		<property name="finalMode" value="true"/>
+		<property name="finalMode" value="false"/>
 	</bean>
 
 	<bean id="report2" class="domain.Report">
@@ -1189,7 +1189,7 @@
 				<ref bean="note2" />
 			</list>
 		</property>
-		<property name="finalMode" value="true"/>
+		<property name="finalMode" value="false"/>
 	</bean>
 
 

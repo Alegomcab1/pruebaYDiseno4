@@ -1,6 +1,7 @@
 
 package services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,7 +16,9 @@ import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
 import domain.Complaint;
+import domain.Note;
 import domain.Referee;
+import domain.Report;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -27,15 +30,11 @@ public class RefereeServiceTest extends AbstractTest {
 	//arbitrasoRF id = 1435;
 
 	@Autowired
-	private RefereeService			refereeService;
+	private RefereeService		refereeService;
 	@Autowired
-	private ComplaintService		complaintService;
+	private ComplaintService	complaintService;
 	@Autowired
-	private ReportService			reportService;
-	@Autowired
-	private ConfigurationService	configurationService;
-	@Autowired
-	private NoteService				noteService;
+	private ReportService		reportService;
 
 
 	@Test(expected = NullPointerException.class)
@@ -91,7 +90,82 @@ public class RefereeServiceTest extends AbstractTest {
 
 	@Test
 	public void testWriteReportRegardingComplaint() {
+		super.authenticate("arbitrasoRF");
 
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+
+		Complaint complaint = null;
+		List<Complaint> complaints = this.complaintService.findAll();
+		for (Complaint c : complaints)
+			if (c.getReferee().equals(loggedReferee)) {
+				complaint = c;
+				break;
+			}
+		Assert.notNull(complaint);
+
+		int numberOfReports = this.reportService.findAll().size();
+		int numberOfReportsOfReferee = loggedReferee.getReports().size();
+		int numberOfReportsOfComplaints = complaint.getReports().size();
+
+		this.refereeService.writeReportRegardingComplaint(complaint, "Descripcion", new ArrayList<String>(), new ArrayList<Note>());
+
+		int numberOfReports2 = this.reportService.findAll().size();
+		int numberOfReportsOfReferee2 = this.refereeService.securityAndReferee().getReports().size();
+		int numberOfReportsOfComplaints2 = this.complaintService.findOne(complaint.getId()).getReports().size();
+
+		Assert.isTrue(numberOfReports + 1 == numberOfReports2);
+		Assert.isTrue(numberOfReportsOfReferee + 1 == numberOfReportsOfReferee2);
+		Assert.isTrue(numberOfReportsOfComplaints + 1 == numberOfReportsOfComplaints2);
+
+		super.authenticate(null);
+	}
+
+	@Test
+	public void testModifyReport() {
+		super.authenticate("arbitrasoRF");
+
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+		Report report = null;
+		for (Report r : loggedReferee.getReports())
+			if (!r.getFinalMode()) {
+				report = r;
+				break;
+			}
+		Assert.notNull(report);
+
+		Assert.isTrue(report.getDescription().equals("description1"));
+
+		report.setDescription("description1modified");
+
+		Report reportSaved = this.refereeService.modifyReport(report);
+		Assert.notNull(reportSaved);
+		Assert.isTrue(this.reportService.findOne(report.getId()).getDescription().equals("description1modified"));
+
+		super.authenticate(null);
+	}
+
+	@Test
+	public void testEliminateReport() {
+		super.authenticate("arbitrasoRF");
+
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+		Report report = null;
+		for (Report r : loggedReferee.getReports())
+			if (!r.getFinalMode()) {
+				report = r;
+				break;
+			}
+		Assert.notNull(report);
+
+		int numberOfReports = this.reportService.findAll().size();
+
+		this.refereeService.eliminateReport(report);
+
+		int numberOfReports2 = this.reportService.findAll().size();
+
+		Assert.isTrue(numberOfReports == numberOfReports2 + 1);
+
+		super.authenticate(null);
 	}
 
 }

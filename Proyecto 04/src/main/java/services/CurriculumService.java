@@ -69,7 +69,7 @@ public class CurriculumService {
 
 	}
 
-	//Método auxiliar para generar el ticker-------------------------------
+	//MÃ©todo auxiliar para generar el ticker-------------------------------
 	private String generateTicker() {
 		String res = "";
 		Date date = null;
