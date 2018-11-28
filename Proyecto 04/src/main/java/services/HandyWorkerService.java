@@ -307,31 +307,39 @@ public class HandyWorkerService {
 
 	}
 	public void deletePhaseForApplication(int idPhase) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Phase phase = new Phase();
 		phase = this.phaseService.findOne(idPhase);
-		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(userAccount.getId());
+
+		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(logguedHandyWorker.getId());
 		Assert.isTrue(phases.contains(phase));
 
+		FixUpTask f = this.handyWorkerRepository.getFixUpTaskByPhase(idPhase);
+		List<Phase> phasesF = (List<Phase>) f.getPhases();
+		phasesF.remove(phase);
+		f.setPhases(phasesF);
+		this.fixUpTaskService.save(f);
 		this.phaseService.delete(phase);
 	}
 
 	public void updatePhaseForHandyWorker(Phase phase) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
-		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(userAccount.getId());
+		Collection<Phase> phases = this.handyWorkerRepository.getPhasesByHandyWorker(logguedHandyWorker.getId());
 		Assert.isTrue(phases.contains(phase));
+
+		FixUpTask f = this.handyWorkerRepository.getFixUpTaskByPhase(phase.getId());
 
 		this.phaseService.save(phase);
 	}
@@ -340,13 +348,12 @@ public class HandyWorkerService {
 	//37.1 --------------------------------------------------------------------------------------------------------------------------------------
 
 	public void updateFinderFromHandyWorker(Finder finder) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(logguedHandyWorker.getFinder().getId() == finder.getId());
 
@@ -355,26 +362,34 @@ public class HandyWorkerService {
 
 	//37.2 --------------------------------------------------------------------------------------------------------------------------------------
 	public List<FixUpTask> showFinderResult() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
 		List<FixUpTask> resultFixUpTask = new ArrayList<FixUpTask>();
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Finder finder = new Finder();
 
-		finder = this.handyWorkerRepository.getFinderFromAHandyWorker(userAccount.getId());
+		finder = this.handyWorkerRepository.getFinderFromAHandyWorker(logguedHandyWorker.getId());
 		resultFixUpTask = finder.getFixUpTasks();
 		return resultFixUpTask;
 	}
 
 	//37.3 --------------------------------------------------------------------------------------------------------------------------------------
 	public List<Complaint> showComplaintsFromHandyWorker() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
 		List<Complaint> complaints = new ArrayList<Complaint>();
 
-		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(userAccount.getId());
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
+
+		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(logguedHandyWorker.getId());
 
 		return complaints;
 	}

@@ -19,7 +19,9 @@ import org.springframework.util.Assert;
 import utilities.AbstractTest;
 import domain.Actor;
 import domain.Application;
+import domain.Complaint;
 import domain.Customer;
+import domain.Finder;
 import domain.FixUpTask;
 import domain.HandyWorker;
 import domain.Phase;
@@ -58,6 +60,20 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		Assert.isTrue(f.equals(fResults));
 	}
 
+	@Test
+	public void testgetFixUpTaskPerCustomer() {
+		Actor h = new Actor();
+		h = this.actorService.getActorByUsername("PepeHW");
+		Customer customer = new Customer();
+		super.authenticate("PepeHW");
+
+		customer = this.customerService.getCustomerByUserName("PacoCustomer");
+
+		Map<Customer, Collection<FixUpTask>> m = this.handyWorkerService.getFixUpTaskPerCustomer(customer.getFixUpTasks().get(0).getId());
+
+		Assert.isTrue(m.keySet().contains(customer) && m.get(customer).size() == customer.getFixUpTasks().size());
+	}
+
 	//11.2
 
 	@Test
@@ -76,19 +92,6 @@ public class HandyWorkerServiceTest extends AbstractTest {
 
 		Assert.isTrue(!(fixUpTasksBeforeFinder.equals(fixUpTasksBeforeAfter)));
 
-	}
-	@Test
-	public void testgetFixUpTaskPerCustomer() {
-		Actor h = new Actor();
-		h = this.actorService.getActorByUsername("PepeHW");
-		Customer customer = new Customer();
-		super.authenticate("PepeHW");
-
-		customer = this.customerService.getCustomerByUserName("PacoCustomer");
-
-		Map<Customer, Collection<FixUpTask>> m = this.handyWorkerService.getFixUpTaskPerCustomer(customer.getFixUpTasks().get(0).getId());
-
-		Assert.isTrue(m.keySet().contains(customer) && m.get(customer).size() == customer.getFixUpTasks().size());
 	}
 
 	//11.3
@@ -171,6 +174,95 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		Phase phaseAdded = phasesNew.get(phasesNew.size() - 1);
 
 		Assert.isTrue(fixUpTask.getPhases().contains(phaseAdded));
+
+	}
+
+	@Test
+	public void testDeletePhaseForApplication() {
+		Actor actor = new Actor();
+		actor = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		FixUpTask fixUpTaskBeforeDelePhase = this.fixUpTaskService.findOne(1382);
+
+		List<Phase> phases = (List<Phase>) fixUpTaskBeforeDelePhase.getPhases();
+		Phase phase = phases.get(0);
+
+		this.handyWorkerService.deletePhaseForApplication(phase.getId());
+
+		FixUpTask fixUpTaskAfterDelePhase = this.fixUpTaskService.findOne(1382);
+
+		Assert.isTrue(!(fixUpTaskAfterDelePhase.getPhases().contains(phase)));
+
+	}
+
+	@Test
+	public void testUpdatePhaseForHandyWorker() {
+		Actor actor = new Actor();
+		actor = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		FixUpTask fixUpTask = this.fixUpTaskService.findOne(1382);
+
+		List<Phase> phases = (List<Phase>) fixUpTask.getPhases();
+		Phase phaseBeforeUpdate = phases.get(0);
+
+		Phase phaseAfterUpdate = phaseBeforeUpdate;
+
+		phaseAfterUpdate.setTitle("Cambio");
+		this.handyWorkerService.updatePhaseForHandyWorker(phaseAfterUpdate);
+
+		List<Phase> newPhases = (List<Phase>) fixUpTask.getPhases();
+		Assert.isTrue(newPhases.get(0).getTitle().equals(phaseAfterUpdate.getTitle()));
+
+	}
+
+	//37.1
+
+	@Test
+	public void testShowFinderFromHandyWorker() {
+		Actor actor = new Actor();
+		actor = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+		Finder finder = h.getFinder();
+		finder.setKeyWord("Cambio");
+
+		this.handyWorkerService.updateFinderFromHandyWorker(finder);
+
+		Assert.isTrue(h.getFinder().getKeyWord().equals(finder.getKeyWord()));
+
+	}
+
+	//37.2
+
+	@Test
+	public void testShowFinderResult() {
+		Actor actor = new Actor();
+		actor = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+
+		List<FixUpTask> f = this.handyWorkerService.showFinderResult();
+
+		Assert.isTrue(f.size() == h.getFinder().getFixUpTasks().size());
+	}
+
+	//37.3
+
+	@Test
+	public void testShowComplaintsFromHandyWorker() {
+		Actor actor = new Actor();
+		actor = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+
+		List<Complaint> complaints = this.handyWorkerService.showComplaintsFromHandyWorker();
+
+		Assert.isTrue(complaints.size() == 6);
 
 	}
 }

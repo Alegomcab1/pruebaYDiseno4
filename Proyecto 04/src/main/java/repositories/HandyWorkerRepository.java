@@ -34,6 +34,9 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	@Query("select a.phases from FixUpTask a join a.applications b where b.id = ?1")
 	public Collection<Phase> getPhasesByApplication(int id);
 
+	@Query("select f from FixUpTask f join f.phases p where p.id= ?1")
+	public FixUpTask getFixUpTaskByPhase(int id);
+
 	//Se utiliza en deletePhaseForHandyWorker
 	@Query("select a.phases from FixUpTask a join a.applications b join b.handyWorker c where c.id = ?1")
 	public Collection<Phase> getPhasesByHandyWorker(int id);
