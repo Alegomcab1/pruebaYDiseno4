@@ -194,7 +194,8 @@ public class RefereeService {
 		return reportSaved;
 	}
 
-	public Report modifiedReport(Report report) {
+	//Testeado
+	public Report modifyReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());
 		Report rp = this.reportService.save(report);
@@ -202,6 +203,7 @@ public class RefereeService {
 		return rp;
 	}
 
+	//Testing
 	public void eliminateReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());

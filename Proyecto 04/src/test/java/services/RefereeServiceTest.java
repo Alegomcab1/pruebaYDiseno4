@@ -18,6 +18,7 @@ import utilities.AbstractTest;
 import domain.Complaint;
 import domain.Note;
 import domain.Referee;
+import domain.Report;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -92,7 +93,14 @@ public class RefereeServiceTest extends AbstractTest {
 		super.authenticate("arbitrasoRF");
 
 		Referee loggedReferee = this.refereeService.securityAndReferee();
-		Complaint complaint = this.complaintService.findOne(1403); //Complaint asignado al referee
+
+		Complaint complaint = null;
+		List<Complaint> complaints = this.complaintService.findAll();
+		for (Complaint c : complaints)
+			if (c.getReferee().equals(loggedReferee)) {
+				complaint = c;
+				break;
+			}
 		Assert.notNull(complaint);
 
 		int numberOfReports = this.reportService.findAll().size();
@@ -103,11 +111,35 @@ public class RefereeServiceTest extends AbstractTest {
 
 		int numberOfReports2 = this.reportService.findAll().size();
 		int numberOfReportsOfReferee2 = this.refereeService.securityAndReferee().getReports().size();
-		int numberOfReportsOfComplaints2 = this.complaintService.findOne(1403).getReports().size();
+		int numberOfReportsOfComplaints2 = this.complaintService.findOne(complaint.getId()).getReports().size();
 
 		Assert.isTrue(numberOfReports + 1 == numberOfReports2);
 		Assert.isTrue(numberOfReportsOfReferee + 1 == numberOfReportsOfReferee2);
 		Assert.isTrue(numberOfReportsOfComplaints + 1 == numberOfReportsOfComplaints2);
+
+		super.authenticate(null);
+	}
+
+	@Test
+	public void testModifyReport() {
+		super.authenticate("arbitrasoRF");
+
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+		Report report = null;
+		for (Report r : loggedReferee.getReports())
+			if (!r.getFinalMode()) {
+				report = r;
+				break;
+			}
+		Assert.notNull(report);
+
+		Assert.isTrue(report.getDescription().equals("description1"));
+
+		report.setDescription("description1modified");
+
+		Report reportSaved = this.refereeService.modifyReport(report);
+		Assert.notNull(reportSaved);
+		Assert.isTrue(this.reportService.findOne(report.getId()).getDescription().equals("description1modified"));
 
 		super.authenticate(null);
 	}
