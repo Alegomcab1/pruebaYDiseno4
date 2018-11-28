@@ -22,7 +22,10 @@ import domain.Tutorial;
 public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Integer> {
 
 	@Query("select a.applications from HandyWorker a where a.id = ?1")
-	public List<Application> getAllApplicationsFromAHandyWorker(int id);
+	public Collection<Application> getAllApplicationsFromAHandyWorker(int id);
+
+	@Query("select h from HandyWorker h join h.userAccount u where u.username = ?1")
+	public HandyWorker getHandyWorkerByUsername(String username);
 
 	@Query("select a from Customer a join a.fixUpTasks b where b.id = ?1")
 	public Customer getCustomerByFixUpTask(int id);
