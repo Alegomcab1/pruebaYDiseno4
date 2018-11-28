@@ -26,7 +26,7 @@ public interface BoxRepository extends JpaRepository<Box, Integer> {
     @Query("select b from Actor a inner join a.boxes b where b.fatherBox =?1")
     public List<Box> getSonsBox(Box box);
 
-    @Query("select f from Box b inner join b.messages f where f LIKE ?1")
-    public Box getCurrentBoxByMessage(Message m);
+    @Query("select b from Box b inner join b.messages f where f LIKE ?1")
+    public List<Box> getCurrentBoxByMessage(Message m);
 
 }
