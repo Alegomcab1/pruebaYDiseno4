@@ -32,16 +32,18 @@ public class FinderService {
 
 		Finder result = new Finder();
 
-		//TODO Esto es por si se quiere que solo se tenga que pasar por parametro a 
-		//keyWord inicializando lo demas para que el Filter use solo el keyWord
-
 		result.setCategory(category);
-		result.setEndDate(endDate);
+
 		result.setFixUpTasks(fixUpTasks);
 		result.setKeyWord(keyWord);
-		result.setMaxPrice(maxPrice);
-		result.setMinPrice(minPrice);
-		result.setStartDate(startDate);
+		if (minPrice != null && maxPrice != null && minPrice <= maxPrice) {
+			result.setMaxPrice(maxPrice);
+			result.setMinPrice(minPrice);
+		}
+		if (startDate != null && endDate != null && startDate.before(endDate)) {
+			result.setEndDate(endDate);
+			result.setStartDate(startDate);
+		}
 		result.setWarranty(warranty);
 
 		return result;
@@ -56,6 +58,7 @@ public class FinderService {
 	}
 
 	public Finder save(Finder finder) {
+
 		return this.finderRepository.save(finder);
 	}
 

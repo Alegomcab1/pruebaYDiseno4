@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import repositories.ReportRepository;
+import domain.Note;
 import domain.Report;
 
 @Service
@@ -20,7 +21,7 @@ public class ReportService {
 	private ReportRepository	reportRepository;
 
 
-	public Report create(String description, List<String> attachments) {
+	public Report create(String description, List<String> attachments, List<Note> notes) {
 
 		Report report = new Report();
 		Date thisMoment = new Date();
@@ -29,6 +30,7 @@ public class ReportService {
 		report.setDescription(description);
 		report.setAttachments(attachments);
 		report.setFinalMode(false);
+		report.setNotes(notes);
 
 		return report;
 	}
@@ -37,13 +39,16 @@ public class ReportService {
 		return this.reportRepository.save(report);
 	}
 
+	public void flush() {
+		this.reportRepository.flush();
+	}
+
 	public Report findOne(int reportId) {
 		return this.reportRepository.findOne(reportId);
 	}
 
 	public void delete(Report report) {
-		if (report.getNotes().size() == 0)
-			this.reportRepository.delete(report);
+		this.reportRepository.delete(report);
 	}
 
 	public List<Report> findAll() {

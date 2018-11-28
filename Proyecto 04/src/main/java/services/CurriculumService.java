@@ -18,6 +18,7 @@ import utilities.RandomString;
 import domain.Curriculum;
 import domain.EducationRecord;
 import domain.EndorserRecord;
+import domain.HandyWorker;
 import domain.MiscellaneousRecord;
 import domain.PersonalRecord;
 import domain.ProfessionalRecord;
@@ -107,16 +108,20 @@ public class CurriculumService {
 	}
 
 	public Curriculum save(Curriculum curriculum) {
-		if (!curriculum.getEducationRecords().isEmpty() && !curriculum.getPersonalRecord().equals(null) && !curriculum.getEndorserRecords().isEmpty() && !curriculum.getProfessionalRecords().isEmpty() && !curriculum.getMiscellaneousRecords().isEmpty())
-			return this.curriculumRepository.save(curriculum);
-		else
-			return curriculum;
+		return this.curriculumRepository.save(curriculum);
+
 	}
+
 	public void delete(Curriculum curriculum) {
-
-
+		HandyWorker handyCurriculum = this.getHandyWorkerByCurriculum(curriculum.getId());
+		handyCurriculum.setCurriculum(null);
+		this.handyWorkerService.save(handyCurriculum);
 		this.curriculumRepository.delete(curriculum);
 
+	}
+
+	public HandyWorker getHandyWorkerByCurriculum(int id) {
+		return this.curriculumRepository.getHandyWorkerByCurriculum(id);
 	}
 
 }

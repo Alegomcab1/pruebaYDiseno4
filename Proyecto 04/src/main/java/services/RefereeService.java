@@ -72,12 +72,6 @@ public class RefereeService {
 		return referee;
 	}
 	public Referee save(Referee referee) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("REFEREE"));
-
-		// Comprobacion en todos los SAVE de los ACTORES
-		Assert.isTrue(referee.getId() == 0 || userAccount.equals(referee.getUserAccount()));
 		return this.refereeRepository.save(referee);
 	}
 
@@ -170,11 +164,10 @@ public class RefereeService {
 		return note;
 	}
 
-	//Testing
-	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments) {
+	//Testeado
+	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments, List<Note> notes) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> lc = this.complaintService.findAll();
-		Report rep = null;
 		Complaint com = null;
 		for (Complaint c : lc)
 			if (c.getId() == complaint.getId() && c.getReferee().equals(loggedReferee) && complaint.getReferee().equals(loggedReferee)) {
@@ -183,25 +176,26 @@ public class RefereeService {
 			}
 		Assert.notNull(com);
 
-		rep = this.reportService.create(description, attachments);
+		Report rep = this.reportService.create(description, attachments, notes);
 		Assert.notNull(rep);
 		Report reportSaved = this.reportService.save(rep);
 
 		List<Report> repList = loggedReferee.getReports();
-		repList.add(rep);
+		repList.add(this.reportService.findOne(reportSaved.getId()));
 		loggedReferee.setReports(repList);
-		this.refereeRepository.save(loggedReferee);
+		this.save(loggedReferee);
 
 		List<Report> repList2 = com.getReports();
-		repList2.add(rep);
+		repList2.add(this.reportService.findOne(reportSaved.getId()));
+		com.setReports(repList2);
 		this.complaintService.save(com);
 
-		//SIN USAR POR AHORA, PENDIENTE DE REVISAR
-		//this.configurationService.isActorSuspicious(loggedReferee);
+		this.configurationService.isActorSuspicious(loggedReferee);
 		return reportSaved;
 	}
 
-	public Report modifiedReport(Report report) {
+	//Testeado
+	public Report modifyReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());
 		Report rp = this.reportService.save(report);
@@ -209,6 +203,7 @@ public class RefereeService {
 		return rp;
 	}
 
+	//Testing
 	public void eliminateReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());

@@ -20,11 +20,6 @@ public class PersonalRecordService {
 	@Autowired
 	private PersonalRecordRepository	personalRecordRepository;
 
-	@Autowired
-	private HandyWorkerService			handyWorkerService;
-	@Autowired
-	private CurriculumService			curriculumService;
-
 
 	// Simple CRUD methods
 
@@ -42,19 +37,14 @@ public class PersonalRecordService {
 	}
 
 	public Collection<PersonalRecord> findAll() {
-		Collection<PersonalRecord> result;
-
-		result = this.personalRecordRepository.findAll();
-
-		return result;
+		return this.personalRecordRepository.findAll();
 	}
 	public PersonalRecord findOne(Integer id) {
-		PersonalRecord result = this.personalRecordRepository.findOne(id);
-		return result;
+		return this.personalRecordRepository.findOne(id);
 	}
 
-	public void save(PersonalRecord personalRecord) {
-		this.personalRecordRepository.save(personalRecord);
+	public PersonalRecord save(PersonalRecord personalRecord) {
+		return this.personalRecordRepository.save(personalRecord);
 	}
 
 	public void delete(PersonalRecord personalRecord) {

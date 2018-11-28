@@ -22,11 +22,6 @@ public class ProfessionalRecordService {
 	@Autowired
 	private ProfessionalRecordRepository	professionalRecordRepository;
 
-	@Autowired
-	private HandyWorkerService				handyWorkerService;
-	@Autowired
-	private CurriculumService				curriculumService;
-
 
 	// Simple CRUD methods
 
@@ -45,19 +40,14 @@ public class ProfessionalRecordService {
 	}
 
 	public Collection<ProfessionalRecord> findAll() {
-		Collection<ProfessionalRecord> result;
-
-		result = this.professionalRecordRepository.findAll();
-
-		return result;
+		return this.professionalRecordRepository.findAll();
 	}
 	public ProfessionalRecord findOne(Integer id) {
-		ProfessionalRecord result = this.professionalRecordRepository.findOne(id);
-		return result;
+		return this.professionalRecordRepository.findOne(id);
 	}
 
-	public ProfessionalRecord save(ProfessionalRecord professionalRecord) {
-		return this.professionalRecordRepository.save(professionalRecord);
+	public void save(ProfessionalRecord professionalRecord) {
+		this.professionalRecordRepository.save(professionalRecord);
 	}
 
 	public void delete(ProfessionalRecord professionalRecord) {

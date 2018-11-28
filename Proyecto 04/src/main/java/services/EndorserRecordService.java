@@ -21,11 +21,6 @@ public class EndorserRecordService {
 	@Autowired
 	private EndorserRecordRepository	endorserRecordRepository;
 
-	@Autowired
-	private HandyWorkerService			handyWorkerService;
-	@Autowired
-	private CurriculumService			curriculumService;
-
 
 	// Simple CRUD methods
 
@@ -43,15 +38,10 @@ public class EndorserRecordService {
 	}
 
 	public Collection<EndorserRecord> findAll() {
-		Collection<EndorserRecord> result;
-
-		result = this.endorserRecordRepository.findAll();
-
-		return result;
+		return this.endorserRecordRepository.findAll();
 	}
 	public EndorserRecord findOne(Integer id) {
-		EndorserRecord result = this.endorserRecordRepository.findOne(id);
-		return result;
+		return this.endorserRecordRepository.findOne(id);
 	}
 
 	public void save(EndorserRecord endorserRecord) {

@@ -21,11 +21,6 @@ public class MiscellaneousRecordService {
 	@Autowired
 	private MiscellaneousRecordRepository	miscellaneousRecordRepository;
 
-	@Autowired
-	private HandyWorkerService				handyWorkerService;
-	@Autowired
-	private CurriculumService				curriculumService;
-
 
 	// Simple CRUD methods
 
@@ -40,19 +35,13 @@ public class MiscellaneousRecordService {
 
 	}
 	public Collection<MiscellaneousRecord> findAll() {
-		Collection<MiscellaneousRecord> result;
-
-		result = this.miscellaneousRecordRepository.findAll();
-
-		return result;
+		return this.miscellaneousRecordRepository.findAll();
 	}
 	public MiscellaneousRecord findOne(Integer id) {
-		MiscellaneousRecord result = this.miscellaneousRecordRepository.findOne(id);
-		return result;
+		return this.miscellaneousRecordRepository.findOne(id);
 	}
 
 	public void save(MiscellaneousRecord niscellaneousRecord) {
-
 		this.miscellaneousRecordRepository.save(niscellaneousRecord);
 	}
 
