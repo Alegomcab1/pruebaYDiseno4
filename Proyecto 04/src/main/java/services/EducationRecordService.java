@@ -9,11 +9,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.EducationRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.EducationRecord;
 
 @Service
@@ -35,9 +32,6 @@ public class EducationRecordService {
 
 	public EducationRecord create(String title, Date startDateStudy, Date endDateStudy, String institution, String link, List<String> comments) {
 
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		EducationRecord educationRecord = new EducationRecord();
 		educationRecord.setTitle(title);
 		educationRecord.setStartDateStudy(startDateStudy);
@@ -63,9 +57,6 @@ public class EducationRecordService {
 	}
 
 	public void save(EducationRecord educationRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.educationRecordRepository.save(educationRecord);
 	}
 

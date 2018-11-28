@@ -8,11 +8,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.EndorserRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.EndorserRecord;
 
 @Service
@@ -33,10 +30,6 @@ public class EndorserRecordService {
 	// Simple CRUD methods
 
 	public EndorserRecord create(String fullName, String email, String phoneNumber, String linkLinkedInProfile, List<String> comments) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		EndorserRecord endorserRecord = new EndorserRecord();
 		endorserRecord.setFullName(fullName);
@@ -62,9 +55,6 @@ public class EndorserRecordService {
 	}
 
 	public void save(EndorserRecord endorserRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.endorserRecordRepository.save(endorserRecord);
 	}
 

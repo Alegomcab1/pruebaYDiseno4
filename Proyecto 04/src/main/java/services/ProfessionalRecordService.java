@@ -9,11 +9,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.ProfessionalRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.ProfessionalRecord;
 
 @Service
@@ -35,9 +32,6 @@ public class ProfessionalRecordService {
 
 	public ProfessionalRecord create(String nameCompany, Date startDate, Date endDate, String role, String linkAttachment, List<String> comments) {
 
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		ProfessionalRecord professionalRecord = new ProfessionalRecord();
 		professionalRecord.setNameCompany(nameCompany);
 		professionalRecord.setStartDate(startDate);
@@ -62,11 +56,8 @@ public class ProfessionalRecordService {
 		return result;
 	}
 
-	public void save(ProfessionalRecord professionalRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.professionalRecordRepository.save(professionalRecord);
+	public ProfessionalRecord save(ProfessionalRecord professionalRecord) {
+		return this.professionalRecordRepository.save(professionalRecord);
 	}
 
 	public void delete(ProfessionalRecord professionalRecord) {

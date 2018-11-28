@@ -7,11 +7,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.PersonalRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.PersonalRecord;
 
 @Service
@@ -32,10 +29,6 @@ public class PersonalRecordService {
 	// Simple CRUD methods
 
 	public PersonalRecord create(String fullName, String photo, String email, String phoneNumber, String urlLinkedInProfile) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		PersonalRecord personalRecord = new PersonalRecord();
 		personalRecord.setFullName(fullName);
@@ -61,9 +54,6 @@ public class PersonalRecordService {
 	}
 
 	public void save(PersonalRecord personalRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.personalRecordRepository.save(personalRecord);
 	}
 

@@ -8,11 +8,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.MiscellaneousRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.MiscellaneousRecord;
 
 @Service
@@ -33,10 +30,6 @@ public class MiscellaneousRecordService {
 	// Simple CRUD methods
 
 	public MiscellaneousRecord create(String title, String linkAttachment, List<String> comments) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		MiscellaneousRecord miscellaneousRecord = new MiscellaneousRecord();
 		miscellaneousRecord.setTitle(title);
@@ -59,9 +52,7 @@ public class MiscellaneousRecordService {
 	}
 
 	public void save(MiscellaneousRecord niscellaneousRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+
 		this.miscellaneousRecordRepository.save(niscellaneousRecord);
 	}
 

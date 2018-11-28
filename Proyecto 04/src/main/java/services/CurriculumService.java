@@ -12,11 +12,8 @@ import javax.transaction.Transactional;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.CurriculumRepository;
-import security.LoginService;
-import security.UserAccount;
 import utilities.RandomString;
 import domain.Curriculum;
 import domain.EducationRecord;
@@ -58,10 +55,6 @@ public class CurriculumService {
 	// Simple CRUD methods
 
 	public Curriculum create(List<EndorserRecord> endorserRecords, List<MiscellaneousRecord> miscellaneousRecords, List<EducationRecord> educationRecords, List<ProfessionalRecord> professionalRecords, PersonalRecord personalRecord) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		Curriculum curriculum = new Curriculum();
 		curriculum.setTicker(this.generateTicker());
@@ -113,20 +106,15 @@ public class CurriculumService {
 
 	}
 
-	public void save(Curriculum curriculum) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-		this.curriculumRepository.save(curriculum);
-
+	public Curriculum save(Curriculum curriculum) {
+		if (!curriculum.getEducationRecords().isEmpty() && !curriculum.getPersonalRecord().equals(null) && !curriculum.getEndorserRecords().isEmpty() && !curriculum.getProfessionalRecords().isEmpty() && !curriculum.getMiscellaneousRecords().isEmpty())
+			return this.curriculumRepository.save(curriculum);
+		else
+			return curriculum;
 	}
-
 	public void delete(Curriculum curriculum) {
-		this.educationalRecordService.deleteAll(curriculum.getEducationRecords());
-		this.endorserRecordService.deleteAll(curriculum.getEndorserRecords());
-		this.miscellandeousRecordService.deleteAll(curriculum.getMiscellaneousRecords());
-		this.profesionalRecordService.deleteAll(curriculum.getProfessionalRecords());
-		this.personalRecordService.delete(curriculum.getPersonalRecord());
+
+
 		this.curriculumRepository.delete(curriculum);
 
 	}

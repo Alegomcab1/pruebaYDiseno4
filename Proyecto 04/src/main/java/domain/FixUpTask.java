@@ -40,7 +40,7 @@ public class FixUpTask extends DomainEntity {
 
 
 	@NotBlank
-	@Pattern(regexp = "[0-9]{2}[0-1]{1}[0-9]{3}-([A-Za-z0-9]{6})")
+	@Pattern(regexp = "[0-9]{2}[0-1]{1}[0-9]{3}(-[A-Za-z0-9]{6})")
 	@Column(unique = true)
 	public String getTicker() {
 		return this.ticker;

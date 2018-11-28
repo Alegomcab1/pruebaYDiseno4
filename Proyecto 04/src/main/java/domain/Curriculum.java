@@ -33,7 +33,7 @@ public class Curriculum extends DomainEntity {
 		super();
 	}
 
-	@Pattern(regexp = "[0-9]{2}[0-1]{1}[0-9]{3}-([A-Za-z0-9]{6})")
+	@Pattern(regexp = "[0-9]{2}[0-1]{1}[0-9]{3}(-[A-Za-z0-9]{6})")
 	@Column(unique = true)
 	@NotBlank
 	public String getTicker() {
