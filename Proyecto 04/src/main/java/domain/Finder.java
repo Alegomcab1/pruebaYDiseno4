@@ -83,8 +83,7 @@ public class Finder extends DomainEntity {
 	}
 
 	public void setMaxPrice(Double maxPrice) {
-		if (maxPrice >= this.minPrice)
-			this.maxPrice = maxPrice;
+		this.maxPrice = maxPrice;
 	}
 
 	@Valid

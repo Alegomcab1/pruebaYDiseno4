@@ -2,6 +2,7 @@
 package services;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -14,8 +15,10 @@ import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
 import domain.Actor;
+import domain.Application;
 import domain.Customer;
 import domain.FixUpTask;
+import domain.HandyWorker;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -32,17 +35,23 @@ public class HandyWorkerServiceTest extends AbstractTest {
 	private CustomerService		customerService;
 	@Autowired
 	private ActorService		actorService;
+	@Autowired
+	private FixUpTaskService	fixUpTaskService;
 
 
+	//11.1
 	@Test
 	public void testShowFixUpTask() {
 		Actor h = new Actor();
 		h = this.actorService.getActorByUsername("PepeHW");
-		Customer customer = new Customer();
 		super.authenticate("PepeHW");
 
-		//	Assert.isTrue(expression)
+		Collection<FixUpTask> fResults = this.handyWorkerService.showFixUpTasks();
+		Collection<FixUpTask> f = this.fixUpTaskService.findAll();
+
+		Assert.isTrue(f.equals(fResults));
 	}
+
 	@Test
 	public void testgetFixUpTaskPerCustomer() {
 		Actor h = new Actor();
@@ -55,6 +64,21 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		Map<Customer, Collection<FixUpTask>> m = this.handyWorkerService.getFixUpTaskPerCustomer(customer.getFixUpTasks().get(0).getId());
 
 		Assert.isTrue(m.keySet().contains(customer) && m.get(customer).size() == customer.getFixUpTasks().size());
+	}
+
+	//11.3
+	@Test
+	public void testShowApplication() {
+		Actor actor = new Actor();
+		actor = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+
+		List<Application> aResults = this.handyWorkerService.showApplications();
+		List<Application> a = h.getApplications();
+
+		Assert.isTrue(a.equals(aResults));
 	}
 
 }
