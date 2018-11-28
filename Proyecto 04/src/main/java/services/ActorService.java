@@ -48,6 +48,10 @@ public class ActorService {
 	return this.actorRepository.findAll();
     }
 
+    public Actor findOne(Integer id) {
+	return this.actorRepository.findOne(id);
+    }
+
     public Actor getActorByUsername(String a) {
 	return this.actorRepository.getActorByUserName(a);
     }
@@ -186,14 +190,13 @@ public class ActorService {
 
     public Map<HandyWorker, List<Tutorial>> showHandyWorkers(Tutorial tutorial) {
 	Map<HandyWorker, List<Tutorial>> result = new HashMap<HandyWorker, List<Tutorial>>();
-
 	List<HandyWorker> handyWorkers = new ArrayList<HandyWorker>();
-
-	handyWorkers = (List<HandyWorker>) this.handyWorkerService.findAll();
 	HandyWorker requiredHandyWorker = new HandyWorker();
 
+	handyWorkers = (List<HandyWorker>) this.handyWorkerService.findAll();
+
 	for (HandyWorker h : handyWorkers)
-	    if (h.getApplications().contains(tutorial))
+	    if (h.getTutorials().contains(tutorial))
 		requiredHandyWorker = h;
 
 	result.put(requiredHandyWorker, requiredHandyWorker.getTutorials());

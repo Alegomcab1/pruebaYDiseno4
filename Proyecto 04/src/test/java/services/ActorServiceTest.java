@@ -1,7 +1,9 @@
-
 package services;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,114 +15,122 @@ import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
 import domain.Actor;
+import domain.HandyWorker;
+import domain.Tutorial;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-	"classpath:spring/datasource.xml", "classpath:spring/config/packages.xml"
-})
+@ContextConfiguration(locations = { "classpath:spring/datasource.xml",
+	"classpath:spring/config/packages.xml" })
 @Transactional
 public class ActorServiceTest extends AbstractTest {
 
-	//Service under test
+    // Service under test
 
-	@Autowired
-	private ActorService	actorService;
+    @Autowired
+    private ActorService actorService;
 
+    @Autowired
+    private ConfigurationService configurationService;
 
-	//TEST---------------------------------------------------------------------
+    @Autowired
+    private HandyWorkerService handyWorkerService;
 
-	/*
-	 * public void loggedAsActor() {
-	 * UserAccount userAccount;
-	 * userAccount = LoginService.getPrincipal();
-	 * Assert.isTrue(userAccount.getAuthorities().size() > 0);
-	 * }
-	 */
+    @Autowired
+    private TutorialService tutorialService;
 
-	@Test
-	public void testloggedAsActor() {
-		Collection<Actor> all;
-		super.authenticate("PacoCustomer");
-		all = this.actorService.findAll();
-		Assert.isTrue(all.size() > 0);
-		super.authenticate(null);
-	}
+    // TEST---------------------------------------------------------------------
 
-	/*
-	 * @Test
-	 * public void testCreateHandyWorker() {
-	 * 
-	 * HandyWorker handyWorker = new HandyWorker();
-	 * UserAccount userAccount = new UserAccount();
-	 * List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
-	 * List<Box> boxes = new ArrayList<Box>();
-	 * 
-	 * //Actor
-	 * handyWorker.setName("Alejandro");
-	 * handyWorker.setMiddleName("");
-	 * handyWorker.setSurname("Gomez Caballero");
-	 * handyWorker.setPhoto("https://trello.com/b/MD1aM3qn/proyecto-4-dp");
-	 * handyWorker.setEmail("alegomcab1@gmail.com");
-	 * handyWorker.setPhoneNumber("+34615392784");
-	 * handyWorker.setAddress("C/Piruleta");
-	 * 
-	 * handyWorker.setBoxes(boxes);
-	 * handyWorker.setSocialProfiles(socialProfiles);
-	 * handyWorker.setUserAccount(userAccount);
-	 * 
-	 * //UserAccount
-	 * userAccount.setUsername("alegomcab1");
-	 * userAccount.setPassword("rutherfordio");
-	 * List<Authority> authorities = new ArrayList<Authority>();
-	 * Authority handyWorkerAut = new Authority();
-	 * handyWorkerAut.setAuthority("HANDYWORKER");
-	 * 
-	 * authorities.add(handyWorkerAut);
-	 * userAccount.setAuthorities(authorities);
-	 * 
-	 * //Boxes
-	 * Box spamBox = new Box();
-	 * List<Message> messages1 = new ArrayList<>();
-	 * spamBox.setIsSystem(true);
-	 * spamBox.setMessages(messages1);
-	 * spamBox.setName("Spam Box");
-	 * 
-	 * Box trashBox = new Box();
-	 * List<Message> messages2 = new ArrayList<>();
-	 * trashBox.setIsSystem(true);
-	 * trashBox.setMessages(messages2);
-	 * trashBox.setName("Trash Box");
-	 * 
-	 * Box sentBox = new Box();
-	 * List<Message> messages3 = new ArrayList<>();
-	 * sentBox.setIsSystem(true);
-	 * sentBox.setMessages(messages3);
-	 * sentBox.setName("Sent Box");
-	 * 
-	 * Box receivedBox = new Box();
-	 * List<Message> messages4 = new ArrayList<>();
-	 * receivedBox.setIsSystem(true);
-	 * receivedBox.setMessages(messages4);
-	 * receivedBox.setName("Received Box");
-	 * 
-	 * //addBoxes
-	 * boxes.add(receivedBox);
-	 * boxes.add(sentBox);
-	 * boxes.add(spamBox);
-	 * boxes.add(trashBox);
-	 * 
-	 * //HandyWorker
-	 * handyWorker.setMake(handyWorker.getName() + handyWorker.getMiddleName() + handyWorker.getSurname());
-	 * handyWorker.setScore(Score.NOT);
-	 * //Tener en cuenta Application y Curriculum
-	 * 
-	 * HandyWorker saved;
-	 * Collection<Actor> handyWorkers;
-	 * 
-	 * saved = this.actorService.saveHandyWorker(handyWorker);
-	 * handyWorkers = this.actorService.findAll();
-	 * 
-	 * Assert.isTrue(handyWorkers.contains(saved));
-	 * }
-	 */
+    /*
+     * public void loggedAsActor() { UserAccount userAccount; userAccount =
+     * LoginService.getPrincipal();
+     * Assert.isTrue(userAccount.getAuthorities().size() > 0); }
+     */
+
+    @Test
+    public void testCreateActor() {
+	Actor a = new Actor();
+	a = this.actorService.createActor("Luisa", "", "Perez",
+		"https://www.url2.com/example", "luisa@gmail.com",
+		"+34746952921", "Reina Mercedes", "luisaActor",
+		"81dc9bdb52d04dc20036dbd8313ed055");
+
+	this.actorService.save(a);
+	this.actorService.findAll();
+
+	Assert.isTrue(this.actorService.findAll().contains(a));
+    }
+
+    @Test
+    public void testNumberOfActors() {
+	Collection<Actor> all;
+	super.authenticate("PacoCustomer");
+	all = this.actorService.findAll();
+	Assert.isTrue(all.size() == 15);
+	super.authenticate(null);
+    }
+
+    @Test
+    public void testActorByUsername() {
+	Actor actor = new Actor();
+	super.authenticate("PacoCustomer");
+	actor = this.actorService.getActorByUsername("PacoCustomer");
+	Assert.isTrue(actor.getName().equals("Paco"));
+	super.authenticate(null);
+    }
+
+    @Test
+    public void testFindOne() {
+	Actor actor = new Actor();
+	super.authenticate("PacoCustomer");
+	actor = this.actorService.findOne(1873);
+	Assert.isTrue(actor.getId() == 1873);
+	super.authenticate(null);
+    }
+
+    @Test
+    public void testShowTutorials() {
+	super.authenticate("PacoCustomer");
+	Assert.isTrue(this.actorService.showTutorials().size() == 2);
+	super.authenticate(null);
+    }
+
+    @Test
+    public void testNumberOfBoxes() {
+	Actor actor = new Actor();
+	super.authenticate("PacoCustomer");
+	actor = this.actorService.getActorByUsername("PacoCustomer");
+	Assert.isTrue(this.actorService.getlistOfBoxes(actor).size() == 4);
+	super.authenticate(null);
+    }
+
+    @Test
+    public void TestShowHandyWorkers() {
+	// Actor actor = new Actor();
+	Tutorial tutorial = new Tutorial();
+	Map<HandyWorker, List<Tutorial>> map = new HashMap<HandyWorker, List<Tutorial>>();
+	// List<Tutorial>>();
+
+	// HandyWorker handy = new HandyWorker();
+	// List<HandyWorker> listHandy = new ArrayList<HandyWorker>();
+
+	super.authenticate("PacoCustomer");
+
+	tutorial = this.tutorialService.findOne(1904);
+	System.out.println(tutorial.getTitle());
+	map = this.actorService.showHandyWorkers(tutorial);
+	System.out.println(map.toString());
+
+	Assert.isTrue(!map.isEmpty());
+	super.authenticate(null);
+    }
+
+    @Test
+    public void testUpdateActorSpam() {
+	Actor actor = new Actor();
+	super.authenticate("PacoCustomer");
+	actor = this.actorService.getActorByUsername("PacoCustomer");
+	this.configurationService.isActorSuspicious(actor);
+	Assert.isTrue(actor.getHasSpam() == false);
+	super.authenticate(null);
+    }
 }
