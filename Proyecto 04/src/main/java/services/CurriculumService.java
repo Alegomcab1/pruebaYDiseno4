@@ -114,19 +114,11 @@ public class CurriculumService {
 	}
 
 	public void save(Curriculum curriculum) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.curriculumRepository.save(curriculum);
 
 	}
 
 	public void delete(Curriculum curriculum) {
-		this.educationalRecordService.deleteAll(curriculum.getEducationRecords());
-		this.endorserRecordService.deleteAll(curriculum.getEndorserRecords());
-		this.miscellandeousRecordService.deleteAll(curriculum.getMiscellaneousRecords());
-		this.profesionalRecordService.deleteAll(curriculum.getProfessionalRecords());
-		this.personalRecordService.delete(curriculum.getPersonalRecord());
 		this.curriculumRepository.delete(curriculum);
 
 	}

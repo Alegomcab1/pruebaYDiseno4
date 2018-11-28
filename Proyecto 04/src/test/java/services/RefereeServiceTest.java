@@ -18,7 +18,6 @@ import utilities.AbstractTest;
 import domain.Complaint;
 import domain.Note;
 import domain.Referee;
-import domain.Report;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -30,15 +29,11 @@ public class RefereeServiceTest extends AbstractTest {
 	//arbitrasoRF id = 1435;
 
 	@Autowired
-	private RefereeService			refereeService;
+	private RefereeService		refereeService;
 	@Autowired
-	private ComplaintService		complaintService;
+	private ComplaintService	complaintService;
 	@Autowired
-	private ReportService			reportService;
-	@Autowired
-	private ConfigurationService	configurationService;
-	@Autowired
-	private NoteService				noteService;
+	private ReportService		reportService;
 
 
 	@Test(expected = NullPointerException.class)
@@ -104,7 +99,7 @@ public class RefereeServiceTest extends AbstractTest {
 		int numberOfReportsOfReferee = loggedReferee.getReports().size();
 		int numberOfReportsOfComplaints = complaint.getReports().size();
 
-		Report reportSaved = this.refereeService.writeReportRegardingComplaint(complaint, "Descripcion", new ArrayList<String>(), new ArrayList<Note>());
+		this.refereeService.writeReportRegardingComplaint(complaint, "Descripcion", new ArrayList<String>(), new ArrayList<Note>());
 
 		int numberOfReports2 = this.reportService.findAll().size();
 		int numberOfReportsOfReferee2 = this.refereeService.securityAndReferee().getReports().size();
