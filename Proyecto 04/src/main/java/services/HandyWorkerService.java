@@ -110,34 +110,19 @@ public class HandyWorkerService {
 
 	}
 	public Collection<HandyWorker> findAll() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		return this.handyWorkerRepository.findAll();
 	}
 
 	public HandyWorker findOne(int id) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		return this.handyWorkerRepository.findOne(id);
 	}
 
 	public HandyWorker save(HandyWorker handyWorker) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-
-		Assert.isTrue(handyWorker.getId() == 0 || userAccount.equals(handyWorker.getUserAccount()));
 		return this.handyWorkerRepository.save(handyWorker);
 	}
 
 	public void delete(HandyWorker handyWorker) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
-		Assert.isTrue(handyWorker.getId() == 0 || userAccount.equals(handyWorker.getUserAccount()));
 		this.curriculumService.delete(handyWorker.getCurriculum());
 		this.handyWorkerRepository.delete(handyWorker);
 	}
@@ -170,17 +155,21 @@ public class HandyWorkerService {
 	//11.1 ------------------------------------------------------------------------------------------------------------------
 
 	public Collection<FixUpTask> showFixUpTasks() {
+
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 
 		return this.fixUpTaskService.findAll();
 	}
 
 	public Map<Customer, Collection<FixUpTask>> getFixUpTaskPerCustomer(int idFixUpTask) {
+
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 
 		Map<Customer, Collection<FixUpTask>> res = new HashMap<Customer, Collection<FixUpTask>>();
 
