@@ -8,11 +8,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.EndorserRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.EndorserRecord;
 
 @Service
@@ -24,19 +21,10 @@ public class EndorserRecordService {
 	@Autowired
 	private EndorserRecordRepository	endorserRecordRepository;
 
-	@Autowired
-	private HandyWorkerService			handyWorkerService;
-	@Autowired
-	private CurriculumService			curriculumService;
-
 
 	// Simple CRUD methods
 
 	public EndorserRecord create(String fullName, String email, String phoneNumber, String linkLinkedInProfile, List<String> comments) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		EndorserRecord endorserRecord = new EndorserRecord();
 		endorserRecord.setFullName(fullName);
@@ -50,21 +38,13 @@ public class EndorserRecordService {
 	}
 
 	public Collection<EndorserRecord> findAll() {
-		Collection<EndorserRecord> result;
-
-		result = this.endorserRecordRepository.findAll();
-
-		return result;
+		return this.endorserRecordRepository.findAll();
 	}
 	public EndorserRecord findOne(Integer id) {
-		EndorserRecord result = this.endorserRecordRepository.findOne(id);
-		return result;
+		return this.endorserRecordRepository.findOne(id);
 	}
 
 	public void save(EndorserRecord endorserRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.endorserRecordRepository.save(endorserRecord);
 	}
 

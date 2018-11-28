@@ -9,11 +9,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.ProfessionalRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.ProfessionalRecord;
 
 @Service
@@ -25,19 +22,11 @@ public class ProfessionalRecordService {
 	@Autowired
 	private ProfessionalRecordRepository	professionalRecordRepository;
 
-	@Autowired
-	private HandyWorkerService				handyWorkerService;
-	@Autowired
-	private CurriculumService				curriculumService;
-
 
 	// Simple CRUD methods
 
 	public ProfessionalRecord create(String nameCompany, Date startDate, Date endDate, String role, String linkAttachment, List<String> comments) {
 
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		ProfessionalRecord professionalRecord = new ProfessionalRecord();
 		professionalRecord.setNameCompany(nameCompany);
 		professionalRecord.setStartDate(startDate);
@@ -51,21 +40,13 @@ public class ProfessionalRecordService {
 	}
 
 	public Collection<ProfessionalRecord> findAll() {
-		Collection<ProfessionalRecord> result;
-
-		result = this.professionalRecordRepository.findAll();
-
-		return result;
+		return this.professionalRecordRepository.findAll();
 	}
 	public ProfessionalRecord findOne(Integer id) {
-		ProfessionalRecord result = this.professionalRecordRepository.findOne(id);
-		return result;
+		return this.professionalRecordRepository.findOne(id);
 	}
 
 	public void save(ProfessionalRecord professionalRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.professionalRecordRepository.save(professionalRecord);
 	}
 

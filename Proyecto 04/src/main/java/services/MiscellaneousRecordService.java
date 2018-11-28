@@ -8,11 +8,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.MiscellaneousRecordRepository;
-import security.LoginService;
-import security.UserAccount;
 import domain.MiscellaneousRecord;
 
 @Service
@@ -24,19 +21,10 @@ public class MiscellaneousRecordService {
 	@Autowired
 	private MiscellaneousRecordRepository	miscellaneousRecordRepository;
 
-	@Autowired
-	private HandyWorkerService				handyWorkerService;
-	@Autowired
-	private CurriculumService				curriculumService;
-
 
 	// Simple CRUD methods
 
 	public MiscellaneousRecord create(String title, String linkAttachment, List<String> comments) {
-
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 
 		MiscellaneousRecord miscellaneousRecord = new MiscellaneousRecord();
 		miscellaneousRecord.setTitle(title);
@@ -47,21 +35,13 @@ public class MiscellaneousRecordService {
 
 	}
 	public Collection<MiscellaneousRecord> findAll() {
-		Collection<MiscellaneousRecord> result;
-
-		result = this.miscellaneousRecordRepository.findAll();
-
-		return result;
+		return this.miscellaneousRecordRepository.findAll();
 	}
 	public MiscellaneousRecord findOne(Integer id) {
-		MiscellaneousRecord result = this.miscellaneousRecordRepository.findOne(id);
-		return result;
+		return this.miscellaneousRecordRepository.findOne(id);
 	}
 
 	public void save(MiscellaneousRecord niscellaneousRecord) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
 		this.miscellaneousRecordRepository.save(niscellaneousRecord);
 	}
 

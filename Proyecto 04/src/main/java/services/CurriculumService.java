@@ -12,15 +12,13 @@ import javax.transaction.Transactional;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.CurriculumRepository;
-import security.LoginService;
-import security.UserAccount;
 import utilities.RandomString;
 import domain.Curriculum;
 import domain.EducationRecord;
 import domain.EndorserRecord;
+import domain.HandyWorker;
 import domain.MiscellaneousRecord;
 import domain.PersonalRecord;
 import domain.ProfessionalRecord;
@@ -59,10 +57,6 @@ public class CurriculumService {
 
 	public Curriculum create(List<EndorserRecord> endorserRecords, List<MiscellaneousRecord> miscellaneousRecords, List<EducationRecord> educationRecords, List<ProfessionalRecord> professionalRecords, PersonalRecord personalRecord) {
 
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
-
 		Curriculum curriculum = new Curriculum();
 		curriculum.setTicker(this.generateTicker());
 		curriculum.setEndorserRecords(endorserRecords);
@@ -75,7 +69,7 @@ public class CurriculumService {
 
 	}
 
-	//Método auxiliar para generar el ticker-------------------------------
+	//MÃ©todo auxiliar para generar el ticker-------------------------------
 	private String generateTicker() {
 		String res = "";
 		Date date = null;
@@ -113,14 +107,21 @@ public class CurriculumService {
 
 	}
 
-	public void save(Curriculum curriculum) {
-		this.curriculumRepository.save(curriculum);
+	public Curriculum save(Curriculum curriculum) {
+		return this.curriculumRepository.save(curriculum);
 
 	}
 
 	public void delete(Curriculum curriculum) {
+		HandyWorker handyCurriculum = this.getHandyWorkerByCurriculum(curriculum.getId());
+		handyCurriculum.setCurriculum(null);
+		this.handyWorkerService.save(handyCurriculum);
 		this.curriculumRepository.delete(curriculum);
 
+	}
+
+	public HandyWorker getHandyWorkerByCurriculum(int id) {
+		return this.curriculumRepository.getHandyWorkerByCurriculum(id);
 	}
 
 }

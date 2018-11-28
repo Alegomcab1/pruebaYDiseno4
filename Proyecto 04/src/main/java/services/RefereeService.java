@@ -101,13 +101,13 @@ public class RefereeService {
 
 	// Methods ------------------------------------------------------
 
-	//Testeado
+	//Tested
 	public List<Complaint> unassignedComplaints() {
 		Referee loggedReferee = this.securityAndReferee();
 		return (List<Complaint>) this.refereeRepository.complaintsUnassigned();
 	}
 
-	//Testeado
+	//Tested
 	public Complaint assingComplaint(Complaint complaint) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> unassignedComplaints = (List<Complaint>) this.refereeRepository.complaintsUnassigned();
@@ -122,7 +122,7 @@ public class RefereeService {
 		return complaintSaved;
 	}
 
-	//Testeado
+	//Tested
 	public List<Complaint> selfAssignedComplaints() {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> res = new ArrayList<>();
@@ -135,19 +135,28 @@ public class RefereeService {
 		return res;
 	}
 
+	//Tested
 	public Note writeNoteReport(Report report, String mandatoryComment, List<String> optionalComments) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Report> lr = loggedReferee.getReports();
-		Report rep = new Report();
+		Report rep = null;
 		for (Report r : lr)
-			if (r == report)
-				r = rep;
+			if (r.getId() == report.getId() && r.getFinalMode() && report.getFinalMode())
+				rep = r;
 		Assert.notNull(rep);
 		Note note = this.noteService.create(mandatoryComment, optionalComments);
-		report.getNotes().add(note);
-		this.reportService.save(report);
+		Assert.notNull(note);
+		Note noteSaved = this.noteService.save(note);
+		Assert.notNull(noteSaved);
+
+		List<Note> notes = this.reportService.findOne(rep.getId()).getNotes();
+		notes.add(noteSaved);
+		rep.setNotes(notes);
+		Report reportSaved = this.reportService.save(rep);
+		Assert.notNull(reportSaved);
+
 		this.configurationService.isActorSuspicious(loggedReferee);
-		return note;
+		return noteSaved;
 	}
 
 	public Note writeComment(String comment, Note note) {
@@ -164,7 +173,7 @@ public class RefereeService {
 		return note;
 	}
 
-	//Testeado
+	//Tested
 	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments, List<Note> notes) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> lc = this.complaintService.findAll();
@@ -194,17 +203,35 @@ public class RefereeService {
 		return reportSaved;
 	}
 
-	public Report modifiedReport(Report report) {
+	//Tested
+	public Report modifyReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());
+		Assert.isTrue(loggedReferee.getReports().contains(this.reportService.findOne(report.getId())));
 		Report rp = this.reportService.save(report);
 		this.configurationService.isActorSuspicious(loggedReferee);
 		return rp;
 	}
 
+	//Tested
 	public void eliminateReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());
+		Assert.isTrue(loggedReferee.getReports().contains(this.reportService.findOne(report.getId())));
+
+		List<Report> reportsOfReferee = loggedReferee.getReports();
+		reportsOfReferee.remove(this.reportService.findOne(report.getId()));
+		loggedReferee.setReports(reportsOfReferee);
+		this.save(loggedReferee);
+
+		for (Complaint c : this.complaintService.findAll())
+			if (c.getReports().contains(this.reportService.findOne(report.getId()))) {
+				List<Report> reportsOfComplaint = c.getReports();
+				reportsOfComplaint.remove(this.reportService.findOne(report.getId()));
+				c.setReports(reportsOfComplaint);
+				this.complaintService.save(c);
+			}
+
 		this.reportService.delete(report);
 		this.configurationService.isActorSuspicious(loggedReferee);
 	}
