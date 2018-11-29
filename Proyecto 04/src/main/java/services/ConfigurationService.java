@@ -331,8 +331,8 @@ public class ConfigurationService {
      * worker. The score is computed building on the endorsements that they’ve
      * got. The system must analyse the comments in the endorsements and compute
      * the number of positive words (p) and the number of negative words (n).
-     * The score must be computed as p – n normalised to range -1.00 up to +1.00
-     * using a linear homothetic transformation.
+     * The score must be computed as p – n normalised to range -1.00 up to
+     * +1.00 using a linear homothetic transformation.
      */
 
     public Double computeScore(Endorser e) {
@@ -357,10 +357,11 @@ public class ConfigurationService {
 		    if (badWordsList.contains(word))
 			countBad = countBad - 1.0;
 		    total = countGood - countBad;
-		    parcialresult.add((countGood / total) + (countBad / total));
+
 		}
 
 	    }
+	parcialresult.add((countGood / total) + (countBad / total));
 	Double res = 0.0;
 	Double cont = 0.0;
 

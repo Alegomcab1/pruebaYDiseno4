@@ -1564,6 +1564,8 @@
 			<list>
 				<value>Example of comment</value>
 				<value>Example of comment 2</value>
+				<value>good, great</value>
+				<value>bad</value>
 			</list>
 		</property>
 		<property name="writtenBy" ref="customer1" />
