@@ -14,7 +14,7 @@ public class CreditCard {
 
 	private String	holderName;
 	private String	brandName;
-	private Integer	number;
+	private Long	number;
 	private Integer	expirationMonth;
 	private Integer	expirationYear;
 	private Integer	cvvCode;
@@ -43,11 +43,11 @@ public class CreditCard {
 	}
 
 	@NotNull
-	public Integer getNumber() {
+	public Long getNumber() {
 		return this.number;
 	}
 
-	public void setNumber(Integer number) {
+	public void setNumber(Long number) {
 		this.number = number;
 	}
 

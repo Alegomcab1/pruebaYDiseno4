@@ -85,7 +85,7 @@ public class CustomerService {
 	}
 
 	//Auxiliar methods
-	private Customer securityAndCustomer() {
+	public Customer securityAndCustomer() {
 		UserAccount userAccount = LoginService.getPrincipal();
 		String username = userAccount.getUsername();
 		Customer loggedCustomer = this.customerRepository.getCustomerByUsername(username);
@@ -95,7 +95,7 @@ public class CustomerService {
 		return loggedCustomer;
 	}
 
-	private static boolean validateCreditCardNumber(String str) {
+	public static boolean validateCreditCardNumber(String str) {
 
 		int[] ints = new int[str.length()];
 		for (int i = 0; i < str.length(); i++)
@@ -281,7 +281,7 @@ public class CustomerService {
 
 		if (application.getStatus().equals(Status.ACCEPTED))
 			Assert.notNull(creditCard);
-		Integer number = creditCard.getNumber();
+		Long number = creditCard.getNumber();
 		Assert.isTrue(CustomerService.validateCreditCardNumber(number.toString()));
 
 		Application applicationSave = this.applicationService.save(application);
