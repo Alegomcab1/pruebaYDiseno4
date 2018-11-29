@@ -27,6 +27,9 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 	@Query("select h from HandyWorker h join h.userAccount u where u.username = ?1")
 	public HandyWorker getHandyWorkerByUsername(String username);
 
+	@Query("select h from Endorser h join h.userAccount u where u.username = ?1")
+	public HandyWorker getEndorserByUsername(String username);
+
 	@Query("select a from Customer a join a.fixUpTasks b where b.id = ?1")
 	public Customer getCustomerByFixUpTask(int id);
 
