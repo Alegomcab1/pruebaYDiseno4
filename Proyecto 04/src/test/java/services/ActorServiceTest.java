@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.Collection;
@@ -19,112 +20,90 @@ import domain.HandyWorker;
 import domain.Tutorial;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring/datasource.xml",
-	"classpath:spring/config/packages.xml" })
+@ContextConfiguration(locations = {
+	"classpath:spring/datasource.xml", "classpath:spring/config/packages.xml"
+})
 @Transactional
 public class ActorServiceTest extends AbstractTest {
 
-    // Service under test
+	// Service under test
 
-    @Autowired
-    private ActorService actorService;
+	@Autowired
+	private ActorService			actorService;
 
-    @Autowired
-    private ConfigurationService configurationService;
+	@Autowired
+	private ConfigurationService	configurationService;
 
-    @Autowired
-    private TutorialService tutorialService;
+	@Autowired
+	private TutorialService			tutorialService;
 
-    // TEST---------------------------------------------------------------------
 
-    /*
-     * public void loggedAsActor() { UserAccount userAccount; userAccount =
-     * LoginService.getPrincipal();
-     * Assert.isTrue(userAccount.getAuthorities().size() > 0); }
-     */
+	// TEST---------------------------------------------------------------------
 
-    @Test
-    public void testCreateActor() {
-	Actor a = new Actor();
-	a = this.actorService.createActor("Luisa", "", "Perez",
-		"https://www.url2.com/example", "luisa@gmail.com",
-		"+34746952921", "Reina Mercedes", "luisaActor",
-		"81dc9bdb52d04dc20036dbd8313ed055");
+	/*
+	 * public void loggedAsActor() { UserAccount userAccount; userAccount =
+	 * LoginService.getPrincipal();
+	 * Assert.isTrue(userAccount.getAuthorities().size() > 0); }
+	 */
 
-	this.actorService.save(a);
-	this.actorService.findAll();
+	@Test
+	public void testNumberOfActors() {
+		Collection<Actor> all;
+		super.authenticate("PacoCustomer");
+		all = this.actorService.findAll();
+		Assert.isTrue(all.size() == 15);
+		super.authenticate(null);
+	}
 
-	Assert.isTrue(this.actorService.findAll().contains(a));
-    }
+	@Test
+	public void testActorByUsername() {
+		Actor actor = new Actor();
+		super.authenticate("PacoCustomer");
+		actor = this.actorService.getActorByUsername("PacoCustomer");
+		Assert.isTrue(actor.getName().equals("Paco"));
+		super.authenticate(null);
+	}
 
-    @Test
-    public void testNumberOfActors() {
-	Collection<Actor> all;
-	super.authenticate("PacoCustomer");
-	all = this.actorService.findAll();
-	Assert.isTrue(all.size() == 15);
-	super.authenticate(null);
-    }
+	@Test
+	public void testShowTutorials() {
+		super.authenticate("PacoCustomer");
+		Assert.isTrue(this.actorService.showTutorials().size() == 2);
+		super.authenticate(null);
+	}
 
-    @Test
-    public void testActorByUsername() {
-	Actor actor = new Actor();
-	super.authenticate("PacoCustomer");
-	actor = this.actorService.getActorByUsername("PacoCustomer");
-	Assert.isTrue(actor.getName().equals("Paco"));
-	super.authenticate(null);
-    }
+	@Test
+	public void testNumberOfBoxes() {
+		Actor actor = new Actor();
+		super.authenticate("PacoCustomer");
+		actor = this.actorService.getActorByUsername("PacoCustomer");
+		Assert.isTrue(this.actorService.getlistOfBoxes(actor).size() == 4);
+		super.authenticate(null);
+	}
 
-    @Test
-    public void testFindOne() {
-	Actor actor = new Actor();
-	super.authenticate("PacoCustomer");
-	actor = this.actorService.findOne(1879);
-	System.out.println(actor);
-	Assert.isTrue(actor.getId() == 1879);
-	super.authenticate(null);
-    }
+	@Test
+	public void TestShowHandyWorkers() {
+		// Actor actor = new Actor();
+		Tutorial tutorial = new Tutorial();
+		Map<HandyWorker, List<Tutorial>> map = new HashMap<HandyWorker, List<Tutorial>>();
+		// List<Tutorial>>();
 
-    @Test
-    public void testShowTutorials() {
-	super.authenticate("PacoCustomer");
-	Assert.isTrue(this.actorService.showTutorials().size() == 2);
-	super.authenticate(null);
-    }
+		// HandyWorker handy = new HandyWorker();
+		// List<HandyWorker> listHandy = new ArrayList<HandyWorker>();
 
-    @Test
-    public void testNumberOfBoxes() {
-	Actor actor = new Actor();
-	super.authenticate("PacoCustomer");
-	actor = this.actorService.getActorByUsername("PacoCustomer");
-	Assert.isTrue(this.actorService.getlistOfBoxes(actor).size() == 4);
-	super.authenticate(null);
-    }
+		super.authenticate("PacoCustomer");
+		tutorial = this.tutorialService.findOne(1904);
+		map = this.actorService.showHandyWorkers(tutorial);
+		Assert.isTrue(!map.isEmpty());
+		super.authenticate(null);
+	}
 
-    @Test
-    public void TestShowHandyWorkers() {
-	// Actor actor = new Actor();
-	Tutorial tutorial = new Tutorial();
-	Map<HandyWorker, List<Tutorial>> map = new HashMap<HandyWorker, List<Tutorial>>();
-	// List<Tutorial>>();
-
-	// HandyWorker handy = new HandyWorker();
-	// List<HandyWorker> listHandy = new ArrayList<HandyWorker>();
-
-	super.authenticate("PacoCustomer");
-	tutorial = this.tutorialService.findOne(1904);
-	map = this.actorService.showHandyWorkers(tutorial);
-	Assert.isTrue(!map.isEmpty());
-	super.authenticate(null);
-    }
-
-    @Test
-    public void testUpdateActorSpam() {
-	Actor actor = new Actor();
-	super.authenticate("PacoCustomer");
-	actor = this.actorService.getActorByUsername("PacoCustomer");
-	this.configurationService.isActorSuspicious(actor);
-	Assert.isTrue(actor.getHasSpam() == false);
-	super.authenticate(null);
-    }
+	@Test
+	public void testUpdateActorSpam() {
+		Actor actor = new Actor();
+		super.authenticate("PacoCustomer");
+		actor = this.actorService.getActorByUsername("PacoCustomer");
+		this.configurationService.isActorSuspicious(actor);
+		Assert.isTrue(actor.getHasSpam() == false);
+		super.authenticate(null);
+	}
 }

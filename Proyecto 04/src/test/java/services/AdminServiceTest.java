@@ -113,10 +113,11 @@ public class AdminServiceTest extends AbstractTest {
 		savedAdmin = this.adminService.save(admin);
 
 		List<Admin> admins = new ArrayList<>();
-		Admin admin1 = this.adminService.findOne(savedAdmin.getId());
-		admins.add(admin1);
+		admins = this.adminService.findAll();
+		//Admin admins = this.adminService.findOne(savedAdmin.getId());
+		//admins.add(admin1);
 
-		Assert.isTrue(admins.size() == 1);
+		Assert.isTrue(admins.contains(savedAdmin));
 
 		super.authenticate(null);
 	}
@@ -307,7 +308,7 @@ public class AdminServiceTest extends AbstractTest {
 		Float numberComplaintsPerFixUpTask = map.get("numberComplaintsPerFixUpTask");
 		Float notesPerReferee = map.get("notesPerReferee");
 		Float resultado1 = (float) 1.5714;
-		Float resultado2 = (float) 1.0;
+		Float resultado2 = (float) 0.8;
 
 		Assert.isTrue(numberComplaintsPerFixUpTask.equals(resultado1));
 		Assert.isTrue(notesPerReferee.equals(resultado2));
@@ -343,7 +344,7 @@ public class AdminServiceTest extends AbstractTest {
 
 	@Test
 	public void testBroadcastMessage() {
-		this.authenticate("admin");
+
 		this.authenticate("davidAdmin");
 
 		Admin admin = this.adminService.getAdminByUsername("davidAdmin");
@@ -354,6 +355,8 @@ public class AdminServiceTest extends AbstractTest {
 
 		Message message = this.messageService.create("subject", "body", Priority.LOW, recipients);
 		Message saved = this.messageService.save(message);
+		System.out.println(message);
+		System.out.println(saved);
 
 		this.adminService.broadcastMessage(saved);
 
@@ -380,7 +383,6 @@ public class AdminServiceTest extends AbstractTest {
 
 		this.authenticate(null);
 	}
-
 	@Test
 	public void testBanSuspiciousActor() {
 		this.authenticate("admin");

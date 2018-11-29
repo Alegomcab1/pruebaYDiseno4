@@ -71,7 +71,7 @@ public class ApplicationServiceTest extends AbstractTest {
 		List<Application> l = (List<Application>) this.applicationService.findAll();
 		HandyWorker h = l.get(0).getHandyWorker();
 
-		this.applicationService.deleteAllFronHAndyWorker(h.getApplications());
+		this.applicationService.deleteAllFromHandyWorker(h.getApplications());
 		Assert.isTrue(h.getApplications().isEmpty());
 
 	}

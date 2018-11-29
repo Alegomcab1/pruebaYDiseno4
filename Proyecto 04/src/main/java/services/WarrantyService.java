@@ -33,10 +33,7 @@ public class WarrantyService {
 	}
 
 	public Warranty save(Warranty warranty) {
-		if (warranty.getIsDraftMode())
-			return this.warrantyRepository.save(warranty);
-		else
-			throw new IllegalAccessError();
+		return this.warrantyRepository.save(warranty);
 	}
 
 	public Warranty findOne(int warrantyId) {
@@ -44,8 +41,7 @@ public class WarrantyService {
 	}
 
 	public void delete(Warranty warranty) {
-		if (warranty.getIsDraftMode())
-			this.warrantyRepository.delete(warranty);
+		this.warrantyRepository.delete(warranty);
 	}
 
 	public List<Warranty> findAll() {

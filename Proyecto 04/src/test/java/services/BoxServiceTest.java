@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.ArrayList;
@@ -17,117 +18,118 @@ import domain.Box;
 import domain.Message;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring/datasource.xml",
-	"classpath:spring/config/packages.xml" })
+@ContextConfiguration(locations = {
+	"classpath:spring/datasource.xml", "classpath:spring/config/packages.xml"
+})
 @Transactional
 public class BoxServiceTest extends AbstractTest {
 
-    @Autowired
-    public BoxService boxService;
+	@Autowired
+	public BoxService		boxService;
 
-    @Autowired
-    public ActorService actorService;
+	@Autowired
+	public ActorService		actorService;
 
-    @Autowired
-    public MessageService messageService;
+	@Autowired
+	public MessageService	messageService;
 
-    @Test
-    public void testGetRecievedBoxByActor() {
-	Actor actor = new Actor();
-	Box box = new Box();
-	super.authenticate("PacoCustomer");
 
-	actor = this.actorService.getActorByUsername("PacoCustomer");
-	box = this.boxService.getRecievedBoxByActor(actor);
-	Assert.isTrue(box.getName().equals("Received messages"));
-	super.authenticate(null);
-    }
+	@Test
+	public void testGetRecievedBoxByActor() {
+		Actor actor = new Actor();
+		Box box = new Box();
+		super.authenticate("PacoCustomer");
 
-    @Test
-    public void testGetSpamBoxByActor() {
-	Actor actor = new Actor();
-	Box box = new Box();
-	super.authenticate("PacoCustomer");
+		actor = this.actorService.getActorByUsername("PacoCustomer");
+		box = this.boxService.getRecievedBoxByActor(actor);
+		Assert.isTrue(box.getName().equals("Received messages"));
+		super.authenticate(null);
+	}
 
-	actor = this.actorService.getActorByUsername("PacoCustomer");
-	box = this.boxService.getSpamBoxByActor(actor);
-	Assert.isTrue(box.getName().equals("Spam"));
-	super.authenticate(null);
-    }
+	@Test
+	public void testGetSpamBoxByActor() {
+		Actor actor = new Actor();
+		Box box = new Box();
+		super.authenticate("PacoCustomer");
 
-    @Test
-    public void testGetTrashBoxByActor() {
-	Actor actor = new Actor();
-	Box box = new Box();
-	super.authenticate("PacoCustomer");
+		actor = this.actorService.getActorByUsername("PacoCustomer");
+		box = this.boxService.getSpamBoxByActor(actor);
+		Assert.isTrue(box.getName().equals("Spam"));
+		super.authenticate(null);
+	}
 
-	actor = this.actorService.getActorByUsername("PacoCustomer");
-	box = this.boxService.getTrashBoxByActor(actor);
-	Assert.isTrue(box.getName().equals("Trash"));
-	super.authenticate(null);
-    }
+	@Test
+	public void testGetTrashBoxByActor() {
+		Actor actor = new Actor();
+		Box box = new Box();
+		super.authenticate("PacoCustomer");
 
-    @Test
-    public void testGetCurrentBoxByMessage() {
-	// message 1915 esta en la caja 1819 que es SENT del actor 1818 que es
-	// Referee(Arbitraso) con userName ArbitrasoRF
-	// Se le pasa un message Message m
+		actor = this.actorService.getActorByUsername("PacoCustomer");
+		box = this.boxService.getTrashBoxByActor(actor);
+		Assert.isTrue(box.getName().equals("Trash"));
+		super.authenticate(null);
+	}
 
-	// Actor actor = new Actor();
-	List<Box> box = new ArrayList<Box>();
-	Message message = new Message();
+	@Test
+	public void testGetCurrentBoxByMessage() {
+		// message 1915 esta en la caja 1819 que es SENT del actor 1818 que es
+		// Referee(Arbitraso) con userName ArbitrasoRF
+		// Se le pasa un message Message m
 
-	super.authenticate("PacoCustomer");
+		// Actor actor = new Actor();
+		List<Box> box = new ArrayList<Box>();
+		Message message = new Message();
 
-	message = this.messageService.findOne(1915);
-	box = this.boxService.getCurrentBoxByMessage(message);
+		super.authenticate("PacoCustomer");
+		List<Message> messages = new ArrayList<Message>();
+		messages = this.messageService.findAll2();
+		message = this.messageService.findOne(messages.get(1).getId());
+		box = this.boxService.getCurrentBoxByMessage(message);
 
-	Assert.isTrue(box.size() == 3);
-	super.authenticate(null);
+		System.out.println(box.size());
+		Assert.isTrue(box.size() > 0);
+		super.authenticate(null);
 
-    }
+	}
 
-    @Test
-    public void testSaveBox() {
-	this.authenticate("PacoCustomer");
-	Box fatherBox = this.actorService.getActorByUsername("PacoCustomer")
-		.getBoxes().get(0);
-	Box box = this.boxService.create("testBox", fatherBox);
+	@Test
+	public void testSaveBox() {
+		this.authenticate("PacoCustomer");
+		Box fatherBox = this.actorService.getActorByUsername("PacoCustomer").getBoxes().get(0);
+		Box box = this.boxService.create("testBox", fatherBox);
 
-	Box save = this.boxService.save(box);
-	Assert.isTrue(this.actorService.getActorByUsername("PacoCustomer")
-		.getBoxes().contains(save));
+		Box save = this.boxService.save(box);
+		Assert.isTrue(this.actorService.getActorByUsername("PacoCustomer").getBoxes().contains(save));
 
-	this.authenticate(null);
-    }
+		this.authenticate(null);
+	}
 
-    @Test
-    public void testDelete() {
-	this.authenticate("pepe4HW");
-	Actor actor = new Actor();
-	Box box = new Box();
-	actor = this.actorService.getActorByUsername("Pepe4HW");
-	box = actor.getBoxes().get(5);
+	@Test
+	public void testDelete() {
+		this.authenticate("pepe4HW");
+		Actor actor = new Actor();
+		Box box = new Box();
+		actor = this.actorService.getActorByUsername("Pepe4HW");
+		box = actor.getBoxes().get(5);
 
-	System.out.println();
+		System.out.println();
 
-	// HW with 6 box = pepe4HW
-	this.boxService.deleteBox(box);
+		// HW with 6 box = pepe4HW
+		this.boxService.deleteBox(box);
 
-	System.out.println(actor.getBoxes());
-	System.out.println(this.boxService.findOne(1872));
+		System.out.println(actor.getBoxes());
+		System.out.println(this.boxService.findOne(1872));
 
-	Assert.isTrue(this.actorService.getActorByUsername("Pepe4HW")
-		.getBoxes().size() == 5);
-	this.authenticate(null);
-    }
+		Assert.isTrue(this.actorService.getActorByUsername("Pepe4HW").getBoxes().size() == 5);
+		this.authenticate(null);
+	}
 
-    /*
-     * public void deleteBox(Box box) { Assert.isTrue(!box.getIsSystem());
-     * List<Box> sonBoxes = this.boxRepository.getSonsBox(box); if
-     * (sonBoxes.size() == 0) { for (Message m : box.getMessages())
-     * this.messageService.delete(m); this.boxRepository.delete(box); } else for
-     * (Box sonBox : sonBoxes) this.deleteBox(sonBox); this.deleteBox(box);
-     */
+	/*
+	 * public void deleteBox(Box box) { Assert.isTrue(!box.getIsSystem());
+	 * List<Box> sonBoxes = this.boxRepository.getSonsBox(box); if
+	 * (sonBoxes.size() == 0) { for (Message m : box.getMessages())
+	 * this.messageService.delete(m); this.boxRepository.delete(box); } else for
+	 * (Box sonBox : sonBoxes) this.deleteBox(sonBox); this.deleteBox(box);
+	 */
 
 }

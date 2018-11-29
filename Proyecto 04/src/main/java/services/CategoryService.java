@@ -45,7 +45,7 @@ public class CategoryService {
 		else
 			for (Category subCategory : subCategories)
 				this.categoryRepository.delete(subCategory);
-		this.delete(category);
+
 	}
 
 	public List<Category> findAll() {

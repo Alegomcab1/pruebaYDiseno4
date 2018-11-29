@@ -2573,7 +2573,7 @@
     
     
     <bean class="domain.Box" id="miscellaneous1">
-		<property value="Spam" name="name" />
+		<property value="miscellaneous1" name="name" />
 		<property value="false" name="isSystem" />
 		<property name="messages">
 			<list>
@@ -2583,7 +2583,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="miscellaneous2">
-		<property value="Spam" name="name" />
+		<property value="miscellaneous2" name="name" />
 		<property value="false" name="isSystem" />
 		<property name="fatherBox" ref ="miscellaneous1"/>
 		<property name="messages">
