@@ -16,12 +16,15 @@ import repositories.AdminRepository;
 import security.Authority;
 import security.LoginService;
 import security.UserAccount;
+import security.UserAccountService;
 import domain.Actor;
 import domain.Admin;
+import domain.Box;
 import domain.Category;
 import domain.Customer;
 import domain.HandyWorker;
 import domain.Message;
+import domain.SocialProfile;
 import domain.Warranty;
 
 @Service
@@ -49,39 +52,104 @@ public class AdminService {
 	@Autowired
 	private BoxService				boxService;
 
+	@Autowired
+	private UserAccountService		userAccountService;
+
 
 	// 1. Create user accounts for new administrators.
 	public void loggedAsAdmin() {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-
 		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
 		Assert.isTrue(authorities.get(0).toString().equals("ADMIN"));
 	}
-
 	public Admin createAdmin(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password) {
 
+		/*
+		 * private String name;
+		 * private String middleName;
+		 * private String surname;
+		 * private String photo;
+		 * private String email;
+		 * private String phoneNumber;
+		 * private String address;
+		 * private Boolean hasSpam;
+		 * 
+		 * //Dependencias
+		 * private List<SocialProfile> socialProfiles;
+		 * private List<Box> boxes;
+		 * 
+		 * private UserAccount userAccount;
+		 */
+
 		Admin admin = new Admin();
-		admin = (Admin) this.actorService.createActor(name, middleName, surname, photo, email, phoneNumber, address, userName, password);
-		List<Authority> authorities = new ArrayList<Authority>();
-		admin.getUserAccount().setAuthorities(authorities);
+
+		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
+		List<Box> boxes = new ArrayList<Box>();
 
 		UserAccount userAccountAdmin = new UserAccount();
+
+		userAccountAdmin.setUsername(userName);
+		userAccountAdmin.setPassword(password);
+
+		Box spamBox = new Box();
+		List<Message> messages1 = new ArrayList<>();
+		spamBox.setIsSystem(true);
+		spamBox.setMessages(messages1);
+		spamBox.setName("Spam");
+
+		Box trashBox = new Box();
+		List<Message> messages2 = new ArrayList<>();
+		trashBox.setIsSystem(true);
+		trashBox.setMessages(messages2);
+		trashBox.setName("Trash");
+
+		Box sentBox = new Box();
+		List<Message> messages3 = new ArrayList<>();
+		sentBox.setIsSystem(true);
+		sentBox.setMessages(messages3);
+		sentBox.setName("Sent messages");
+
+		Box receivedBox = new Box();
+		List<Message> messages4 = new ArrayList<>();
+		receivedBox.setIsSystem(true);
+		receivedBox.setMessages(messages4);
+		receivedBox.setName("Received messages");
+
+		boxes.add(receivedBox);
+		boxes.add(sentBox);
+		boxes.add(spamBox);
+		boxes.add(trashBox);
+
+		admin.setName(name);
+		admin.setMiddleName(middleName);
+		admin.setSurname(surname);
+		admin.setPhoto(photo);
+		admin.setEmail(email);
+		admin.setPhoneNumber(phoneNumber);
+		admin.setAddress(address);
+		admin.setSocialProfiles(socialProfiles);
+		admin.setBoxes(boxes);
+		admin.setHasSpam(false);
+
+		List<Authority> authorities = new ArrayList<Authority>();
+
 		Authority authority = new Authority();
 		authority.setAuthority(Authority.ADMIN);
 		authorities.add(authority);
+		userAccountAdmin.setAuthorities(authorities);
+		userAccountAdmin.setIsNotLocked(true);
+		admin.setUserAccount(userAccountAdmin);
 
 		return admin;
 	}
 
 	public Admin save(Admin admin) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		// Comprobacion en todos los SAVE de los ACTORES
-		Assert.isTrue(admin.getId() == 0 || userAccount.equals(admin.getUserAccount()));
-
+		//Assert.isTrue(admin.getId() == 0 || userAccount.equals(admin.getUserAccount()));
+		this.userAccountService.save(admin.getUserAccount());
 		return this.adminRepository.save(admin);
 	}
 
@@ -113,16 +181,21 @@ public class AdminService {
 		return this.warrantyService.save(warranty);
 	}
 
+	public void warrantyToFinalMode(Warranty warranty) {
+		this.loggedAsAdmin();
+
+		warranty.setIsDraftMode(false);
+		this.warrantyService.save(warranty);
+	}
+
 	public List<Warranty> listWarranty() {
 		this.loggedAsAdmin();
 		return this.warrantyService.findAll();
 	}
 
-	public void updateWarranty(Warranty warranty, String tittle, Boolean draftMode, List<String> laws, List<String> terms) {
+	public void updateWarranty(Warranty warranty, String tittle, List<String> laws, List<String> terms) {
 		this.loggedAsAdmin();
 		warranty.setTitle(tittle);
-
-		warranty.setIsDraftMode(draftMode);
 
 		List<String> newLaws = warranty.getLaws();
 		newLaws.addAll(laws);
@@ -131,6 +204,7 @@ public class AdminService {
 		List<String> newTerms = warranty.getTerms();
 		newTerms.addAll(terms);
 		warranty.setTerms(newTerms);
+		this.warrantyService.save(warranty);
 
 	}
 
@@ -198,16 +272,23 @@ public class AdminService {
 
 	public void deleteCategory(Category category) {
 		this.loggedAsAdmin();
-
+		//System.out.println(category.getSubCategories().size());
+		/*
+		 * if (category.getSubCategories().size() == 0) {
+		 * System.out.println("Pasa por el if");
+		 * this.categoryService.delete(category);
+		 * 
+		 * } else {
+		 * System.out.println("Pasa por el else");
+		 * for (Category c : category.getSubCategories())
+		 * this.deleteCategory(c);
+		 * }
+		 */
 		this.categoryService.delete(category);
 	}
-
 	// 4. Broadcast a message to all of the actors of the system.
 
 	// Guardar copia del mensaje para cada uno de los usuarios
-	public void createGlobalMessage(Message message) {
-		this.loggedAsAdmin();
-	}
 
 	/*
 	 * Display a dashboard with the following information: The average, the
@@ -281,7 +362,7 @@ public class AdminService {
 	public Map<String, List<Customer>> tenPercentMoreApplicationsCustomers() {
 		this.loggedAsAdmin();
 
-		final Map<String, List<Customer>> result;
+		Map<String, List<Customer>> result;
 		List<Customer> calculations1;
 		// List<HandyWorker> calculations2;
 
@@ -329,7 +410,7 @@ public class AdminService {
 		this.loggedAsAdmin();
 
 		Float numberComplaintsPerFixUpTask, notesPerReferee;
-		final Map<String, Float> result;
+		Map<String, Float> result;
 
 		numberComplaintsPerFixUpTask = this.adminRepository.numberComplaintsPerFixUpTask();
 		notesPerReferee = this.adminRepository.notesPerReferee();
@@ -391,18 +472,18 @@ public class AdminService {
 	}
 
 	public void broadcastMessage(Message message) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
-		List<Actor> receivers = this.actorService.findAll();
+		this.loggedAsAdmin();
 
-		this.messageService.sendMessage(message.getSubject(), message.getBody(), message.getPriority(), receivers);
+		List<Actor> actors = new ArrayList<Actor>();
+		actors = this.actorService.findAll();
+		message.setReceivers(actors);
+
+		Message saved = this.messageService.save(message);
+		this.messageService.sendMessage(saved);
 	}
 
 	public void banSuspiciousActor(Actor a) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		Assert.isTrue(a.getHasSpam());
 
@@ -411,11 +492,26 @@ public class AdminService {
 	}
 
 	public void unBanSuspiciousActor(Actor a) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ADMIN"));
+		this.loggedAsAdmin();
 
 		a.getUserAccount().setIsNotLocked(true);
 		this.actorService.save(a);
 	}
+
+	public List<Admin> findAll() {
+		return this.adminRepository.findAll();
+	}
+
+	public Admin getAdminByUsername(String a) {
+		return this.adminRepository.getAdminByUserName(a);
+	}
+
+	public Admin findOne(int adminId) {
+		return this.findOne(adminId);
+	}
+
+	public List<Admin> findAll2() {
+		return this.adminRepository.findAll2();
+	}
+
 }
