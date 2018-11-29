@@ -2170,7 +2170,7 @@
 	
 	
 	<bean class="domain.Box" id="sentReferee1">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2180,7 +2180,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedReferee1">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2208,7 +2208,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="sentReferee2">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2218,7 +2218,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedReferee2">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2246,7 +2246,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="sentReferee3">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2256,7 +2256,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedReferee3">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2284,7 +2284,7 @@
 	</bean>
 	
     <bean class="domain.Box" id="sentReferee4">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2294,7 +2294,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedReferee4">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2324,7 +2324,7 @@
 	
 	
 	<bean class="domain.Box" id="sentSponsor1">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2334,7 +2334,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedSponsor1">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2363,7 +2363,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="sentSponsor2">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2373,7 +2373,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedSponsor2">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2402,7 +2402,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="sentHandyWorker1">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2412,7 +2412,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedHandyWorker1">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2445,7 +2445,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="sentHandyWorker2">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2455,7 +2455,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedHandyWorker2">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2488,7 +2488,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="sentHandyWorker3">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2498,7 +2498,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedHandyWorker3">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2530,7 +2530,7 @@
 	</bean>
 	
     <bean class="domain.Box" id="sentHandyWorker4">
-		<property value="Sent" name="name" />
+		<property value="Sent messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
@@ -2540,7 +2540,7 @@
 	</bean>
 	
 	<bean class="domain.Box" id="receivedHandyWorker4">
-		<property value="Received" name="name" />
+		<property value="Received messages" name="name" />
 		<property value="true" name="isSystem" />
 		<property name="messages">
 		    <list>
