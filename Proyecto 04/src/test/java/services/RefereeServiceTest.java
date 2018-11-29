@@ -195,4 +195,23 @@ public class RefereeServiceTest extends AbstractTest {
 
 		super.authenticate(null);
 	}
+
+	@Test
+	public void testWriteComment() {
+		super.authenticate("arbitrasoRF");
+
+		Referee loggedReferee = this.refereeService.securityAndReferee();
+		List<Note> notes = (List<Note>) this.refereeService.notesReferee(loggedReferee.getId());
+		Note note = notes.get(0);
+		Assert.notNull(note);
+
+		int numberOfComments = this.noteService.findOne(note.getId()).getOptionalComments().size();
+		Note noteSaved = this.refereeService.writeComment("Comentario de prueba", note);
+		Assert.notNull(noteSaved);
+		int numberOfComments2 = this.noteService.findOne(note.getId()).getOptionalComments().size();
+
+		Assert.isTrue(numberOfComments + 1 == numberOfComments2);
+
+		super.authenticate(null);
+	}
 }

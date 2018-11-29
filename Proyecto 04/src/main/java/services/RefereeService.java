@@ -159,18 +159,22 @@ public class RefereeService {
 		return noteSaved;
 	}
 
+	//Testing
 	public Note writeComment(String comment, Note note) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Note> notes = (List<Note>) this.refereeRepository.notesReferee(loggedReferee.getId());
-		Note no = new Note();
+		Note no = null;
 		for (Note n : notes)
-			if (n == note)
-				n = no;
+			if (n.getId() == note.getId())
+				no = n;
 		Assert.notNull(no);
-		note.getOptionalComments().add(comment);
-		this.noteService.save(note);
+		Note noteFound = this.noteService.findOne(no.getId());
+		List<String> comments = noteFound.getOptionalComments();
+		comments.add(comment);
+		noteFound.setOptionalComments(comments);
+		Note noteSaved = this.noteService.save(noteFound);
 		this.configurationService.isActorSuspicious(loggedReferee);
-		return note;
+		return noteSaved;
 	}
 
 	//Tested
