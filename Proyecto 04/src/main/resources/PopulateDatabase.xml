@@ -328,6 +328,7 @@
 		<property name="applications">
 			<list>
 				<ref bean="application2" />
+				<ref bean="application9" />
 			</list>
 		</property>
 		<property name="categories">
@@ -404,9 +405,7 @@
 
 		<property name="applications">
 			<list>
-				<ref bean="application5" />
-				<ref bean="application6" />
-			
+				<ref bean="application5" />		
 			</list>
 		</property>
 		<property name="categories">
@@ -443,7 +442,7 @@
 
 		<property name="applications">
 			<list>
-				<ref bean="application7" />
+				<ref bean="application6" />
 			</list>
 		</property>
 		<property name="categories">
@@ -479,7 +478,7 @@
 
 		<property name="applications">
 			<list>
-				<ref bean="application8" />
+				<ref bean="application7" />
 			</list>
 		</property>
 		<property name="categories">
@@ -515,7 +514,7 @@
 
 		<property name="applications">
 			<list>
-				<ref bean="application9" />
+				<ref bean="application8" />
 			</list>
 		</property>
 		<property name="categories">
@@ -792,7 +791,6 @@
 		<property name="reports">
 			<list>
 				<ref bean="report1" />
-				<ref bean="report5" />
 			</list>
 		</property>
 		<property name="referee" ref="referee1"/>
@@ -1227,18 +1225,6 @@
 		</property>
 		<property name="finalMode" value="true"/>
 	</bean>
-	
-	<bean id="report5" class="domain.Report">
-		<property name="moment" value="03/04/2018 11:30" />
-		<property name="description" value="description1" />
-		<property name="attachments">
-			<list>
-				<value>attachment1</value>
-				<value>attachment2</value>
-			</list>
-		</property>
-		<property name="finalMode" value="true"/>
-	</bean>
 	<!-- END OF REPORT -->
 
 	<!-- NOTE -->
@@ -1300,7 +1286,6 @@
 		<property name="reports">
 			<list>
 				<ref bean="report1" />
-				<ref bean="report5" />
 			</list>
 		</property>
 		<property name="boxes">
@@ -1451,8 +1436,6 @@
 		<property name="applications">
 			<list>
 				<ref bean="application1" />
-				<ref bean="application5" />
-				<ref bean="application6" />
 				<ref bean="application7" />
 				<ref bean="application8" />
 				<ref bean="application9" />
@@ -1484,6 +1467,7 @@
 		<property name="applications">
 			<list>
 				<ref bean="application2" />
+				<ref bean="application3" />
 			</list>
 		</property>
 		<property name="boxes">
@@ -1511,7 +1495,6 @@
 		<property name="make" value="Pepe Luis Martinez" />
 		<property name="applications">
 			<list>
-				<ref bean="application3" />
 				<ref bean="application4" />
 			</list>
 		</property>

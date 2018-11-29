@@ -88,4 +88,14 @@ public class ApplicationService {
 	public void delete(Application application) {
 		this.applicationRepository.delete(application);
 	}
+
+	// Test methods ------------------------------------------
+
+	public Collection<Application> getApplicationsHandy(HandyWorker handyWorker) {
+		return this.applicationRepository.getAllApplicationsFromAHandyWorker(handyWorker.getId());
+	}
+
+	public Collection<Application> getApplicationsFix(FixUpTask fixupTask) {
+		return this.applicationRepository.getAllApplicationsFromAFixUpTask(fixupTask.getId());
+	}
 }
