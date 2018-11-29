@@ -51,6 +51,8 @@ public class BoxService {
 
     public Box save(Box box) {
 	Assert.isTrue(!box.getIsSystem());
+	this.actorService.loggedAsActor();
+
 	UserAccount userAccount;
 	userAccount = LoginService.getPrincipal();
 	Actor actor = this.actorService.getActorByUsername(userAccount
@@ -61,6 +63,7 @@ public class BoxService {
     }
 
     public Box updateBox(Box box) {
+	this.actorService.loggedAsActor();
 	Assert.isTrue(!box.getIsSystem());
 	return this.save(box);
     }
