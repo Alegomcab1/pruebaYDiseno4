@@ -19,17 +19,25 @@ import security.Authority;
 import security.LoginService;
 import security.UserAccount;
 import domain.Application;
+import domain.Box;
 import domain.Complaint;
 import domain.Curriculum;
 import domain.Customer;
+import domain.EducationRecord;
 import domain.Endorser;
+import domain.EndorserRecord;
 import domain.Endorsment;
 import domain.Finder;
 import domain.FixUpTask;
 import domain.HandyWorker;
+import domain.Message;
+import domain.MiscellaneousRecord;
 import domain.Note;
+import domain.PersonalRecord;
 import domain.Phase;
+import domain.ProfessionalRecord;
 import domain.Report;
+import domain.SocialProfile;
 import domain.Status;
 import domain.Tutorial;
 
@@ -68,6 +76,8 @@ public class HandyWorkerService {
 	private ComplaintService		complaintService;
 	@Autowired
 	private EndorserService			endorserSevice;
+	@Autowired
+	private CustomerService			customerService;
 
 
 	// Simple CRUD methods --------------------------------------------------------------------------------------------
@@ -75,27 +85,74 @@ public class HandyWorkerService {
 	public HandyWorker createHandyWorker(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Double score, List<Tutorial> tutorials, Curriculum curriculum) {
 
 		HandyWorker handyWorker = new HandyWorker();
-		handyWorker = (HandyWorker) this.endorserSevice.createEndorser(name, middleName, surname, photo, email, phoneNumber, address, userName, password, score);
 		handyWorker.setMake(handyWorker.getName() + "" + handyWorker.getMiddleName() + "" + handyWorker.getSurname());
 
+		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
+		List<Box> boxes = new ArrayList<Box>();
+
 		List<FixUpTask> f = new ArrayList<FixUpTask>();
+
+		UserAccount userAccountActor = new UserAccount();
+		userAccountActor.setUsername(userName);
+		userAccountActor.setPassword(password);
+
+		Box spamBox = new Box();
+		List<Message> messages1 = new ArrayList<>();
+		spamBox.setIsSystem(true);
+		spamBox.setMessages(messages1);
+		spamBox.setName("Spam");
+
+		Box trashBox = new Box();
+		List<Message> messages2 = new ArrayList<>();
+		trashBox.setIsSystem(true);
+		trashBox.setMessages(messages2);
+		trashBox.setName("Trash");
+
+		Box sentBox = new Box();
+		List<Message> messages3 = new ArrayList<>();
+		sentBox.setIsSystem(true);
+		sentBox.setMessages(messages3);
+		sentBox.setName("Sent messages");
+
+		Box receivedBox = new Box();
+		List<Message> messages4 = new ArrayList<>();
+		receivedBox.setIsSystem(true);
+		receivedBox.setMessages(messages4);
+		receivedBox.setName("Received messages");
+
+		boxes.add(receivedBox);
+		boxes.add(sentBox);
+		boxes.add(spamBox);
+		boxes.add(trashBox);
 
 		Date thisMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime());
 		Date afterMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() + 1);
 		Finder finder = this.finderService.createFinder("finder", "", "", 0.0, 0.0, thisMoment, afterMoment, f);
+
 		handyWorker.setFinder(finder);
 		handyWorker.setCurriculum(curriculum);
 		handyWorker.setTutorials(tutorials);
+		handyWorker.setName(name);
+		handyWorker.setUserAccount(userAccountActor);
+		handyWorker.setAddress(address);
+		handyWorker.setEmail(email);
+		handyWorker.setMiddleName(middleName);
+		handyWorker.setPhoneNumber(phoneNumber);
+		handyWorker.setScore(score);
+
+		handyWorker.setHasSpam(false);
 
 		List<Authority> authorities = new ArrayList<Authority>();
-		handyWorker.getUserAccount().setAuthorities(authorities);
 
-		UserAccount userAccountHandyWorker = new UserAccount();
 		Authority authority = new Authority();
 		authority.setAuthority(Authority.HANDYWORKER);
 		authorities.add(authority);
+
+		handyWorker.getUserAccount().setAuthorities(authorities);
+		//NOTLOCKED A TRUE EN LA INICIALIZACION, O SE CREARA UNA CUENTA BANEADA
+		handyWorker.getUserAccount().setIsNotLocked(true);
 
 		return handyWorker;
 
@@ -150,6 +207,59 @@ public class HandyWorkerService {
 		return lr;
 	}
 
+	public Curriculum addCurriculum(PersonalRecord personalRecord, List<ProfessionalRecord> professionalRecords, List<EducationRecord> educationRecords, List<MiscellaneousRecord> miscellaneousRecords, List<EndorserRecord> endorserRecords) {
+
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
+
+		Assert.isNull(logguedHandyWorker.getCurriculum());
+
+		Curriculum curriculum = this.curriculumService.create(endorserRecords, miscellaneousRecords, educationRecords, professionalRecords, personalRecord);
+		logguedHandyWorker.setCurriculum(curriculum);
+		this.handyWorkerRepository.save(logguedHandyWorker);
+		this.curriculumService.save(curriculum);
+		return curriculum;
+
+	}
+
+	public void deleteCurriculum(Curriculum curriculum) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
+
+		Assert.isTrue(logguedHandyWorker.getCurriculum().equals(curriculum));
+
+		this.curriculumService.delete(curriculum);
+
+	}
+
+	public Curriculum editCurriculum(Curriculum curriculum, PersonalRecord personalRecord, List<ProfessionalRecord> professionalRecords, List<EducationRecord> educationRecords, List<MiscellaneousRecord> miscellaneousRecords,
+		List<EndorserRecord> endorserRecords) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
+
+		Assert.isTrue(logguedHandyWorker.getCurriculum().equals(curriculum));
+		curriculum.setEducationRecords(educationRecords);
+		curriculum.setEndorserRecords(endorserRecords);
+		curriculum.setMiscellaneousRecords(miscellaneousRecords);
+		curriculum.setPersonalRecord(personalRecord);
+		curriculum.setProfessionalRecords(professionalRecords);
+		return this.curriculumService.save(curriculum);
+	}
 	// Other business methods -------------------------------------------------------------------------------------------
 
 	//11.1 ------------------------------------------------------------------------------------------------------------------
@@ -297,7 +407,7 @@ public class HandyWorkerService {
 		Assert.isTrue(application.getHandyWorker().equals(logguedHandyWorker));
 		Assert.isTrue(application.getStatus().equals(Status.ACCEPTED));
 
-		Collection<Phase> newPhases = this.handyWorkerRepository.getPhasesByApplication(application.getId());
+		List<Phase> newPhases = (List<Phase>) this.handyWorkerRepository.getPhasesByApplication(application.getId());
 		newPhases.add(newPhase);
 
 		FixUpTask newFixUpTask = application.getFixUpTask();
@@ -565,29 +675,34 @@ public class HandyWorkerService {
 		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
 		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 
-		System.out.println(userAccount);
-		System.out.println(endorsment.getWrittenBy().getUserAccount());
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(endorsment.getWrittenBy().getUserAccount().equals(userAccount));
 
-		Assert.isTrue(endorsment.getWrittenTo().getUserAccount().getAuthorities().contains("CUSTOMER"));
+		authorities = (List<Authority>) endorsment.getWrittenTo().getUserAccount().getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("CUSTOMER"));
+
 		List<Integer> ids = new ArrayList<Integer>();
-		ids = this.handyWorkerRepository.getCustomersFromHandyWorker(userAccount.getId());
+		ids = this.handyWorkerRepository.getCustomersFromHandyWorker(logguedHandyWorker.getId());
 
-		Assert.isTrue(ids.contains(endorsment.getWrittenTo().getUserAccount().getId()));
+		Customer customer = this.customerService.getCustomerByUserName(endorsment.getWrittenTo().getUserAccount().getUsername());
+		Assert.isTrue(ids.contains(customer.getId()));
 
+		Endorsment newEndorsment = this.endorsmentService.save(endorsment);
 		List<Endorsment> end = endorsment.getWrittenTo().getEndorsments();
-		end.add(endorsment);
+		end.add(newEndorsment);
+
 		Endorser endorser1 = this.endorserSevice.findOne(endorsment.getWrittenTo().getId());
 		endorser1.setEndorsments(end);
+		this.endorserSevice.save(endorser1);
 
 		end = endorsment.getWrittenBy().getEndorsments();
 		end.add(endorsment);
 		Endorser endorser2 = this.endorserSevice.findOne(endorsment.getWrittenTo().getId());
 		endorser2.setEndorsments(end);
-		this.endorserSevice.save(endorser1);
 		this.endorserSevice.save(endorser2);
-		this.endorsmentService.save(endorsment);
+		this.endorsmentService.save(newEndorsment);
 
 	}
 
@@ -599,10 +714,21 @@ public class HandyWorkerService {
 		HandyWorker logguedHandyWorker = new HandyWorker();
 		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
-		List<Endorsment> endorsments = new ArrayList<Endorsment>();
-
-		endorsments = this.handyWorkerRepository.getEndorsmentsByEndorser(logguedHandyWorker.getId());
-
+		List<Endorsment> endorsments = logguedHandyWorker.getEndorsments();
 		return endorsments;
+	}
+
+	//Test Methods ------------------------------------------
+	public HandyWorker getHandyWorkerByUsername(String username) {
+
+		return this.handyWorkerRepository.getHandyWorkerByUsername(username);
+	}
+	public List<FixUpTask> getFixUpTaskByHandyWorker(HandyWorker handyWorker) {
+
+		return this.handyWorkerRepository.getFixUpTasksFromHandyWorker(handyWorker.getId());
+	}
+	public Collection<Phase> getPhasesByApplication(Application application) {
+
+		return this.handyWorkerRepository.getPhasesByApplication(application.getId());
 	}
 }
