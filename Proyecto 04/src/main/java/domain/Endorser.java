@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
@@ -23,7 +22,6 @@ public class Endorser extends Actor {
 
 	@Valid
 	@OneToMany
-	@ElementCollection(targetClass = Endorsment.class)
 	public List<Endorsment> getEndorsments() {
 		return this.endorsments;
 	}

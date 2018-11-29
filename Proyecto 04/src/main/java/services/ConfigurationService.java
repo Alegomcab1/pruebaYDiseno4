@@ -331,8 +331,8 @@ public class ConfigurationService {
      * worker. The score is computed building on the endorsements that they’ve
      * got. The system must analyse the comments in the endorsements and compute
      * the number of positive words (p) and the number of negative words (n).
-     * The score must be computed as p – n normalised to range -1.00 up to +1.00
-     * using a linear homothetic transformation.
+     * The score must be computed as p – n normalised to range -1.00 up to
+     * +1.00 using a linear homothetic transformation.
      */
 
     public Double computeScore(Endorser e) {
@@ -349,18 +349,20 @@ public class ConfigurationService {
 	List<Endorsment> endorsments = e.getEndorsments();
 
 	for (Endorsment endo : endorsments)
-	    for (String g : endo.getComments()) {
-		List<String> commentSplit = Arrays.asList(g.split("\\W"));
-		for (String word : commentSplit) {
-		    if (goodWordsList.contains(word))
-			countGood = countGood + 1.0;
-		    if (badWordsList.contains(word))
-			countBad = countBad - 1.0;
-		    total = countGood - countBad;
-		    parcialresult.add((countGood / total) + (countBad / total));
-		}
+	    if (endo.getWrittenTo().equals(e))
+		for (String g : endo.getComments()) {
+		    List<String> commentSplit = Arrays.asList(g.split("\\W"));
+		    for (String word : commentSplit) {
+			if (goodWordsList.contains(word))
+			    countGood = countGood + 1.0;
+			if (badWordsList.contains(word))
+			    countBad = countBad - 1.0;
+			total = countGood - countBad;
 
-	    }
+		    }
+
+		}
+	parcialresult.add((countGood / total) + (countBad / total));
 	Double res = 0.0;
 	Double cont = 0.0;
 

@@ -1442,13 +1442,15 @@
 		<property name="score" value="0" />
 		<property name="endorsments">
 			<list>
-				<ref bean="endorsment2" />
+				<ref bean="endorsment1" />
 			</list>
 		</property>
 		<property name="make" value="Pepe Luis Martinez" />
 		<property name="applications">
 			<list>
 				<ref bean="application1" />
+				<ref bean="application5" />
+				<ref bean="application6" />
 				<ref bean="application7" />
 				<ref bean="application8" />
 				<ref bean="application9" />
@@ -1564,6 +1566,8 @@
 			<list>
 				<value>Example of comment</value>
 				<value>Example of comment 2</value>
+				<value>good, great</value>
+				<value>bad</value>
 			</list>
 		</property>
 		<property name="writtenBy" ref="customer1" />
