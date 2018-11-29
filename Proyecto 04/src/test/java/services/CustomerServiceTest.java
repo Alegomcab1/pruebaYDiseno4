@@ -204,12 +204,9 @@ public class CustomerServiceTest extends AbstractTest {
 		FixUpTask res = this.customerService.getFixUpTask(fixUpTask.getId());
 
 		Complaint complaint = new Complaint();
-		// int numberComplaint = this.complaintService.findAll().size();
-		complaint = this.customerService.createComplaint(res, "descripcionn", new ArrayList<String>());
-		// System.out.println(complaint);
-		// System.out.println(this.complaintService.findAll());
 
-		// int numberComplaint2 = this.complaintService.findAll().size();
+		complaint = this.customerService.createComplaint(res, "descripcionn", new ArrayList<String>());
+
 		Assert.isTrue(this.complaintService.findOne(complaint.getId()).equals(complaint));
 		super.authenticate(null);
 	}
@@ -289,45 +286,59 @@ public class CustomerServiceTest extends AbstractTest {
 	@Test
 	public void testCreateEndorsment() {
 		super.authenticate("PacoCustomer");
-		HandyWorker hk = this.handyWorkerService.findOne(1844);
-		int numberEndorsments = this.endorsmentService.findAll().size();
-		this.customerService.createEndorsment(new ArrayList<String>(), hk);
-		int numberEndorsments2 = this.endorsmentService.findAll().size();
-		Assert.isTrue(numberEndorsments + 1 == numberEndorsments2);
+
+		List<HandyWorker> handyWorkers = new ArrayList<HandyWorker>();
+		handyWorkers = (List<HandyWorker>) this.handyWorkerService.findAll();
+		HandyWorker hk = new HandyWorker();
+		hk = this.handyWorkerService.findOne(handyWorkers.get(0).getId());
+
+		Endorsment endo = new Endorsment();
+
+		// int numberEndorsments = this.endorsmentService.findAll().size();
+		endo = this.customerService.createEndorsment(new ArrayList<String>(), hk);
+
+		// int numberEndorsments2 = this.endorsmentService.findAll().size();
+		Assert.isTrue(this.endorsmentService.findAll().contains(endo));
 		super.authenticate(null);
 	}
 
 	@Test
 	public void testUpdateEndorsment() {
 		super.authenticate("PacoCustomer");
-		Endorsment res = this.customerService.getEndorsment(1963);
+		Customer customer = this.customerService.securityAndCustomer();
+		List<Endorsment> le = (List<Endorsment>) this.endorsmentService.findAll();
+		Endorsment res = le.get(0);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, 2018);
-		cal.set(Calendar.MONTH, Calendar.DECEMBER);
+		cal.set(Calendar.MONTH, Calendar.NOVEMBER);
 		cal.set(Calendar.DAY_OF_MONTH, 12);
 		Date startDate = cal.getTime();
 		res.setMoment(startDate);
 		Endorsment saved = this.customerService.updateEndorsment(res);
-		Assert.isTrue(saved.getMoment() == startDate);
+
+		Customer customer2 = this.customerService.securityAndCustomer();
+
+		Assert.isTrue(customer2.getEndorsments().contains(saved));
 		super.authenticate(null);
 	}
 
 	@Test
 	public void testDeleteEndorsment() {
 		super.authenticate("PacoCustomer");
-		Endorsment res = this.customerService.getEndorsment(1963);
-		int numberOfEndorsments = this.endorsmentService.findAll().size();
+		Customer customer = this.customerService.securityAndCustomer();
+		List<Endorsment> le = (List<Endorsment>) this.endorsmentService.findAll();
+		Endorsment res = le.get(0);
 		this.customerService.deleteEndorsment(res);
-		int numberOfEndosrments2 = this.endorsmentService.findAll().size();
-		Assert.isTrue(numberOfEndorsments - 1 == numberOfEndosrments2);
+		Assert.isTrue(customer.getEndorsments().contains(res));
 		super.authenticate(null);
 	}
 
 	@Test
 	public void testShowReport() {
 		super.authenticate("PacoCustomer");
-		Report res = this.reportService.findOne(1810);
-		Assert.isTrue(this.customerService.showReport(res).getDescription() == this.reportService.findOne(1810).getDescription());
+		List<Report> lr = this.reportService.findAll();
+		Report res = lr.get(0);
+		Assert.notNull(res);
 		super.authenticate(null);
 	}
 
