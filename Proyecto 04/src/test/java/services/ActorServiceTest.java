@@ -33,9 +33,6 @@ public class ActorServiceTest extends AbstractTest {
     private ConfigurationService configurationService;
 
     @Autowired
-    private HandyWorkerService handyWorkerService;
-
-    @Autowired
     private TutorialService tutorialService;
 
     // TEST---------------------------------------------------------------------
@@ -82,8 +79,9 @@ public class ActorServiceTest extends AbstractTest {
     public void testFindOne() {
 	Actor actor = new Actor();
 	super.authenticate("PacoCustomer");
-	actor = this.actorService.findOne(1873);
-	Assert.isTrue(actor.getId() == 1873);
+	actor = this.actorService.findOne(1879);
+	System.out.println(actor);
+	Assert.isTrue(actor.getId() == 1879);
 	super.authenticate(null);
     }
 
@@ -114,12 +112,8 @@ public class ActorServiceTest extends AbstractTest {
 	// List<HandyWorker> listHandy = new ArrayList<HandyWorker>();
 
 	super.authenticate("PacoCustomer");
-
 	tutorial = this.tutorialService.findOne(1904);
-	System.out.println(tutorial.getTitle());
 	map = this.actorService.showHandyWorkers(tutorial);
-	System.out.println(map.toString());
-
 	Assert.isTrue(!map.isEmpty());
 	super.authenticate(null);
     }

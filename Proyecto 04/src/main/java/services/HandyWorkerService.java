@@ -22,6 +22,7 @@ import domain.Application;
 import domain.Complaint;
 import domain.Curriculum;
 import domain.Customer;
+import domain.Endorser;
 import domain.Endorsment;
 import domain.Finder;
 import domain.FixUpTask;
@@ -357,7 +358,9 @@ public class HandyWorkerService {
 
 		Assert.isTrue(logguedHandyWorker.getFinder().getId() == finder.getId());
 
+		logguedHandyWorker.setFinder(finder);
 		this.finderService.save(finder);
+		this.handyWorkerRepository.save(logguedHandyWorker);
 	}
 
 	//37.2 --------------------------------------------------------------------------------------------------------------------------------------
@@ -397,18 +400,18 @@ public class HandyWorkerService {
 	//37.4 --------------------------------------------------------------------------------------------------------------------------------------
 	public void createNoteFromHandyWorker(int idComplaint, Note note, int idReport) {
 
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(!note.getMandatoryComment().equals(""));
 		Assert.notNull(note.getMandatoryComment());
 		Assert.notNull(note.getMoment());
 
 		List<Complaint> complaints = new ArrayList<Complaint>();
-		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(userAccount.getId());
+		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(logguedHandyWorker.getId());
 		Complaint complaint = new Complaint();
 		complaint = this.complaintService.findOne(idComplaint);
 
@@ -432,17 +435,16 @@ public class HandyWorkerService {
 
 	}
 	//37.5 --------------------------------------------------------------------------------------------------------------------------------------
-	//TODO REVISAR
 	public void writeCommentFromHandyWorker(int idComplaint, String comment, int idReport, int idNote) {
 
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		List<Complaint> complaints = new ArrayList<Complaint>();
-		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(userAccount.getId());
+		complaints = this.handyWorkerRepository.getComplaintsFromHandyWorker(logguedHandyWorker.getId());
 		Complaint complaint = new Complaint();
 		complaint = this.complaintService.findOne(idComplaint);
 
@@ -467,35 +469,43 @@ public class HandyWorkerService {
 
 	//49.1
 	public List<Tutorial> showTutorials() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		List<Tutorial> tutorials = new ArrayList<Tutorial>();
 
-		tutorials = this.handyWorkerRepository.getAllTutorialsFromAHandyWorker(userAccount.getId());
+		tutorials = this.handyWorkerRepository.getAllTutorialsFromAHandyWorker(logguedHandyWorker.getId());
 
 		return tutorials;
 	}
 
 	public void deleteTutorial(Tutorial tutorial) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(logguedHandyWorker.getTutorials().contains(tutorial));
 
+		List<Tutorial> tutorials = logguedHandyWorker.getTutorials();
+		tutorials.remove(tutorial);
+
+		logguedHandyWorker.setTutorials(tutorials);
+
 		this.tutorialService.delete(tutorial);
+		this.handyWorkerRepository.save(logguedHandyWorker);
 	}
 
 	public void updateTutorial(Tutorial tutorial) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(logguedHandyWorker.getTutorials().contains(tutorial));
 
@@ -503,36 +513,46 @@ public class HandyWorkerService {
 	}
 
 	public void createTutorial(Tutorial newTutorial) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
+
 		Assert.isTrue(!logguedHandyWorker.getTutorials().contains(newTutorial));
 
-		this.tutorialService.save(newTutorial);
+		Tutorial tutorial = this.tutorialService.save(newTutorial);
+		List<Tutorial> tutorials = logguedHandyWorker.getTutorials();
+		tutorials.add(tutorial);
+		logguedHandyWorker.setTutorials(tutorials);
+
+		this.handyWorkerRepository.save(logguedHandyWorker);
 
 	}
 
 	//49.2
 	public void deleteEndorsment(Endorsment endorsment) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(logguedHandyWorker.getEndorsments().contains(endorsment));
+		List<Endorsment> endorsments = logguedHandyWorker.getEndorsments();
+		endorsments.remove(endorsment);
+		logguedHandyWorker.setEndorsments(endorsments);
 
 		this.endorsmentService.delete(endorsment);
+		this.handyWorkerRepository.save(logguedHandyWorker);
 	}
 
 	public void updateEndorsment(Endorsment endorsment) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
 		HandyWorker logguedHandyWorker = new HandyWorker();
-		logguedHandyWorker = this.handyWorkerRepository.findOne(userAccount.getId());
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		Assert.isTrue(logguedHandyWorker.getEndorsments().contains(endorsment));
 
@@ -541,9 +561,12 @@ public class HandyWorkerService {
 
 	//TODO COMPROBAR
 	public void createEndorsment(Endorsment endorsment) {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
+		System.out.println(userAccount);
+		System.out.println(endorsment.getWrittenBy().getUserAccount());
 
 		Assert.isTrue(endorsment.getWrittenBy().getUserAccount().equals(userAccount));
 
@@ -552,18 +575,33 @@ public class HandyWorkerService {
 		ids = this.handyWorkerRepository.getCustomersFromHandyWorker(userAccount.getId());
 
 		Assert.isTrue(ids.contains(endorsment.getWrittenTo().getUserAccount().getId()));
+
+		List<Endorsment> end = endorsment.getWrittenTo().getEndorsments();
+		end.add(endorsment);
+		Endorser endorser1 = this.endorserSevice.findOne(endorsment.getWrittenTo().getId());
+		endorser1.setEndorsments(end);
+
+		end = endorsment.getWrittenBy().getEndorsments();
+		end.add(endorsment);
+		Endorser endorser2 = this.endorserSevice.findOne(endorsment.getWrittenTo().getId());
+		endorser2.setEndorsments(end);
+		this.endorserSevice.save(endorser1);
+		this.endorserSevice.save(endorser2);
 		this.endorsmentService.save(endorsment);
 
 	}
 
 	public List<Endorsment> showEndorsments() {
-		UserAccount userAccount;
-		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("HANDYWORKER"));
+		UserAccount userAccount = LoginService.getPrincipal();
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("HANDYWORKER"));
+
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerRepository.getHandyWorkerByUsername(userAccount.getUsername());
 
 		List<Endorsment> endorsments = new ArrayList<Endorsment>();
 
-		endorsments = this.handyWorkerRepository.getEndorsmentsByEndorser(userAccount.getId());
+		endorsments = this.handyWorkerRepository.getEndorsmentsByEndorser(logguedHandyWorker.getId());
 
 		return endorsments;
 	}

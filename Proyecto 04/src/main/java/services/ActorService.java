@@ -48,7 +48,7 @@ public class ActorService {
 	return this.actorRepository.findAll();
     }
 
-    public Actor findOne(Integer id) {
+    public Actor findOne(int id) {
 	return this.actorRepository.findOne(id);
     }
 
