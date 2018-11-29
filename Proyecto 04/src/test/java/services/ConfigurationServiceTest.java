@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
-import domain.Customer;
+import domain.HandyWorker;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/datasource.xml",
@@ -25,6 +25,9 @@ public class ConfigurationServiceTest extends AbstractTest {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private HandyWorkerService handyWorkerService;
 
     @Test
     public void testGoodWords() {
@@ -64,11 +67,11 @@ public class ConfigurationServiceTest extends AbstractTest {
     public void testComputeScore() {
 	super.authenticate("PacoCustomer");
 	Double res = 0.0;
-	Customer customer = new Customer();
-	customer = this.customerService.getCustomerByUserName("PacoCustomer");
+	HandyWorker handyWorker = new HandyWorker();
+	handyWorker = this.handyWorkerService
+		.getHandyWorkerByUsername("PepeHW");
 
-	res = this.configurationService.computeScore(customer);
-
+	res = this.configurationService.computeScore(handyWorker);
 	Assert.isTrue(res == 0.3333333333333333);
 
 	super.authenticate(null);
