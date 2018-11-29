@@ -349,18 +349,19 @@ public class ConfigurationService {
 	List<Endorsment> endorsments = e.getEndorsments();
 
 	for (Endorsment endo : endorsments)
-	    for (String g : endo.getComments()) {
-		List<String> commentSplit = Arrays.asList(g.split("\\W"));
-		for (String word : commentSplit) {
-		    if (goodWordsList.contains(word))
-			countGood = countGood + 1.0;
-		    if (badWordsList.contains(word))
-			countBad = countBad - 1.0;
-		    total = countGood - countBad;
+	    if (endo.getWrittenTo().equals(e))
+		for (String g : endo.getComments()) {
+		    List<String> commentSplit = Arrays.asList(g.split("\\W"));
+		    for (String word : commentSplit) {
+			if (goodWordsList.contains(word))
+			    countGood = countGood + 1.0;
+			if (badWordsList.contains(word))
+			    countBad = countBad - 1.0;
+			total = countGood - countBad;
+
+		    }
 
 		}
-
-	    }
 	parcialresult.add((countGood / total) + (countBad / total));
 	Double res = 0.0;
 	Double cont = 0.0;
