@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.ArrayList;
@@ -17,34 +18,39 @@ import domain.Tutorial;
 @Transactional
 public class TutorialService {
 
-    @Autowired
-    private TutorialRepository tutorialRepository;
+	@Autowired
+	private TutorialRepository	tutorialRepository;
 
-    public Tutorial create(String title, Date lastUpdate, String sumary) {
-	Tutorial tutorial = new Tutorial();
-	List<Section> sections = new ArrayList<Section>();
 
-	tutorial.setLastUpdate(lastUpdate);
-	tutorial.setTitle(title);
-	tutorial.setSumary(sumary);
-	tutorial.setSections(sections);
+	public Tutorial create(String title, Date lastUpdate, String sumary) {
+		Tutorial tutorial = new Tutorial();
+		List<Section> sections = new ArrayList<Section>();
 
-	return tutorial;
-    }
+		tutorial.setLastUpdate(lastUpdate);
+		tutorial.setTitle(title);
+		tutorial.setSumary(sumary);
+		tutorial.setSections(sections);
 
-    public Tutorial save(Tutorial tutorial) {
-	return this.tutorialRepository.save(tutorial);
-    }
+		return tutorial;
+	}
 
-    public List<Tutorial> findAll() {
-	return this.tutorialRepository.findAll();
-    }
+	public Tutorial save(Tutorial tutorial) {
+		return this.tutorialRepository.save(tutorial);
+	}
 
-    public void delete(Tutorial tutorial) {
-	this.tutorialRepository.delete(tutorial);
-    }
+	public List<Tutorial> findAll() {
+		return this.tutorialRepository.findAll();
+	}
 
-    public Tutorial findOne(int id) {
-	return this.tutorialRepository.findOne(id);
-    }
+	public void delete(Tutorial tutorial) {
+		this.tutorialRepository.delete(tutorial);
+	}
+
+	public Tutorial findOne(int id) {
+		return this.tutorialRepository.findOne(id);
+	}
+
+	public void deleteAll(List<Tutorial> tutorials) {
+		this.tutorialRepository.deleteInBatch(tutorials);
+	}
 }

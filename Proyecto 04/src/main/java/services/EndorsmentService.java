@@ -68,4 +68,8 @@ public class EndorsmentService {
 		this.endorsmentRepository.delete(endorsment);
 	}
 
+	public void deleteAll(List<Endorsment> endorsments) {
+		this.endorsmentRepository.deleteInBatch(endorsments);
+	}
+
 }
