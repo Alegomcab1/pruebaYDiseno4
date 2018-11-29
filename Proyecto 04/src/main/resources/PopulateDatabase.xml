@@ -791,6 +791,7 @@
 		<property name="reports">
 			<list>
 				<ref bean="report1" />
+				<ref bean="report5" />
 			</list>
 		</property>
 		<property name="referee" ref="referee1"/>
@@ -1225,6 +1226,17 @@
 		</property>
 		<property name="finalMode" value="true"/>
 	</bean>
+	<bean id="report5" class="domain.Report">	
+		<property name="moment" value="03/04/2018 11:30" />	
+		<property name="description" value="description1" />	
+		<property name="attachments">	
+			<list>	
+				<value>attachment1</value>	
+				<value>attachment2</value>	
+			</list>	
+		</property>	
+		<property name="finalMode" value="true"/>	
+	</bean>
 	<!-- END OF REPORT -->
 
 	<!-- NOTE -->
@@ -1286,6 +1298,7 @@
 		<property name="reports">
 			<list>
 				<ref bean="report1" />
+				<ref bean="report5" />
 			</list>
 		</property>
 		<property name="boxes">
