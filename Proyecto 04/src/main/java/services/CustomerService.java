@@ -17,20 +17,18 @@ import security.Authority;
 import security.LoginService;
 import security.UserAccount;
 import domain.Application;
-import domain.Box;
 import domain.Category;
 import domain.Complaint;
 import domain.CreditCard;
 import domain.Customer;
+import domain.Endorser;
 import domain.Endorsment;
 import domain.Finder;
 import domain.FixUpTask;
 import domain.HandyWorker;
-import domain.Message;
 import domain.Note;
 import domain.Phase;
 import domain.Report;
-import domain.SocialProfile;
 import domain.Status;
 import domain.Warranty;
 
@@ -66,78 +64,11 @@ public class CustomerService {
 
 
 	// Simple CRUD methods
-	public Customer create(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password) {
+	public Customer create(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score) {
 
-		// SE DECLARA EL SPONSOR
-		Customer s = new Customer();
+		Customer result = (Customer) this.endorserService.createEndorser(name, middleName, surname, photo, email, phoneNumber, address, userName, password, score);
 
-		// SE CREAN LAS LISTAS VACIAS
-		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
-		List<Box> boxes = new ArrayList<Box>();
-		List<FixUpTask> fixUpTasks = new ArrayList<FixUpTask>();
-
-		// SE AÑADE EL USERNAME Y EL PASSWORD
-		UserAccount userAccountActor = new UserAccount();
-		userAccountActor.setUsername(userName);
-		userAccountActor.setPassword(password);
-
-		// SE CREAN LAS CAJAS POR DEFECTO
-		Box spamBox = new Box();
-		List<Message> messages1 = new ArrayList<>();
-		spamBox.setIsSystem(true);
-		spamBox.setMessages(messages1);
-		spamBox.setName("Spam");
-
-		Box trashBox = new Box();
-		List<Message> messages2 = new ArrayList<>();
-		trashBox.setIsSystem(true);
-		trashBox.setMessages(messages2);
-		trashBox.setName("Trash");
-
-		Box sentBox = new Box();
-		List<Message> messages3 = new ArrayList<>();
-		sentBox.setIsSystem(true);
-		sentBox.setMessages(messages3);
-		sentBox.setName("Sent messages");
-
-		Box receivedBox = new Box();
-		List<Message> messages4 = new ArrayList<>();
-		receivedBox.setIsSystem(true);
-		receivedBox.setMessages(messages4);
-		receivedBox.setName("Received messages");
-
-		boxes.add(receivedBox);
-		boxes.add(sentBox);
-		boxes.add(spamBox);
-		boxes.add(trashBox);
-
-		// SE AÑADEN TODOS LOS ATRIBUTOS
-		s.setName(name);
-		s.setMiddleName(middleName);
-		s.setSurname(surname);
-		s.setPhoto(photo);
-		s.setEmail(email);
-		s.setPhoneNumber(phoneNumber);
-		s.setAddress(address);
-		s.setSocialProfiles(socialProfiles);
-		s.setBoxes(boxes);
-		s.setUserAccount(userAccountActor);
-		s.setFixUpTasks(fixUpTasks);
-		s.setScore(0.);
-		// SPAM SIEMPRE A FALSE EN LA INICIALIZACION
-		s.setHasSpam(false);
-
-		List<Authority> authorities = new ArrayList<Authority>();
-
-		Authority authority = new Authority();
-		authority.setAuthority(Authority.SPONSOR);
-		authorities.add(authority);
-
-		s.getUserAccount().setAuthorities(authorities);
-		//NOTLOCKED A TRUE EN LA INICIALIZACION, O SE CREARA UNA CUENTA BANEADA
-		s.getUserAccount().setIsNotLocked(true);
-
-		return s;
+		return result;
 	}
 
 	public Collection<Customer> findAll() {
@@ -156,17 +87,14 @@ public class CustomerService {
 		this.customerRepository.delete(customer);
 	}
 
-	public Customer getCustomerByUserName(String username) {
-		return this.customerRepository.getCustomerByUsername(username);
-	}
-
 	//Auxiliar methods
 	public Customer securityAndCustomer() {
 		UserAccount userAccount = LoginService.getPrincipal();
 		String username = userAccount.getUsername();
 		Customer loggedCustomer = this.customerRepository.getCustomerByUsername(username);
 
-		Assert.isTrue(userAccount.getAuthorities().contains("CUSTOMER"));
+		List<Authority> authorities = (List<Authority>) loggedCustomer.getUserAccount().getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("CUSTOMER"));
 
 		return loggedCustomer;
 	}
@@ -275,42 +203,31 @@ public class CustomerService {
 				break;
 			}
 
-		Assert.notNull(fixUpTaskFounded);
+		Assert.isTrue(!fixUpTaskFounded.equals(null));
 
-		List<FixUpTask> fixUpTasks2 = loggedCustomer.getFixUpTasks();
-		fixUpTasks2.remove(this.fixUpTaskService.findOne(fixUpTaskFounded.getId()));
-		loggedCustomer.setFixUpTasks(fixUpTasks2);
-		this.customerRepository.save(loggedCustomer);
-
-		List<Application> applications = (List<Application>) this.applicationService.findAll();
-		List<Application> applicationsNew = new ArrayList<>();
-		for (Application a : applications)
-			if (a.getFixUpTask().equals(this.fixUpTaskService.findOne(fixUpTaskFounded.getId())))
-				applicationsNew.add(a);
-
-		List<HandyWorker> workers = (List<HandyWorker>) this.handyWorkerService.findAll();
-		for (HandyWorker h : workers) {
-			List<Application> applicationsHw = h.getApplications();
-			for (Application ap : applicationsNew)
-				if (applicationsHw.contains(this.applicationService.findOne(ap.getId()))) {
-					applicationsHw.remove(this.applicationService.findOne(ap.getId()));
-					h.setApplications(applicationsHw);
+		List<Application> la = (List<Application>) fixUpTaskFounded.getApplications();
+		List<HandyWorker> lh = (List<HandyWorker>) this.handyWorkerService.findAll();
+		for (Application a : la) {
+			for (HandyWorker h : lh)
+				if (h.getApplications().contains(a)) {
+					h.getApplications().remove(a);
 					this.handyWorkerService.save(h);
 				}
-		}
 
-		for (Application app : applicationsNew)
-			this.applicationService.delete(this.applicationService.findOne(app.getId()));
-
-		List<Finder> finders = (List<Finder>) this.finderService.findAll();
-		for (Finder fi : finders) {
-			List<FixUpTask> fixUpTasksFi = fi.getFixUpTasks();
-			if (fixUpTasksFi.contains(this.fixUpTaskService.findOne(fixUpTaskFounded.getId()))) {
-				fixUpTasksFi.remove(this.fixUpTaskService.findOne(fixUpTaskFounded.getId()));
-				fi.setFixUpTasks(fixUpTasksFi);
-				this.finderService.save(fi);
-			}
+			this.applicationService.delete(a);
 		}
+		fixUpTaskFounded.getApplications().removeAll(la);
+
+		List<Finder> lfind = (List<Finder>) this.finderService.findAll();
+		for (Finder find : lfind)
+			if (find.getFixUpTasks().contains(fixUpTaskFounded))
+				find.getFixUpTasks().remove(fixUpTaskFounded);
+		this.fixUpTaskService.save(fixUpTaskFounded);
+
+		List<FixUpTask> fixUpTasks2 = loggedCustomer.getFixUpTasks();
+		fixUpTasks2.remove(fixUpTaskFounded);
+		loggedCustomer.setFixUpTasks(fixUpTasks2);
+		this.customerRepository.save(loggedCustomer);
 
 		this.fixUpTaskService.delete(fixUpTaskFounded);
 	}
@@ -393,6 +310,8 @@ public class CustomerService {
 			Assert.notNull(creditCard);
 		Long number = creditCard.getNumber();
 		Assert.isTrue(CustomerService.validateCreditCardNumber(number.toString()));
+
+		application.setCreditCard(creditCard);
 
 		Application applicationSave = this.applicationService.save(application);
 
@@ -479,30 +398,63 @@ public class CustomerService {
 		return endorsmentFound;
 	}
 
-	public Endorsment createEndorsment(List<String> comments, HandyWorker writtenTo) {
-		Customer loggedCustomer = this.securityAndCustomer();
+	public void loggedAsEndorser() {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
 
-		Assert.isTrue(writtenTo.getClass().equals(HandyWorker.class));
-
-		Collection<HandyWorker> handyWorkers = this.customerRepository.handyWorkersById(loggedCustomer.getId());
-
-		HandyWorker handyWorkerFound = null;
-		for (HandyWorker h : handyWorkers)
-			if (h.getId() == writtenTo.getId()) {
-				handyWorkerFound = h;
-				break;
-			}
-
-		Assert.notNull(handyWorkerFound);
-
-		Endorsment endorsment = this.endorsmentService.createEndorsment(comments, writtenTo);
-
-		Endorsment endorsmentSave = this.endorsmentService.save(endorsment);
-
-		this.configurationService.isActorSuspicious(loggedCustomer);
-
-		return endorsmentSave;
+		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("CUSTOMER"));
 	}
+
+	public Endorsment createEndorsment(Endorser writtenTo) {
+		this.loggedAsEndorser();
+
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+
+		Customer customer = this.customerRepository.getCustomerByUsername(userAccount.getUsername());
+
+		Endorsment endorsment = new Endorsment();
+
+		List<String> comments = new ArrayList<String>();
+		endorsment.setComments(comments);
+		Date thisMoment = new Date();
+		thisMoment.setTime(thisMoment.getTime() - 1);
+		endorsment.setMoment(thisMoment);
+		endorsment.setWrittenBy(customer);
+		endorsment.setWrittenTo(writtenTo);
+
+		return endorsment;
+	}
+	/*
+	 * public Endorsment createEndorsment(Endorsment endorsment) {
+	 * Customer loggedCustomer = this.securityAndCustomer();
+	 * 
+	 * Assert.isTrue(endorsment.getWrittenBy().getUserAccount().equals(loggedCustomer));
+	 * 
+	 * Collection<HandyWorker> hks = new ArrayList<HandyWorker>();
+	 * hks = this.customerRepository.handyWorkersById(loggedCustomer.getId());
+	 * 
+	 * HandyWorker hk = this.handyWorkerService.handyWorkerByUsername(endorsment.getWrittenTo().getUserAccount().getUsername());
+	 * Assert.isTrue(hks.contains(hk));
+	 * 
+	 * Endorsment newEndorsment = this.endorsmentService.save(endorsment);
+	 * List<Endorsment> end = endorsment.getWrittenTo().getEndorsments();
+	 * end.add(newEndorsment);
+	 * 
+	 * Endorser endorser1 = this.endorserService.findOne(endorsment.getWrittenTo().getId());
+	 * endorser1.setEndorsments(end);
+	 * this.endorserService.save(endorser1);
+	 * 
+	 * end = endorsment.getWrittenBy().getEndorsments();
+	 * end.add(endorsment);
+	 * Endorser endorser2 = this.endorserService.findOne(endorsment.getWrittenBy().getId());
+	 * endorser2.setEndorsments(end);
+	 * this.endorserService.save(endorser2);
+	 * this.endorsmentService.save(newEndorsment);
+	 * return newEndorsment;
+	 * }
+	 */
 
 	public Endorsment updateEndorsment(Endorsment endorsment) {
 		Customer loggedCustomer = this.securityAndCustomer();
@@ -555,5 +507,9 @@ public class CustomerService {
 		for (Report report : lr)
 			Assert.isTrue(report.getFinalMode());
 		return lr;
+	}
+
+	public List<HandyWorker> getHandyWorkersById(int customerId) {
+		return (List<HandyWorker>) this.customerRepository.handyWorkersById(customerId);
 	}
 }
