@@ -35,8 +35,6 @@ public class RefereeServiceTest extends AbstractTest {
 	private ComplaintService	complaintService;
 	@Autowired
 	private ReportService		reportService;
-	@Autowired
-	private NoteService			noteService;
 
 
 	@Test(expected = NullPointerException.class)
@@ -170,29 +168,4 @@ public class RefereeServiceTest extends AbstractTest {
 		super.authenticate(null);
 	}
 
-	@Test
-	public void testWriteNoteReport() {
-		super.authenticate("arbitrasoRF");
-
-		Referee loggedReferee = this.refereeService.securityAndReferee();
-		Report report = null;
-		for (Report r : loggedReferee.getReports())
-			if (r.getFinalMode()) {
-				report = r;
-				break;
-			}
-		Assert.notNull(report);
-
-		int numberNotes = this.noteService.findAll().size();
-
-		Note noteSaved = this.refereeService.writeNoteReport(report, "Mandatory", new ArrayList<String>());
-		Assert.notNull(noteSaved);
-		Assert.notNull(this.noteService.findOne(noteSaved.getId()));
-
-		int numberNotes2 = this.noteService.findAll().size();
-
-		Assert.isTrue(numberNotes + 1 == numberNotes2);
-
-		super.authenticate(null);
-	}
 }

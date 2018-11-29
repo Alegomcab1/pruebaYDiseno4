@@ -135,28 +135,19 @@ public class RefereeService {
 		return res;
 	}
 
-	//Tested
 	public Note writeNoteReport(Report report, String mandatoryComment, List<String> optionalComments) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Report> lr = loggedReferee.getReports();
-		Report rep = null;
+		Report rep = new Report();
 		for (Report r : lr)
-			if (r.getId() == report.getId() && r.getFinalMode() && report.getFinalMode())
-				rep = r;
+			if (r == report)
+				r = rep;
 		Assert.notNull(rep);
 		Note note = this.noteService.create(mandatoryComment, optionalComments);
-		Assert.notNull(note);
-		Note noteSaved = this.noteService.save(note);
-		Assert.notNull(noteSaved);
-
-		List<Note> notes = this.reportService.findOne(rep.getId()).getNotes();
-		notes.add(noteSaved);
-		rep.setNotes(notes);
-		Report reportSaved = this.reportService.save(rep);
-		Assert.notNull(reportSaved);
-
+		report.getNotes().add(note);
+		this.reportService.save(report);
 		this.configurationService.isActorSuspicious(loggedReferee);
-		return noteSaved;
+		return note;
 	}
 
 	public Note writeComment(String comment, Note note) {

@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import utilities.AbstractTest;
 import domain.Curriculum;
 import domain.EducationRecord;
 import domain.EndorserRecord;
@@ -26,7 +27,7 @@ import domain.ProfessionalRecord;
 	"classpath:spring/datasource.xml", "classpath:spring/config/packages.xml"
 })
 @Transactional
-public class CurriculumServiceTest {
+public class CurriculumServiceTest extends AbstractTest {
 
 	@Autowired
 	private CurriculumService	curriculumService;

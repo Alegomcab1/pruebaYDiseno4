@@ -241,7 +241,7 @@ public class HandyWorkerService {
 		return listApplications;
 	}
 
-	public Application createApplicationHandyWorker(Integer offeredPrice, List<String> comments, FixUpTask fixUpTask) {
+	public Application createApplicationHandyWorker(double offeredPrice, List<String> comments, FixUpTask fixUpTask) {
 
 		UserAccount userAccount = LoginService.getPrincipal();
 		List<Authority> authorities = (List<Authority>) userAccount.getAuthorities();
