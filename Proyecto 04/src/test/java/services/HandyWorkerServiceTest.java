@@ -86,17 +86,6 @@ public class HandyWorkerServiceTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDeleteHandyWorker() {
-		List<HandyWorker> handyWorkers = (List<HandyWorker>) this.handyWorkerService.findAll();
-		HandyWorker handyWorker = handyWorkers.get(0);
-
-		this.handyWorkerService.delete(handyWorker);
-
-		Assert.isTrue(!(this.handyWorkerService.findAll().contains(handyWorker)));
-
-	}
-
-	@Test
 	public void addCurriculum() {
 		Actor h = new Actor();
 		h = this.actorService.getActorByUsername("Pepe2HW");

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import domain.Application;
 import domain.Complaint;
 import domain.Customer;
+import domain.Endorsment;
 import domain.Finder;
 import domain.FixUpTask;
 import domain.HandyWorker;
@@ -25,9 +26,6 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 
 	@Query("select h from HandyWorker h join h.userAccount u where u.username = ?1")
 	public HandyWorker getHandyWorkerByUsername(String username);
-
-	@Query("select h from Endorser h join h.userAccount u where u.username = ?1")
-	public HandyWorker getEndorserByUsername(String username);
 
 	@Query("select a from Customer a join a.fixUpTasks b where b.id = ?1")
 	public Customer getCustomerByFixUpTask(int id);
@@ -54,6 +52,10 @@ public interface HandyWorkerRepository extends JpaRepository<HandyWorker, Intege
 
 	@Query("select a.tutorials from HandyWorker a where a.id = ?1")
 	public List<Tutorial> getAllTutorialsFromAHandyWorker(int id);
+
+	@Query("select a.endorsments from Endorser a where a.id = ?1")
+	public List<Endorsment> getEndorsmentsByEndorser(int id);
+
 	//Querys del Filtro de Finder
 	@Query("select c from FixUpTask c where c.ticker like '?1' or c.description like '?1' or c.address like '?1'")
 	public List<FixUpTask> getFixUpTaskByKeyWord(String keyWord);

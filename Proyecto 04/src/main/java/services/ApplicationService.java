@@ -4,7 +4,6 @@ package services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -90,10 +89,6 @@ public class ApplicationService {
 		return this.applicationRepository.save(application);
 	}
 
-	public void delete2(Application application) {
-		this.applicationRepository.delete(application);
-	}
-
 	public void delete(Application application) {
 		List<Application> applicationsF = (List<Application>) application.getFixUpTask().getApplications();
 		List<Application> applicationsH = application.getHandyWorker().getApplications();
@@ -109,11 +104,8 @@ public class ApplicationService {
 		this.handyWorkerService.save(h);
 		this.applicationRepository.delete(application);
 	}
-	public void deleteAllFronHAndyWorker(List<Application> applications) {
+	public void deleteAllFromHandyWorker(List<Application> applications) {
 
-		Iterator<Application> iter = applications.iterator();
-		System.out.println(applications.size());
-		Integer i = 0;
 		while (applications.size() != 0) {
 			this.delete(applications.get(0));
 			applications.remove(applications.get(0));
