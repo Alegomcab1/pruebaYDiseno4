@@ -183,13 +183,10 @@ public class HandyWorkerService {
 		return this.handyWorkerRepository.save(handyWorker);
 	}
 
-	public void delete(HandyWorker handyWorker) {
-
-		this.applicationService.deleteAllFronHAndyWorker(handyWorker.getApplications());
-		this.endorsmentService.deleteAll(handyWorker.getEndorsments());
-		this.tutorialService.deleteAll(handyWorker.getTutorials());
+	public void delete(HandyWorker handyWorker){
 		this.handyWorkerRepository.delete(handyWorker);
 	}
+
 	private HandyWorker securityAndHandy() {
 		UserAccount userAccount = LoginService.getPrincipal();
 		String username = userAccount.getUsername();

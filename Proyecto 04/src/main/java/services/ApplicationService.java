@@ -89,6 +89,10 @@ public class ApplicationService {
 		return this.applicationRepository.save(application);
 	}
 
+	public void delete2(Application application) {
+		this.applicationRepository.delete(application);
+	}
+
 	public void delete(Application application) {
 		List<Application> applicationsF = (List<Application>) application.getFixUpTask().getApplications();
 		List<Application> applicationsH = application.getHandyWorker().getApplications();
