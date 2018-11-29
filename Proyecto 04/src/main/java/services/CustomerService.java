@@ -23,6 +23,7 @@ import domain.Complaint;
 import domain.CreditCard;
 import domain.Customer;
 import domain.Endorsment;
+import domain.Finder;
 import domain.FixUpTask;
 import domain.HandyWorker;
 import domain.Message;
@@ -58,6 +59,10 @@ public class CustomerService {
 	private EndorserService			endorserService;
 	@Autowired
 	private ConfigurationService	configurationService;
+	@Autowired
+	private FinderService			finderService;
+	@Autowired
+	private HandyWorkerService		handyWorkerService;
 
 
 	// Simple CRUD methods
@@ -270,11 +275,45 @@ public class CustomerService {
 				break;
 			}
 
-		Assert.isTrue(!fixUpTaskFounded.equals(null));
+		Assert.notNull(fixUpTaskFounded);
+
+		List<FixUpTask> fixUpTasks2 = loggedCustomer.getFixUpTasks();
+		fixUpTasks2.remove(this.fixUpTaskService.findOne(fixUpTaskFounded.getId()));
+		loggedCustomer.setFixUpTasks(fixUpTasks2);
+		this.customerRepository.save(loggedCustomer);
+
+		List<Application> applications = (List<Application>) this.applicationService.findAll();
+		List<Application> applicationsNew = new ArrayList<>();
+		for (Application a : applications)
+			if (a.getFixUpTask().equals(this.fixUpTaskService.findOne(fixUpTaskFounded.getId())))
+				applicationsNew.add(a);
+
+		List<HandyWorker> workers = (List<HandyWorker>) this.handyWorkerService.findAll();
+		for (HandyWorker h : workers) {
+			List<Application> applicationsHw = h.getApplications();
+			for (Application ap : applicationsNew)
+				if (applicationsHw.contains(this.applicationService.findOne(ap.getId()))) {
+					applicationsHw.remove(this.applicationService.findOne(ap.getId()));
+					h.setApplications(applicationsHw);
+					this.handyWorkerService.save(h);
+				}
+		}
+
+		for (Application app : applicationsNew)
+			this.applicationService.delete(this.applicationService.findOne(app.getId()));
+
+		List<Finder> finders = (List<Finder>) this.finderService.findAll();
+		for (Finder fi : finders) {
+			List<FixUpTask> fixUpTasksFi = fi.getFixUpTasks();
+			if (fixUpTasksFi.contains(this.fixUpTaskService.findOne(fixUpTaskFounded.getId()))) {
+				fixUpTasksFi.remove(this.fixUpTaskService.findOne(fixUpTaskFounded.getId()));
+				fi.setFixUpTasks(fixUpTasksFi);
+				this.finderService.save(fi);
+			}
+		}
 
 		this.fixUpTaskService.delete(fixUpTaskFounded);
 	}
-
 	//COMPLAINTS
 	public Collection<Complaint> showComplaints() {
 		Customer loggedCustomer = this.securityAndCustomer();

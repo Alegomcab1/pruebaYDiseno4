@@ -1,9 +1,10 @@
 
 package services;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -62,9 +63,13 @@ public class CustomerServiceTest extends AbstractTest {
 	@Autowired
 	private HandyWorkerService	handyWorkerService;
 
+	@Autowired
+	private WarrantyService		warrantyService;
+
 
 	//TEST---------------------------------------------------------------------
 
+	//Testeado
 	@Test
 	public void testCreditCardNumber() {
 		super.authenticate("PacoCustomer");
@@ -72,6 +77,7 @@ public class CustomerServiceTest extends AbstractTest {
 		super.authenticate(null);
 	}
 
+	//Testeado
 	@Test
 	public void testCreditCardNumberInvalid() {
 		super.authenticate("PacoCustomer");
@@ -101,21 +107,30 @@ public class CustomerServiceTest extends AbstractTest {
 		super.authenticate(null);
 	}
 
+	//Tested
 	@Test
 	public void testCreateFixUpTask() {
 		super.authenticate("PacoCustomer");
+
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, 2018);
 		cal.set(Calendar.MONTH, Calendar.DECEMBER);
 		cal.set(Calendar.DAY_OF_MONTH, 12);
-		Date startDate = (Date) cal.getTime();
-		int fixUpTask = this.fixUpTaskService.findAll().size();
-		this.customerService.createFixUpTask("description", "avda. reina", 100.02, startDate, new ArrayList<Warranty>(), new ArrayList<Phase>(), new ArrayList<Category>(), new ArrayList<Complaint>(), new ArrayList<Application>());
-		int fixUpTask2 = this.fixUpTaskService.findAll().size();
-		Assert.isTrue(fixUpTask + 1 == fixUpTask2);
+		Date realizationTime = cal.getTime();
+
+		List<Warranty> warranties = new ArrayList<Warranty>();
+		Warranty warranty = this.warrantyService.create("titulo", new ArrayList<String>(), new ArrayList<String>(), true);
+		Warranty warrantySaved = this.warrantyService.save(warranty);
+		warranties.add(this.warrantyService.findOne(warrantySaved.getId()));
+
+		List<Category> categories = (List<Category>) this.fixUpTaskService.findAll().get(0).getCategories();
+
+		FixUpTask fix = this.fixUpTaskService.create("Description", "Direction", 5., realizationTime, warranties, new ArrayList<Phase>(), categories, new ArrayList<Complaint>(), new ArrayList<Application>());
+		FixUpTask fixSaved = this.fixUpTaskService.save(fix);
+		Assert.notNull(this.fixUpTaskService.findOne(fixSaved.getId()));
+
 		super.authenticate(null);
 	}
-
 	@Test
 	public void testUpdateFixUpTask() {
 		super.authenticate("PacoCustomer");
@@ -129,11 +144,13 @@ public class CustomerServiceTest extends AbstractTest {
 	@Test
 	public void testDeleteFixUpTask() {
 		super.authenticate("PacoCustomer");
-		FixUpTask res = this.customerService.getFixUpTask(1936);
-		int numberOfFixUpTasks = this.fixUpTaskService.findAll().size();
-		this.customerService.deleteFixUpTask(res);
-		int numberOfFixUpTasks2 = this.fixUpTaskService.findAll().size();
-		Assert.isTrue(numberOfFixUpTasks - 1 == numberOfFixUpTasks2);
+
+		Customer loggedCustomer = this.customerService.securityAndCustomer();
+		FixUpTask fixUpTask = loggedCustomer.getFixUpTasks().get(0);
+
+		this.customerService.deleteFixUpTask(fixUpTask);
+		Assert.isTrue(this.fixUpTaskService.findOne(fixUpTask.getId()).equals(null));
+
 		super.authenticate(null);
 	}
 
@@ -238,7 +255,7 @@ public class CustomerServiceTest extends AbstractTest {
 		cal.set(Calendar.YEAR, 2018);
 		cal.set(Calendar.MONTH, Calendar.DECEMBER);
 		cal.set(Calendar.DAY_OF_MONTH, 12);
-		Date startDate = (Date) cal.getTime();
+		Date startDate = cal.getTime();
 		res.setMoment(startDate);
 		Endorsment saved = this.customerService.updateEndorsment(res);
 		Assert.isTrue(saved.getMoment() == startDate);
