@@ -85,12 +85,12 @@ public class HandyWorkerService {
 	public HandyWorker createHandyWorker(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Double score, List<Tutorial> tutorials, Curriculum curriculum) {
 
 		HandyWorker handyWorker = new HandyWorker();
-		handyWorker.setMake(handyWorker.getName() + "" + handyWorker.getMiddleName() + "" + handyWorker.getSurname());
 
 		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
 		List<Box> boxes = new ArrayList<Box>();
-
+		List<Endorsment> endorsments = new ArrayList<Endorsment>();
 		List<FixUpTask> f = new ArrayList<FixUpTask>();
+		List<Application> applications = new ArrayList<Application>();
 
 		UserAccount userAccountActor = new UserAccount();
 		userAccountActor.setUsername(userName);
@@ -129,7 +129,8 @@ public class HandyWorkerService {
 		thisMoment.setTime(thisMoment.getTime());
 		Date afterMoment = new Date();
 		thisMoment.setTime(thisMoment.getTime() + 1);
-		Finder finder = this.finderService.createFinder("finder", "", "", 0.0, 0.0, thisMoment, afterMoment, f);
+
+		Finder finder = this.finderService.createFinder("finder", "s", "s", 0.0, 0.0, thisMoment, afterMoment, f);
 
 		handyWorker.setFinder(finder);
 		handyWorker.setCurriculum(curriculum);
@@ -141,6 +142,11 @@ public class HandyWorkerService {
 		handyWorker.setMiddleName(middleName);
 		handyWorker.setPhoneNumber(phoneNumber);
 		handyWorker.setScore(score);
+		handyWorker.setEndorsments(endorsments);
+		handyWorker.setMake(name + "" + middleName + "" + surname);
+		handyWorker.setApplications(applications);
+		handyWorker.setPhoto(photo);
+		handyWorker.setSurname(surname);
 
 		handyWorker.setHasSpam(false);
 
@@ -157,7 +163,6 @@ public class HandyWorkerService {
 		return handyWorker;
 
 	}
-
 	public void editHandyWorker(HandyWorker handyworker) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
@@ -180,7 +185,9 @@ public class HandyWorkerService {
 
 	public void delete(HandyWorker handyWorker) {
 
-		this.curriculumService.delete(handyWorker.getCurriculum());
+		this.applicationService.deleteAllFronHAndyWorker(handyWorker.getApplications());
+		this.endorsmentService.deleteAll(handyWorker.getEndorsments());
+		this.tutorialService.deleteAll(handyWorker.getTutorials());
 		this.handyWorkerRepository.delete(handyWorker);
 	}
 	private HandyWorker securityAndHandy() {
@@ -699,7 +706,7 @@ public class HandyWorkerService {
 
 		end = endorsment.getWrittenBy().getEndorsments();
 		end.add(endorsment);
-		Endorser endorser2 = this.endorserSevice.findOne(endorsment.getWrittenTo().getId());
+		Endorser endorser2 = this.endorserSevice.findOne(endorsment.getWrittenBy().getId());
 		endorser2.setEndorsments(end);
 		this.endorserSevice.save(endorser2);
 		this.endorsmentService.save(newEndorsment);
@@ -730,5 +737,8 @@ public class HandyWorkerService {
 	public Collection<Phase> getPhasesByApplication(Application application) {
 
 		return this.handyWorkerRepository.getPhasesByApplication(application.getId());
+	}
+	public List<Integer> getIdCustomersByHandyWorker(HandyWorker handyWorker) {
+		return this.handyWorkerRepository.getCustomersFromHandyWorker(handyWorker.getId());
 	}
 }

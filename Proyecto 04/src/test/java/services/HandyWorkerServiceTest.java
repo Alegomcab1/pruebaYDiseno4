@@ -75,6 +75,28 @@ public class HandyWorkerServiceTest extends AbstractTest {
 
 
 	@Test
+	public void testCreateHandyWorker() {
+
+		List<Tutorial> tutorials = new ArrayList<Tutorial>();
+		HandyWorker h = this.handyWorkerService.createHandyWorker("Roberto", "s", "Hermoso", "https://trello.com/b/MD1aM3qn/proyecto-4-dp", "rhermoso98@gmail.com", "+34686310633", "C/Falsa 123", "Quimi", "asfghdgr", 0., tutorials, null);
+		Integer before = this.handyWorkerService.findAll().size();
+		this.handyWorkerService.save(h);
+
+		Assert.isTrue(this.handyWorkerService.findAll().size() == before + 1);
+	}
+
+	@Test
+	public void testDeleteHandyWorker() {
+		List<HandyWorker> handyWorkers = (List<HandyWorker>) this.handyWorkerService.findAll();
+		HandyWorker handyWorker = handyWorkers.get(0);
+
+		this.handyWorkerService.delete(handyWorker);
+
+		Assert.isTrue(!(this.handyWorkerService.findAll().contains(handyWorker)));
+
+	}
+
+	@Test
 	public void addCurriculum() {
 		Actor h = new Actor();
 		h = this.actorService.getActorByUsername("Pepe2HW");
@@ -227,6 +249,8 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		Assert.isTrue(phasesF.containsAll(phasesResult));
 		super.unauthenticate();
 	}
+
+	@Test
 	public void testCreatePhasesForApplicaion() {
 		Actor actor = new Actor();
 		actor = this.actorService.getActorByUsername("PepeHW");
@@ -544,18 +568,22 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
+		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+
 		List<String> comments = new ArrayList<>();
 		comments.add("A");
 		comments.add("B");
 
-		Endorser endorser = this.customerService.findOne(1490);
+		List<Integer> l = this.handyWorkerService.getIdCustomersByHandyWorker(h);
+
+		Endorser endorser = this.customerService.findOne(l.get(0));
 
 		Integer numEndorsmentsBefore = endorser.getEndorsments().size();
 		Endorsment endorsment = this.endorsmentService.createEndorsment(comments, endorser);
-
+		Assert.notNull(endorsment);
 		this.handyWorkerService.createEndorsment(endorsment);
 
-		Endorser endorser2 = this.customerService.findOne(1490);
+		Endorser endorser2 = this.customerService.findOne(l.get(0));
 		Integer numEndorsmentsAfter = endorser2.getEndorsments().size();
 		Assert.isTrue(numEndorsmentsBefore + 1 == numEndorsmentsAfter);
 	}

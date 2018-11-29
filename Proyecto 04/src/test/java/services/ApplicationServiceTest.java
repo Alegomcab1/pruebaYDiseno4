@@ -14,6 +14,7 @@ import org.springframework.util.Assert;
 
 import utilities.AbstractTest;
 import domain.Application;
+import domain.HandyWorker;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -63,5 +64,15 @@ public class ApplicationServiceTest extends AbstractTest {
 		Assert.isTrue(!applications.contains(application));
 		Assert.isTrue(!this.applicationService.getApplicationsHandy(application.getHandyWorker()).contains(application));
 		Assert.isTrue(!this.applicationService.getApplicationsFix(application.getFixUpTask()).contains(application));
+	}
+	@Test
+	public void testDeleteAll() {
+
+		List<Application> l = (List<Application>) this.applicationService.findAll();
+		HandyWorker h = l.get(0).getHandyWorker();
+
+		this.applicationService.deleteAllFronHAndyWorker(h.getApplications());
+		Assert.isTrue(h.getApplications().isEmpty());
+
 	}
 }

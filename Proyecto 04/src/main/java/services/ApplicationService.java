@@ -4,6 +4,7 @@ package services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -25,6 +26,10 @@ public class ApplicationService {
 
 	@Autowired
 	private ApplicationRepository	applicationRepository;
+	@Autowired
+	private FixUpTaskService		fixUpTaskService;
+	@Autowired
+	private HandyWorkerService		handyWorkerService;
 
 
 	// Supporting Services ------------------------------------------
@@ -86,7 +91,29 @@ public class ApplicationService {
 	}
 
 	public void delete(Application application) {
+		List<Application> applicationsF = (List<Application>) application.getFixUpTask().getApplications();
+		List<Application> applicationsH = application.getHandyWorker().getApplications();
+
+		applicationsF.remove(application);
+		applicationsH.remove(application);
+
+		FixUpTask f = application.getFixUpTask();
+		f.setApplications(applicationsF);
+		this.fixUpTaskService.save(f);
+		HandyWorker h = application.getHandyWorker();
+		h.setApplications(applicationsH);
+		this.handyWorkerService.save(h);
 		this.applicationRepository.delete(application);
+	}
+	public void deleteAllFronHAndyWorker(List<Application> applications) {
+
+		Iterator<Application> iter = applications.iterator();
+		System.out.println(applications.size());
+		Integer i = 0;
+		while (applications.size() != 0) {
+			this.delete(applications.get(0));
+			applications.remove(applications.get(0));
+		}
 	}
 
 	// Test methods ------------------------------------------
