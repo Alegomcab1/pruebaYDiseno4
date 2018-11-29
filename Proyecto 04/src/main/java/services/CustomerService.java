@@ -76,7 +76,7 @@ public class CustomerService {
 	List<Box> boxes = new ArrayList<Box>();
 	List<FixUpTask> fixUpTasks = new ArrayList<FixUpTask>();
 
-	// SE AÑADE EL USERNAME Y EL PASSWORD
+	// SE AÃ‘ADE EL USERNAME Y EL PASSWORD
 	UserAccount userAccountActor = new UserAccount();
 	userAccountActor.setUsername(userName);
 	userAccountActor.setPassword(password);
@@ -111,7 +111,7 @@ public class CustomerService {
 	boxes.add(spamBox);
 	boxes.add(trashBox);
 
-	// SE AÑADEN TODOS LOS ATRIBUTOS
+	// SE AÃ‘ADEN TODOS LOS ATRIBUTOS
 	s.setName(name);
 	s.setMiddleName(middleName);
 	s.setSurname(surname);
@@ -195,7 +195,7 @@ public class CustomerService {
 	    return false;
     }
 
-    // Métodos solicitados
+    // MÃ©todos solicitados
     public Collection<FixUpTask> showFixUpTasks(int customerId) {
 	return this.customerRepository.findFixUpTasksById(customerId);
     }
