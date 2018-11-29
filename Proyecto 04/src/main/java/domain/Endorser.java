@@ -1,3 +1,4 @@
+
 package domain;
 
 import java.util.List;
@@ -8,33 +9,38 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Access(AccessType.PROPERTY)
 public class Endorser extends Actor {
 
-    private Integer score;
-    private List<Endorsment> endorsments;
+	private Double				score;
+	private List<Endorsment>	endorsments;
 
-    @Valid
-    @OneToMany
-    @ElementCollection(targetClass = Endorsment.class)
-    public List<Endorsment> getEndorsments() {
-	return this.endorsments;
-    }
 
-    public void setEndorsments(final List<Endorsment> endorsments) {
-	this.endorsments = endorsments;
-    }
+	@Valid
+	@OneToMany
+	@ElementCollection(targetClass = Endorsment.class)
+	public List<Endorsment> getEndorsments() {
+		return this.endorsments;
+	}
 
-    @NotNull
-    public Integer getScore() {
-	return this.score;
-    }
+	public void setEndorsments(final List<Endorsment> endorsments) {
+		this.endorsments = endorsments;
+	}
 
-    public void setScore(final Integer score) {
-	this.score = score;
-    }
+	@NotNull
+	@Min(-1)
+	@Max(1)
+	public Double getScore() {
+		return this.score;
+	}
+
+	public void setScore(final Double score) {
+		this.score = score;
+	}
 
 }

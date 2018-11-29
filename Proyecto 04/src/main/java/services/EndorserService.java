@@ -27,7 +27,7 @@ public class EndorserService {
 
 	// Simple CRUD methods --------------------------------------------------------------------------------------------------
 
-	public Endorser createEndorser(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score) {
+	public Endorser createEndorser(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Double score) {
 		Endorser endorser = new Endorser();
 		endorser = (Endorser) this.actorService.createActor(name, middleName, surname, photo, email, phoneNumber, address, userName, password);
 

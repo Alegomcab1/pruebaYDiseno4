@@ -15,10 +15,13 @@ import repositories.RefereeRepository;
 import security.Authority;
 import security.LoginService;
 import security.UserAccount;
+import domain.Box;
 import domain.Complaint;
+import domain.Message;
 import domain.Note;
 import domain.Referee;
 import domain.Report;
+import domain.SocialProfile;
 
 @Service
 @Transactional
@@ -59,18 +62,77 @@ public class RefereeService {
 
 	public Referee create(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password) {
 
-		Referee referee = new Referee();
-		referee = (Referee) this.actorService.createActor(name, middleName, surname, photo, email, phoneNumber, address, userName, password);
-		List<Authority> authorities = new ArrayList<Authority>();
-		referee.getUserAccount().setAuthorities(authorities);
+		// SE DECLARA EL SPONSOR
+		Referee s = new Referee();
 
-		UserAccount userAccountReferee = new UserAccount();
+		// SE CREAN LAS LISTAS VACIAS
+		List<SocialProfile> socialProfiles = new ArrayList<SocialProfile>();
+		List<Box> boxes = new ArrayList<Box>();
+		List<Report> reports = new ArrayList<Report>();
+
+		// SE AÑADE EL USERNAME Y EL PASSWORD
+		UserAccount userAccountActor = new UserAccount();
+		userAccountActor.setUsername(userName);
+		userAccountActor.setPassword(password);
+
+		// SE CREAN LAS CAJAS POR DEFECTO
+		Box spamBox = new Box();
+		List<Message> messages1 = new ArrayList<>();
+		spamBox.setIsSystem(true);
+		spamBox.setMessages(messages1);
+		spamBox.setName("Spam");
+
+		Box trashBox = new Box();
+		List<Message> messages2 = new ArrayList<>();
+		trashBox.setIsSystem(true);
+		trashBox.setMessages(messages2);
+		trashBox.setName("Trash");
+
+		Box sentBox = new Box();
+		List<Message> messages3 = new ArrayList<>();
+		sentBox.setIsSystem(true);
+		sentBox.setMessages(messages3);
+		sentBox.setName("Sent messages");
+
+		Box receivedBox = new Box();
+		List<Message> messages4 = new ArrayList<>();
+		receivedBox.setIsSystem(true);
+		receivedBox.setMessages(messages4);
+		receivedBox.setName("Received messages");
+
+		boxes.add(receivedBox);
+		boxes.add(sentBox);
+		boxes.add(spamBox);
+		boxes.add(trashBox);
+
+		// SE AÑADEN TODOS LOS ATRIBUTOS
+		s.setName(name);
+		s.setMiddleName(middleName);
+		s.setSurname(surname);
+		s.setPhoto(photo);
+		s.setEmail(email);
+		s.setPhoneNumber(phoneNumber);
+		s.setAddress(address);
+		s.setSocialProfiles(socialProfiles);
+		s.setBoxes(boxes);
+		s.setUserAccount(userAccountActor);
+		s.setReports(reports);
+		// SPAM SIEMPRE A FALSE EN LA INICIALIZACION
+		s.setHasSpam(false);
+
+		List<Authority> authorities = new ArrayList<Authority>();
+
 		Authority authority = new Authority();
-		authority.setAuthority(Authority.REFEREE);
+		authority.setAuthority(Authority.SPONSOR);
 		authorities.add(authority);
 
-		return referee;
+		s.getUserAccount().setAuthorities(authorities);
+		//NOTLOCKED A TRUE EN LA INICIALIZACION, O SE CREARA UNA CUENTA BANEADA
+		s.getUserAccount().setIsNotLocked(true);
+
+		return s;
 	}
+
 	public Referee save(Referee referee) {
 		return this.refereeRepository.save(referee);
 	}
@@ -101,13 +163,11 @@ public class RefereeService {
 
 	// Methods ------------------------------------------------------
 
-	//Tested
 	public List<Complaint> unassignedComplaints() {
-		Referee loggedReferee = this.securityAndReferee();
+		this.securityAndReferee();
 		return (List<Complaint>) this.refereeRepository.complaintsUnassigned();
 	}
 
-	//Tested
 	public Complaint assingComplaint(Complaint complaint) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> unassignedComplaints = (List<Complaint>) this.refereeRepository.complaintsUnassigned();
@@ -122,7 +182,6 @@ public class RefereeService {
 		return complaintSaved;
 	}
 
-	//Tested
 	public List<Complaint> selfAssignedComplaints() {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> res = new ArrayList<>();
@@ -135,7 +194,6 @@ public class RefereeService {
 		return res;
 	}
 
-	//Tested
 	public Note writeNoteReport(Report report, String mandatoryComment, List<String> optionalComments) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Report> lr = loggedReferee.getReports();
@@ -159,7 +217,6 @@ public class RefereeService {
 		return noteSaved;
 	}
 
-	//Testing
 	public Note writeComment(String comment, Note note) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Note> notes = (List<Note>) this.refereeRepository.notesReferee(loggedReferee.getId());
@@ -177,7 +234,6 @@ public class RefereeService {
 		return noteSaved;
 	}
 
-	//Tested
 	public Report writeReportRegardingComplaint(Complaint complaint, String description, List<String> attachments, List<Note> notes) {
 		Referee loggedReferee = this.securityAndReferee();
 		List<Complaint> lc = this.complaintService.findAll();
@@ -207,7 +263,6 @@ public class RefereeService {
 		return reportSaved;
 	}
 
-	//Tested
 	public Report modifyReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());
@@ -217,7 +272,6 @@ public class RefereeService {
 		return rp;
 	}
 
-	//Tested
 	public void eliminateReport(Report report) {
 		Referee loggedReferee = this.securityAndReferee();
 		Assert.isTrue(!report.getFinalMode());

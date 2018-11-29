@@ -72,7 +72,7 @@ public class HandyWorkerService {
 
 	// Simple CRUD methods --------------------------------------------------------------------------------------------
 
-	public HandyWorker createHandyWorker(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Integer score, List<Tutorial> tutorials, Curriculum curriculum) {
+	public HandyWorker createHandyWorker(String name, String middleName, String surname, String photo, String email, String phoneNumber, String address, String userName, String password, Double score, List<Tutorial> tutorials, Curriculum curriculum) {
 
 		HandyWorker handyWorker = new HandyWorker();
 		handyWorker = (HandyWorker) this.endorserSevice.createEndorser(name, middleName, surname, photo, email, phoneNumber, address, userName, password, score);
