@@ -27,6 +27,7 @@ import domain.HandyWorker;
 import domain.Note;
 import domain.Phase;
 import domain.Report;
+import domain.Status;
 import domain.Warranty;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,15 +66,10 @@ public class CustomerServiceTest extends AbstractTest {
 	@Autowired
 	private WarrantyService		warrantyService;
 
-	@Autowired
-	private CategoryService		categoryService;
-
-	@Autowired
-	private RefereeService		refereeService;
-
 
 	//TEST---------------------------------------------------------------------
 
+	//Testeado
 	@Test
 	public void testCreditCardNumber() {
 		super.authenticate("PacoCustomer");
@@ -81,6 +77,7 @@ public class CustomerServiceTest extends AbstractTest {
 		super.authenticate(null);
 	}
 
+	//Testeado
 	@Test
 	public void testCreditCardNumberInvalid() {
 		super.authenticate("PacoCustomer");
@@ -110,6 +107,7 @@ public class CustomerServiceTest extends AbstractTest {
 		super.authenticate(null);
 	}
 
+	//Tested
 	@Test
 	public void testCreateFixUpTask() {
 		super.authenticate("PacoCustomer");
@@ -129,12 +127,10 @@ public class CustomerServiceTest extends AbstractTest {
 
 		FixUpTask fix = this.fixUpTaskService.create("Description", "Direction", 5., realizationTime, warranties, new ArrayList<Phase>(), categories, new ArrayList<Complaint>(), new ArrayList<Application>());
 		FixUpTask fixSaved = this.fixUpTaskService.save(fix);
-
 		Assert.notNull(this.fixUpTaskService.findOne(fixSaved.getId()));
 
 		super.authenticate(null);
 	}
-
 	@Test
 	public void testUpdateFixUpTask() {
 		super.authenticate("PacoCustomer");
@@ -148,12 +144,13 @@ public class CustomerServiceTest extends AbstractTest {
 	@Test
 	public void testDeleteFixUpTask() {
 		super.authenticate("PacoCustomer");
+
 		Customer loggedCustomer = this.customerService.securityAndCustomer();
-		FixUpTask res = loggedCustomer.getFixUpTasks().get(0);
-		int numberOfFixUpTasks = this.fixUpTaskService.findAll().size();
-		this.customerService.deleteFixUpTask(res);
-		int numberOfFixUpTasks2 = this.fixUpTaskService.findAll().size();
-		Assert.isTrue(numberOfFixUpTasks - 1 == numberOfFixUpTasks2);
+		FixUpTask fixUpTask = loggedCustomer.getFixUpTasks().get(0);
+
+		this.customerService.deleteFixUpTask(fixUpTask);
+		Assert.isTrue(this.fixUpTaskService.findOne(fixUpTask.getId()).equals(null));
+
 		super.authenticate(null);
 	}
 
@@ -176,11 +173,10 @@ public class CustomerServiceTest extends AbstractTest {
 	public void testCreateComplaint() {
 		super.authenticate("PacoCustomer");
 		FixUpTask res = this.customerService.getFixUpTask(1936);
-		Complaint c = this.customerService.createComplaint(res, "descripcionn", new ArrayList<String>());
-		c.setReferee(this.refereeService.findAll().get(0));
-		Complaint saved = this.complaintService.save(c);
-		List<Complaint> lc = this.complaintService.findAll();
-		Assert.isTrue(lc.contains(saved));
+		int numberComplaint = this.complaintService.findAll().size();
+		this.customerService.createComplaint(res, "descripcionn", new ArrayList<String>());
+		int numberComplaint2 = this.complaintService.findAll().size();
+		Assert.isTrue(numberComplaint + 1 == numberComplaint2);
 		super.authenticate(null);
 	}
 
@@ -195,31 +191,22 @@ public class CustomerServiceTest extends AbstractTest {
 	@Test
 	public void testEditApplication() {
 		super.authenticate("PacoCustomer");
-		List<Application> la = (List<Application>) this.applicationService.findAll();
-		Application res = la.get(1);
+		Application res = this.applicationService.findOne(1954);
+		res.setStatus(Status.ACCEPTED);
 		CreditCard creditCard = new CreditCard();
-		creditCard.setBrandName("VISA");
-		creditCard.setHolderName("Paco");
-		creditCard.setCvvCode(667);
-		creditCard.setExpirationMonth(06);
-		creditCard.setExpirationYear(2021);
-		Long num = 4539234009047017L;
-		creditCard.setNumber(num);
 		Application saved = this.customerService.editApplication(res, creditCard);
-		Application a = this.applicationService.save(saved);
-		Assert.isTrue(a.getCreditCard().getNumber().equals(num));
+		Assert.isTrue(saved.getStatus().equals(Status.ACCEPTED));
 		super.authenticate(null);
 	}
 
 	@Test
 	public void testCreateNote() {
 		super.authenticate("PacoCustomer");
-		List<Report> lr = this.reportService.findAll();
-		Report r = lr.get(0);
-		Note note = this.customerService.createNote(r, "hello", new ArrayList<String>());
-		Note save = this.noteService.save(note);
-		List<Note> ln = this.noteService.findAll();
-		Assert.isTrue(ln.contains(save));
+		Report r = this.reportService.findOne(1810);
+		int numberNotes = this.noteService.findAll().size();
+		this.customerService.createNote(r, "hello", new ArrayList<String>());
+		int numberNotes2 = this.noteService.findAll().size();
+		Assert.isTrue(numberNotes + 1 == numberNotes2);
 		super.authenticate(null);
 	}
 
@@ -252,17 +239,11 @@ public class CustomerServiceTest extends AbstractTest {
 	@Test
 	public void testCreateEndorsment() {
 		super.authenticate("PacoCustomer");
-		Customer customer = this.customerService.securityAndCustomer();
-		List<String> comments = new ArrayList<String>();
-		comments.add("waaaaa");
-		List<HandyWorker> hks = this.customerService.getHandyWorkersById(customer.getId());
-		HandyWorker h = hks.get(0);
-		List<Customer> lc = (List<Customer>) this.customerService.findAll();
-		Customer c = lc.get(0);
-		Endorsment e2 = this.customerService.createEndorsment(c);
-		Endorsment save = this.endorsmentService.save(e2);
-		List<Endorsment> le = (List<Endorsment>) this.endorsmentService.findAll();
-		Assert.isTrue(le.contains(save));
+		HandyWorker hk = this.handyWorkerService.findOne(1844);
+		int numberEndorsments = this.endorsmentService.findAll().size();
+		this.customerService.createEndorsment(new ArrayList<String>(), hk);
+		int numberEndorsments2 = this.endorsmentService.findAll().size();
+		Assert.isTrue(numberEndorsments + 1 == numberEndorsments2);
 		super.authenticate(null);
 	}
 
