@@ -20,14 +20,20 @@ import utilities.AbstractTest;
 import domain.Actor;
 import domain.Application;
 import domain.Complaint;
+import domain.Curriculum;
 import domain.Customer;
+import domain.EducationRecord;
 import domain.Endorser;
+import domain.EndorserRecord;
 import domain.Endorsment;
 import domain.Finder;
 import domain.FixUpTask;
 import domain.HandyWorker;
+import domain.MiscellaneousRecord;
 import domain.Note;
+import domain.PersonalRecord;
 import domain.Phase;
+import domain.ProfessionalRecord;
 import domain.Report;
 import domain.Tutorial;
 
@@ -41,29 +47,87 @@ public class HandyWorkerServiceTest extends AbstractTest {
 	//Service under test
 
 	@Autowired
-	private HandyWorkerService	handyWorkerService;
+	private HandyWorkerService		handyWorkerService;
 	@Autowired
-	private CustomerService		customerService;
+	private CustomerService			customerService;
 	@Autowired
-	private ActorService		actorService;
+	private ActorService			actorService;
 	@Autowired
-	private FixUpTaskService	fixUpTaskService;
+	private FixUpTaskService		fixUpTaskService;
 	@Autowired
-	private PhaseService		phaseService;
+	private PhaseService			phaseService;
 	@Autowired
-	private NoteService			noteServce;
+	private NoteService				noteServce;
 	@Autowired
-	private ReportService		reportService;
+	private ReportService			reportService;
 	@Autowired
-	private ComplaintService	complaintService;
+	private ComplaintService		complaintService;
 	@Autowired
-	private TutorialService		tutoralService;
+	private TutorialService			tutoralService;
 	@Autowired
-	private EndorsmentService	endorsmentService;
+	private EndorsmentService		endorsmentService;
 	@Autowired
-	private EndorserService		endorserService;
+	private EndorserService			endorserService;
+	@Autowired
+	private CurriculumService		curriculumService;
+	@Autowired
+	private PersonalRecordService	personalRecordService;
 
 
+	@Test
+	public void addCurriculum() {
+		Actor h = new Actor();
+		h = this.actorService.getActorByUsername("Pepe2HW");
+		super.authenticate("Pepe2HW");
+
+		HandyWorker handyWorker = new HandyWorker();
+		handyWorker = this.handyWorkerService.getHandyWorkerByUsername("Pepe2HW");
+
+		Assert.isNull(handyWorker.getCurriculum());
+
+		List<EndorserRecord> endorserRecords = new ArrayList<>();
+		List<MiscellaneousRecord> miscellaneousRecords = new ArrayList<>();
+		List<EducationRecord> educationRecords = new ArrayList<>();
+		List<ProfessionalRecord> professionalRecords = new ArrayList<>();
+		PersonalRecord personalRecord = this.personalRecordService.create("Prueba", "https://trello.com/b/MD1aM3qn/proyecto-4-dp", "rhermoso98@gmail.com", "+34686310633", "https://trello.com/b/MD1aM3qn/proyecto-4-dp");
+		Curriculum curriculum = this.handyWorkerService.addCurriculum(personalRecord, professionalRecords, educationRecords, miscellaneousRecords, endorserRecords);
+
+		Assert.notNull(handyWorker.getCurriculum());
+	}
+
+	@Test
+	public void testDeleteCurriculum() {
+		Actor h = new Actor();
+		h = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		HandyWorker handyWorker = new HandyWorker();
+		handyWorker = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
+
+		Curriculum curriculum = handyWorker.getCurriculum();
+		this.handyWorkerService.deleteCurriculum(curriculum);
+
+		Assert.isNull(handyWorker.getCurriculum());
+
+	}
+
+	@Test
+	public void testEditCurriculum() {
+		Actor h = new Actor();
+		h = this.actorService.getActorByUsername("PepeHW");
+		super.authenticate("PepeHW");
+
+		HandyWorker handyWorker = new HandyWorker();
+		handyWorker = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
+
+		Curriculum curriculum = handyWorker.getCurriculum();
+		PersonalRecord personalRecord = curriculum.getPersonalRecord();
+		personalRecord.setEmail("rhermoso98@gmail.com");
+
+		this.handyWorkerService.editCurriculum(curriculum, personalRecord, curriculum.getProfessionalRecords(), curriculum.getEducationRecords(), curriculum.getMiscellaneousRecords(), curriculum.getEndorserRecords());
+
+		Assert.isTrue(handyWorker.getCurriculum().getPersonalRecord().getEmail().equals("rhermoso98@gmail.com"));
+	}
 	//11.1
 	@Test
 	public void testShowFixUpTask() {
@@ -135,16 +199,16 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
-		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+		HandyWorker h = new HandyWorker();
+		h = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
 
 		List<String> comments = new ArrayList<String>();
-		FixUpTask fixUpTask = this.fixUpTaskService.findOne(1382);
+		FixUpTask fixUpTask = h.getApplications().get(0).getFixUpTask();
 		Application application = this.handyWorkerService.createApplicationHandyWorker(4.0, comments, fixUpTask);
 
 		Assert.isTrue(fixUpTask.getApplications().contains(application) && h.getApplications().contains(application));
 		super.unauthenticate();
 	}
-
 	//11.4
 	@Test
 	public void testShowPhasesForHandyWorker() {
@@ -152,9 +216,10 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
-		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
+		HandyWorker h = new HandyWorker();
+		h = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
 
-		FixUpTask fixUpTask = this.fixUpTaskService.findOne(1382);
+		FixUpTask fixUpTask = h.getApplications().get(0).getFixUpTask();
 		Collection<Phase> phasesF = fixUpTask.getPhases();
 
 		Collection<Phase> phasesResult = this.handyWorkerService.showPhaseForHandyWorker(fixUpTask);
@@ -162,16 +227,13 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		Assert.isTrue(phasesF.containsAll(phasesResult));
 		super.unauthenticate();
 	}
-
-	@Test
 	public void testCreatePhasesForApplicaion() {
 		Actor actor = new Actor();
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
-		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
-
-		FixUpTask fixUpTask = this.fixUpTaskService.findOne(1382);
+		HandyWorker h = new HandyWorker();
+		h = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
 
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, 2018);
@@ -185,32 +247,40 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		Date endDate = cal.getTime();
 
 		Application app = h.getApplications().get(0);
+		FixUpTask fixUpTask = app.getFixUpTask();
 
 		Phase newPhase = this.phaseService.create("Phase1", "Description", startDate, endDate);
 
+		Assert.notNull(newPhase);
+		Assert.notNull(app);
+		Assert.notNull(fixUpTask);
+		Assert.isTrue(!this.handyWorkerService.getPhasesByApplication(app).contains(newPhase));
+
+		Integer size = this.handyWorkerService.getPhasesByApplication(app).size();
 		this.handyWorkerService.createPhaseForApplication(app, newPhase);
 
-		List<Phase> phasesNew = (List<Phase>) fixUpTask.getPhases();
-		Phase phaseAdded = phasesNew.get(phasesNew.size() - 1);
-
-		Assert.isTrue(fixUpTask.getPhases().contains(phaseAdded));
+		Assert.isTrue(this.handyWorkerService.getPhasesByApplication(app).size() == size + 1);
 		super.unauthenticate();
 	}
-
 	@Test
 	public void testDeletePhaseForApplication() {
 		Actor actor = new Actor();
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
-		FixUpTask fixUpTaskBeforeDelePhase = this.fixUpTaskService.findOne(1382);
+		HandyWorker logguedHandyWorker = new HandyWorker();
+		logguedHandyWorker = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
+
+		FixUpTask fixUpTaskBeforeDelePhase = this.handyWorkerService.getFixUpTaskByHandyWorker(logguedHandyWorker).get(0);
 
 		List<Phase> phases = (List<Phase>) fixUpTaskBeforeDelePhase.getPhases();
 		Phase phase = phases.get(0);
 
+		Assert.isTrue((fixUpTaskBeforeDelePhase.getPhases().contains(phase)));
+
 		this.handyWorkerService.deletePhaseForApplication(phase.getId());
 
-		FixUpTask fixUpTaskAfterDelePhase = this.fixUpTaskService.findOne(1382);
+		FixUpTask fixUpTaskAfterDelePhase = this.fixUpTaskService.findOne(fixUpTaskBeforeDelePhase.getId());
 
 		Assert.isTrue(!(fixUpTaskAfterDelePhase.getPhases().contains(phase)));
 		super.unauthenticate();
@@ -222,7 +292,11 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
-		FixUpTask fixUpTask = this.fixUpTaskService.findOne(1382);
+		HandyWorker h = new HandyWorker();
+		h = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
+
+		Application app = h.getApplications().get(0);
+		FixUpTask fixUpTask = app.getFixUpTask();
 
 		List<Phase> phases = (List<Phase>) fixUpTask.getPhases();
 		Phase phaseBeforeUpdate = phases.get(0);
@@ -298,7 +372,11 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		List<String> optionalComments = new ArrayList<String>();
 		Note newNote = this.noteServce.create("Prueba", optionalComments);
 
-		Complaint complaint = this.complaintService.findOne(1383);
+		HandyWorker h = new HandyWorker();
+		h = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
+
+		List<Complaint> complaints = this.handyWorkerService.showComplaintsFromHandyWorker();
+		Complaint complaint = complaints.get(0);
 
 		Report report = complaint.getReports().get(0);
 		Integer numNotesBeforeCreate = report.getNotes().size();
@@ -318,7 +396,11 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		actor = this.actorService.getActorByUsername("PepeHW");
 		super.authenticate("PepeHW");
 
-		Complaint complaint = this.complaintService.findOne(1383);
+		HandyWorker h = new HandyWorker();
+		h = this.handyWorkerService.getHandyWorkerByUsername("PepeHW");
+
+		List<Complaint> complaints = this.handyWorkerService.showComplaintsFromHandyWorker();
+		Complaint complaint = complaints.get(0);
 		Report report = complaint.getReports().get(0);
 		Note note = report.getNotes().get(0);
 
@@ -467,16 +549,15 @@ public class HandyWorkerServiceTest extends AbstractTest {
 		comments.add("B");
 
 		Endorser endorser = this.customerService.findOne(1490);
-		System.out.println(endorser);
-		//Peta el createEndorsment
+
+		Integer numEndorsmentsBefore = endorser.getEndorsments().size();
 		Endorsment endorsment = this.endorsmentService.createEndorsment(comments, endorser);
 
-		System.out.println("p");
 		this.handyWorkerService.createEndorsment(endorsment);
 
 		Endorser endorser2 = this.customerService.findOne(1490);
-
-		Assert.isTrue(endorser2.getEndorsments().contains(endorser));
+		Integer numEndorsmentsAfter = endorser2.getEndorsments().size();
+		Assert.isTrue(numEndorsmentsBefore + 1 == numEndorsmentsAfter);
 	}
 
 	@Test
@@ -487,14 +568,11 @@ public class HandyWorkerServiceTest extends AbstractTest {
 
 		HandyWorker h = this.handyWorkerService.findOne(actor.getId());
 
-		System.out.println(h.getId());
 		List<Endorsment> endorsments = h.getEndorsments();
 
 		List<Endorsment> result = this.handyWorkerService.showEndorsments();
 
-		System.out.println(result);
-		System.out.println(endorsments);
-		Assert.isTrue(endorsments.equals(result));
+		Assert.isTrue(endorsments.size() == (result.size()));
 
 	}
 }

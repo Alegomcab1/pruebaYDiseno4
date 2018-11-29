@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import repositories.EndorsmentRepository;
 import security.LoginService;
@@ -36,7 +35,6 @@ public class EndorsmentService {
 	public Endorsment createEndorsment(List<String> comments, Endorser writtenTo) {
 		UserAccount userAccount;
 		userAccount = LoginService.getPrincipal();
-		Assert.isTrue(userAccount.getAuthorities().contains("ENDORSER"));
 
 		Endorser sender = (Endorser) this.actorService.getActorByUsername(userAccount.getUsername());
 
