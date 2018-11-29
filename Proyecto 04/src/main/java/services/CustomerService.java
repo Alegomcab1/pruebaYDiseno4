@@ -166,7 +166,8 @@ public class CustomerService {
 		String username = userAccount.getUsername();
 		Customer loggedCustomer = this.customerRepository.getCustomerByUsername(username);
 
-		Assert.isTrue(userAccount.getAuthorities().contains("CUSTOMER"));
+		List<Authority> authorities = (List<Authority>) loggedCustomer.getUserAccount().getAuthorities();
+		Assert.isTrue(authorities.get(0).toString().equals("CUSTOMER"));
 
 		return loggedCustomer;
 	}
@@ -196,7 +197,7 @@ public class CustomerService {
 	public Collection<FixUpTask> showFixUpTasks(int customerId) {
 		return this.customerRepository.findFixUpTasksById(customerId);
 	}
-	
+
 	public Customer getCustomerByUsername(String username) {
 		return this.customerRepository.getCustomerByUsername(username);
 	}
@@ -297,14 +298,15 @@ public class CustomerService {
 			List<Application> applicationsHw = h.getApplications();
 			for (Application ap : applicationsNew)
 				if (applicationsHw.contains(this.applicationService.findOne(ap.getId()))) {
-					applicationsHw.remove(this.applicationService.findOne(ap.getId()));
-					h.setApplications(applicationsHw);
+					List<Application> applicationsHw2 = h.getApplications();
+					applicationsHw2.remove(this.applicationService.findOne(ap.getId()));
+					h.setApplications(applicationsHw2);
 					this.handyWorkerService.save(h);
 				}
 		}
 
 		for (Application app : applicationsNew)
-			this.applicationService.delete(this.applicationService.findOne(app.getId()));
+			this.applicationService.delete2(this.applicationService.findOne(app.getId()));
 
 		List<Finder> finders = (List<Finder>) this.finderService.findAll();
 		for (Finder fi : finders) {

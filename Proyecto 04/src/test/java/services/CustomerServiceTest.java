@@ -149,7 +149,7 @@ public class CustomerServiceTest extends AbstractTest {
 		FixUpTask fixUpTask = loggedCustomer.getFixUpTasks().get(0);
 
 		this.customerService.deleteFixUpTask(fixUpTask);
-		Assert.isTrue(this.fixUpTaskService.findOne(fixUpTask.getId()).equals(null));
+		Assert.isTrue(!this.fixUpTaskService.findAll().contains(fixUpTask));
 
 		super.authenticate(null);
 	}
