@@ -56,6 +56,10 @@ public class ActorService {
 	return this.actorRepository.getActorByUserName(a);
     }
 
+    public List<Actor> getActors() {
+	return this.actorRepository.getActors();
+    }
+
     public void loggedAsActor() {
 	UserAccount userAccount;
 	userAccount = LoginService.getPrincipal();
