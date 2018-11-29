@@ -196,6 +196,10 @@ public class CustomerService {
 	public Collection<FixUpTask> showFixUpTasks(int customerId) {
 		return this.customerRepository.findFixUpTasksById(customerId);
 	}
+	
+	public Customer getCustomerByUsername(String username) {
+		return this.customerRepository.getCustomerByUsername(username);
+	}
 
 	//FixUpTasks
 	public Collection<FixUpTask> showFixUpTasks() {
