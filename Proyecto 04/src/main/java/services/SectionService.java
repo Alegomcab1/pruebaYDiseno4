@@ -19,6 +19,9 @@ public class SectionService {
 	@Autowired
 	private SectionRepository	sectionRepository;
 
+	@Autowired
+	private HandyWorkerService	handyWorkerService;
+
 
 	public Section create(String title, String text, Integer number) {
 		Section section = new Section();
@@ -28,11 +31,18 @@ public class SectionService {
 		section.setText(text);
 		section.setSectionPictures(pictures);
 
+		section.setNumber(number);
+
 		return section;
 	}
 
 	public Section save(Section s) {
 
+		return this.sectionRepository.save(s);
+	}
+
+	public Section save1(Section s) {
+		s.setNumber(s.getId());
 		return this.sectionRepository.save(s);
 	}
 

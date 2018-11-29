@@ -1,3 +1,4 @@
+
 package services;
 
 import java.util.ArrayList;
@@ -21,132 +22,177 @@ import domain.Priority;
 @Transactional
 public class MessageService {
 
-    @Autowired
-    private MessageRepository messageRepository;
+	@Autowired
+	private MessageRepository		messageRepository;
 
-    @Autowired
-    private ActorService actorService;
+	@Autowired
+	private ActorService			actorService;
 
-    @Autowired
-    private BoxService boxService;
+	@Autowired
+	private AdminService			adminService;
 
-    @Autowired
-    private ConfigurationService configurationService;
+	@Autowired
+	private HandyWorkerService		handyWorkerService;
 
-    // Actualizar caja que tiene el mensaje EN ESTE ORDEN
-    // ACTUALIZAR CAJA SIN EL MENSAJE
-    // BORRAR EL MENSAJE
-    public void delete(Message m) {
-	this.messageRepository.delete(m);
-    }
+	@Autowired
+	private CustomerService			customerService;
 
-    // Metodo para enviar un mensaje a un tio (O varios, que tambien puede ser)
-    // Hay que hacer la comprobacion de SPAM
-    public void sendMessage(String subject, String body, Priority priority,
-	    List<Actor> recipients) {
+	@Autowired
+	private RefereeService			refereeService;
 
-	this.actorService.loggedAsActor();
-	for (Actor a : recipients) {
+	@Autowired
+	private SponsorService			sponsorService;
 
-	    Box boxRecieved = new Box();
-	    Box boxSpam = new Box();
-	    Message message = new Message();
-	    message = this.create(subject, body, priority, recipients);
-	    message = this.save(message);
-	    boxRecieved = this.boxService.getRecievedBoxByActor(a);
-	    boxSpam = this.boxService.getSpamBoxByActor(a);
+	@Autowired
+	private BoxService				boxService;
 
-	    // Guardar la box con ese mensaje;
+	@Autowired
+	private ConfigurationService	configurationService;
 
-	    if (this.configurationService.isActorSuspicious(a)) {
-		boxSpam.getMessages().add(message);
-		this.boxService.save(boxSpam);
-	    } else {
-		boxRecieved.getMessages().add(message);
-		this.boxService.save(boxRecieved);
-	    }
+
+	// Actualizar caja que tiene el mensaje EN ESTE ORDEN
+	// ACTUALIZAR CAJA SIN EL MENSAJE
+	// BORRAR EL MENSAJE Y TODAS SUS COPIAS
+	public void delete(Message m) {
+		this.messageRepository.delete(m);
 	}
-    }
 
-    public Message save(Message message) {
-	return this.messageRepository.save(message);
-    }
+	// Metodo para enviar un mensaje a un ACTOR (O varios, que tambien puede ser)
+	public void sendMessage(Message message) {
 
-    public Message findOne(int id) {
-	return this.messageRepository.findOne(id);
-    }
+		this.actorService.loggedAsActor();
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
 
-    public Message create(String Subject, String body, Priority priority,
-	    List<Actor> recipients) {
+		Actor sender = this.actorService.getActorByUsername(userAccount.getUsername());
 
-	this.actorService.loggedAsActor();
+		List<Actor> actors = message.getReceivers();
 
-	UserAccount userAccount;
-	userAccount = LoginService.getPrincipal();
-	Actor actor = this.actorService.getActorByUsername(userAccount
-		.getUsername());
+		for (Actor a : actors) {
+			Box boxRecieved = new Box();
+			Box boxSpam = new Box();
 
-	Date thisMoment = new Date();
-	thisMoment.setTime(thisMoment.getTime() - 1);
-	List<String> tags = new ArrayList<String>();
+			Message messageCopy = this.create(message.getSubject(), message.getBody(), message.getPriority(), message.getReceivers());
+			Message messageCopySaved = this.save(messageCopy);
 
-	Message message = new Message();
+			boxRecieved = this.boxService.getRecievedBoxByActor(a);
+			boxSpam = this.boxService.getSpamBoxByActor(a);
 
-	message.setMoment(thisMoment);
-	message.setSender(actor);
-	message.setSubject(Subject);
-	message.setBody(body);
-	message.setPriority(priority);
-	message.setReceivers(recipients);
-	message.setTags(tags);
+			// Guardar la box con ese mensaje;
 
-	return message;
-    }
+			if (this.configurationService.isActorSuspicious(sender)) {
+				List<Message> list = boxSpam.getMessages();
+				list.add(messageCopySaved);
+				boxSpam.setMessages(list);
 
-    public void updateMessage(Message message, Box box) { // Posible problema
-	// con copia
+			} else {
+				List<Message> list = boxRecieved.getMessages();
+				list.add(messageCopySaved);
+				boxRecieved.setMessages(list);
+			}
+		}
 
-	this.actorService.loggedAsActor();
-	UserAccount userAccount;
-	userAccount = LoginService.getPrincipal();
-	Actor actor = this.actorService.getActorByUsername(userAccount
-		.getUsername());
-
-	for (Box b : actor.getBoxes()) {
-	    if (b.getMessages().contains(message)) {
-		List<Message> list = b.getMessages();
-		list.remove(message);
-		b.setMessages(list);
-		this.boxService.save(b);
-	    }
-	    if (b.getName() == box.getName()) {
-		List<Message> list = b.getMessages();
-		list.add(message);
-		b.setMessages(list);
-		this.boxService.save(b);
-	    }
 	}
-    }
+	public Message save(Message message) {
+		return this.messageRepository.save(message);
 
-    public void deleteMessageToTrashBox(Message message) {
-	UserAccount userAccount;
-	userAccount = LoginService.getPrincipal();
-	Actor actor = this.actorService.getActorByUsername(userAccount
-		.getUsername());
+	}
 
-	List<Box> currentBoxes = this.boxService
-		.getCurrentBoxByMessage(message);
-	Box trash = this.boxService.getTrashBoxByActor(actor);
+	public Message create(String Subject, String body, Priority priority, List<Actor> recipients) {
 
-	// When an actor removes a message from a box other than trash box, it
-	// is moved to the trash box;
-	for (Box b : currentBoxes)
-	    if (b.equals(trash))
-		for (Box bc : actor.getBoxes())
-		    this.messageRepository.delete(message);
-	    else
-		this.updateMessage(message, trash);
-	// this.messageRepository.save(message); Si se pone en el metodo
-	// updateMessage no hace falta aqui
-    }
+		this.actorService.loggedAsActor();
+
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		String userName = userAccount.getUsername();
+
+		Date thisMoment = new Date();
+		thisMoment.setTime(thisMoment.getTime() - 1);
+		List<String> tags = new ArrayList<String>();
+
+		Message message = new Message();
+
+		Actor sender = this.actorService.getActorByUsername(userAccount.getUsername());
+
+		/*
+		 * if (userAccount.getAuthorities().contains(Authority.ADMIN))
+		 * message.setSender(this.adminService.getAdminByUsername(userName));
+		 * else if (userAccount.getAuthorities().contains(Authority.HANDYWORKER))
+		 * message.setSender(this.handyWorkerService.getHandyWorkerByUsername(userName));
+		 * else if (userAccount.getAuthorities().contains(Authority.CUSTOMER))
+		 * message.setSender(this.customerService.getCustomerByUsername(userName));
+		 * else if (userAccount.getAuthorities().contains(Authority.REFEREE))
+		 * message.setSender(this.refereeService.getRefereeByUsername(userName));
+		 * else if (userAccount.getAuthorities().contains(Authority.SPONSOR))
+		 * message.setSender(this.sponsorService.getSponsorByUsername(userName));
+		 */
+
+		message.setMoment(thisMoment);
+		message.setSubject(Subject);
+		message.setBody(body);
+		message.setPriority(priority);
+		message.setReceivers(recipients);
+		message.setTags(tags);
+		message.setSender(sender);
+
+		return message;
+	}
+	public void updateMessage(Message message, Box box) { // Posible problema
+		// con copia
+
+		this.actorService.loggedAsActor();
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Actor actor = this.actorService.getActorByUsername(userAccount.getUsername());
+
+		for (Box b : actor.getBoxes()) {
+			if (b.getMessages().contains(message)) {
+				List<Message> list = b.getMessages();
+				list.remove(message);
+				b.setMessages(list);
+			}
+			if (b.getName().equals(box.getName())) {
+				List<Message> list = b.getMessages();
+				list.add(message);
+				b.setMessages(list);
+			}
+		}
+	}
+	public void deleteMessageToTrashBox(Message message) {
+		UserAccount userAccount;
+		userAccount = LoginService.getPrincipal();
+		Actor actor = this.actorService.getActorByUsername(userAccount.getUsername());
+
+		//Box currentBox = this.boxService.getCurrentBoxByMessage(message);
+
+		List<Box> currentBoxes = new ArrayList<>();
+
+		for (Box b : actor.getBoxes())
+			if (b.getMessages().contains(message))
+				currentBoxes.add(b);
+
+		Box trash = this.boxService.getTrashBoxByActor(actor);
+
+		// When an actor removes a message from a box other than trash box, it
+		// is moved to the trash box;
+		for (Box currentBox : currentBoxes)
+			if (currentBox.equals(trash))
+				for (Box b : actor.getBoxes())
+					this.messageRepository.delete(message);
+			else
+				this.updateMessage(message, trash);
+		// this.messageRepository.save(message); Si se pone en el metodo
+		// updateMessage no hace falta aqui
+	}
+	public List<Message> findAll() {
+		return this.messageRepository.findAll();
+	}
+
+	public List<Message> findAll2() {
+		return this.messageRepository.findAll2();
+	}
+
+	public Message findOne(int id) {
+		return this.messageRepository.findOne(id);
+	}
 }

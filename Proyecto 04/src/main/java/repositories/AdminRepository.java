@@ -59,4 +59,10 @@ public interface AdminRepository extends JpaRepository<Admin, Integer> {
 	@Query("select distinct a.handyWorker from Application a join a.fixUpTask f where (f.complaints.size) > 0 order by f.complaints.size")
 	public List<HandyWorker> HandyWorkerTermsofComplainsOrdered();
 
+	@Query("select a from Admin a join a.userAccount b where b.username = ?1")
+	public Admin getAdminByUserName(String a);
+
+	@Query("select a from Admin a")
+	public List<Admin> findAll2();
+
 }
